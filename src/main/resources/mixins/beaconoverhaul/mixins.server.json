@@ -1,20 +1,20 @@
 {
-  "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_17",
-  "required": true,
-  "package": "dev.sapphic.beacons.mixin",
-  "mixins": [
-    "BeaconBlockEntityAccessor",
-    "BeaconBlockEntityMixin",
-    "BeaconBlockEntityMixin$DataAccessMixin",
-    "BeaconMenuMixin",
-    "GameRulesAccessor",
-    "IntegerValueAccessor",
-    "LivingEntityMixin",
-    "PlayerMixin"
-  ],
-  "refmap": "mixins/beaconoverhaul/refmap.json",
-  "injectors": {
-    "maxShiftBy": 2
-  }
+    "minVersion": "0.8",
+    "compatibilityLevel": "JAVA_17",
+    "required": true,
+    "package": "gay.solonovamax.beaconsoverhaul.mixin",
+    "mixins": [
+        "BeaconBlockEntityAccessor",
+        "BeaconBlockEntityMixin",
+        "BeaconBlockEntityMixin$PropertyDelegateMixin",
+        "BeaconScreenHandlerMixin",
+        "GameRulesAccessor",
+        "IntRuleAccessor",
+        "LivingEntityMixin",
+        "PlayerEntityMixin"
+    ],
+    "refmap": "mixins/beaconoverhaul/refmap.json",
+    "injectors": {
+        "maxShiftBy": 2
+    }
 }

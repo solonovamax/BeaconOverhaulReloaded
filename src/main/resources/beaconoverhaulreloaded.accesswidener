@@ -1,0 +1,12 @@
+accessWidener v1 named
+#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconButton
+accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$BeaconButtonWidget
+
+#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconScreenButton
+accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$BaseButtonWidget
+
+#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconPowerButton
+accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$EffectButtonWidget
+
+#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconUpgradePowerButton
+accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$LevelTwoEffectButtonWidget

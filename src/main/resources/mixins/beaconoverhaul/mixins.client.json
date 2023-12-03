@@ -1,18 +1,18 @@
 {
-  "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_17",
-  "required": true,
-  "package": "dev.sapphic.beacons.client.mixin",
-  "client": [
-    "FogRendererMixin",
-    "GameRendererMixin",
-    "GuiMixin",
-    "LightTextureMixin",
-    "PowerButtonMixin",
-    "ScreenEffectRendererMixin"
-  ],
-  "refmap": "mixins/beaconoverhaul/refmap.json",
-  "injectors": {
-    "maxShiftBy": 5
-  }
+    "minVersion": "0.8",
+    "compatibilityLevel": "JAVA_17",
+    "required": true,
+    "package": "gay.solonovamax.beaconsoverhaul.mixin.client",
+    "client": [
+        "BackgroundRendererMixin",
+        "EffectButtonWidgetMixin",
+        "GameRendererMixin",
+        "InGameHudMixin",
+        "InGameOverlayRendererMixin",
+        "LightmapTextureManagerMixin"
+    ],
+    "refmap": "mixins/beaconoverhaul/refmap.json",
+    "injectors": {
+        "maxShiftBy": 5
+    }
 }

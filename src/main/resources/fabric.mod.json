@@ -1,38 +1,41 @@
 {
-  "schemaVersion": 1,
-  "id": "beaconoverhaul",
-  "name": "Beacon Overhaul",
-  "version": "$version",
-  "description": "Introduces a tier system and better effect scaling for beacons\n- Adds night vision, fire resistance, §onutrition§r, §olong reach§r, and slow falling as beacon effects\n- Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency\n- Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects\n- Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels\n- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage\n- Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied §8(Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)§r",
-  "license": "Apache-2.0",
-  "icon": "pack.png",
-  "depends": {
-    "fabric-api-base": ">=0.4.29",
-    "fabric-networking-api-v1": ">=1.3.8",
-    "fabric-registry-sync-v0": ">=2.2.6",
-    "fabric-resource-loader-v0": ">=0.11.7",
-    "fabricloader": ">=0.14.21",
-    "minecraft": "~1.20",
-    "reach-entity-attributes": "~2.4.0"
-  },
-  "entrypoints": {
-    "main": [
-      "dev.sapphic.beacons.BeaconMobEffects"
-    ]
-  },
-  "mixins": [
-    "mixins/beaconoverhaul/mixins.client.json",
-    "mixins/beaconoverhaul/mixins.server.json"
-  ],
-  "authors": [
-    "Chloe Dawn"
-  ],
-  "contributors": [
-    "Daniel Amberson"
-  ],
-  "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/beaconoverhaul",
-    "sources": "https://github.com/ChloeDawn/BeaconOverhaul/tree/$version",
-    "issues": "https://github.com/ChloeDawn/BeaconOverhaul/issues"
-  }
+    "schemaVersion": 1,
+    "id": "beaconoverhaul",
+    "name": "Beacon Overhaul",
+    "version": "${version}",
+    "description": "Introduces a tier system and better effect scaling for beacons\n- Adds night vision, fire resistance, §onutrition§r, §olong reach§r, and slow falling as beacon effects\n- Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency\n- Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects\n- Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels\n- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage\n- Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied §8(Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)§r",
+    "license": "Apache-2.0",
+    "icon": "pack.png",
+    "depends": {
+        "fabric-api": ">=${versions.fabric.api}",
+        "fabricloader": ">=${versions.fabric.loader}",
+        "fabric-language-kotlin": ">=${versions.fabric.languageKotlin}",
+        "reach-entity-attributes": ">=${versions.reachEntityAttributes}",
+        "minecraft": "~${versions.minecraft}",
+        "java": ">=17"
+    },
+    "entrypoints": {
+        "main": [
+            {
+                "adapter": "kotlin",
+                "value": "gay.solonovamax.beaconsoverhaul.BeaconStatusEffects"
+            }
+        ]
+    },
+    "mixins": [
+        "mixins/beaconoverhaul/mixins.client.json",
+        "mixins/beaconoverhaul/mixins.server.json"
+    ],
+    "authors": [
+        "Chloe Dawn",
+        "solonovamax"
+    ],
+    "contributors": [
+        "Daniel Amberson"
+    ],
+    "contact": {
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/beaconoverhaul",
+        "sources": "https://github.com/ChloeDawn/BeaconOverhaul/tree/$version",
+        "issues": "https://github.com/ChloeDawn/BeaconOverhaul/issues"
+    }
 }

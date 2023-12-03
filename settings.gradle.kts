@@ -1,8 +1,8 @@
 pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    maven("https://maven.fabricmc.net")
-  }
+    repositories {
+        gradlePluginPortal()
+        maven("https://maven.fabricmc.net")
+    }
 }
 
-rootProject.name = "BeaconOverhaul"
+rootProject.name = "BeaconOverhaulReloaded"

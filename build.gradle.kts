@@ -1,178 +1,204 @@
 import java.time.Instant
 
 plugins {
-  id(/*net.fabricmc.*/ "fabric-loom") version "1.3.2"
-  id("io.github.juuxel.loom-quiltflower") version "1.10.0"
-  id("net.nemerosa.versioning") version "3.0.0"
-  id("org.gradle.signing")
+    `maven-publish`
+
+    alias(libs.plugins.fabric.loom)
+
+    alias(libs.plugins.kotlin.jvm)
+
+    alias(libs.plugins.kotlin.serialization)
 }
 
-group = "dev.sapphic"
-version = "1.8.4+1.20"
+group = "gay.solonovamax"
+version = "2.0.0+1.20"
 
-if ("CI" in System.getenv()) {
-  version = "$version-${versioning.info.build}"
+repositories {
+    mavenCentral()
+    maven("https://maven.solo-studios.ca/releases/") {
+        name = "Solo Studios"
+    }
+    maven("https://maven.fabricmc.net/") {
+        name = "FabricMC"
+    }
+    maven("https://masa.dy.fi/maven") {
+        name = "Masa Modding"
+    }
+    maven("https://maven.shedaniel.me/")
+    maven("https://maven.terraformersmc.com/releases/")
+    maven("https://maven.wispforest.io") {
+        name = "Wisp Forest"
+    }
+    maven("https://maven.jamieswhiteshirt.com/libs-release") {
+        content {
+            includeGroup("com.jamieswhiteshirt")
+        }
+    }
+    maven("https://oss.sonatype.org/content/repositories/snapshots") {
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
 }
 
 java {
-  withSourcesJar()
+    withSourcesJar()
 }
 
-quiltflower {
-  preferences.patternMatching(0)
+kotlin {
+    jvmToolchain(17)
 }
 
 loom {
-  accessWidenerPath.set(file(".accesswidener"))
+    accessWidenerPath = sourceSets["main"].resources.srcDirs.map { it.resolve("beaconoverhaulreloaded.accesswidener") }
+        .first { it.exists() }
 
-  mixin {
-    defaultRefmapName.set("mixins/beaconoverhaul/refmap.json")
-  }
-
-  runs {
-    configureEach {
-      vmArgs("-Xmx4G", "-XX:+UseZGC")
-
-      property("mixin.debug", "true")
-      property("mixin.debug.export.decompile", "false")
-      property("mixin.debug.verbose", "true")
-      property("mixin.dumpTargetOnFailure", "true")
-      property("mixin.checks", "true")
-      property("mixin.hotSwap", "true")
+    mixin {
+        defaultRefmapName.set("mixins/beaconoverhaul/refmap.json")
     }
-  }
-}
-
-repositories {
-  maven("https://maven.jamieswhiteshirt.com/libs-release") {
-    content {
-      includeGroup("com.jamieswhiteshirt")
-    }
-  }
-
-  maven("https://maven.terraformersmc.com/releases") {
-    content {
-      includeGroup("com.terraformersmc")
-    }
-  }
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.20.1")
-  mappings(loom.layered {
-    officialMojangMappings {
-      nameSyntheticMembers = true
+    minecraft(libs.minecraft)
+
+    mappings(variantOf(libs.yarn.mappings) { classifier("v2") })
+    // mappings(loom.layered {
+    //     officialMojangMappings {
+    //         nameSyntheticMembers = true
+    //     }
+    // })
+
+    modImplementation(libs.fabric.loader)
+
+    implementation("org.checkerframework:checker-qual:3.35.0")
+
+    modImplementation(libs.fabric.api)
+    modImplementation(libs.fabric.language.kotlin)
+
+
+    annotationProcessor(libs.sponge.mixin)
+
+    // fun fabricApiModule(moduleName: String): Dependency =
+    //     fabricApi.module(moduleName, "0.85.0+1.20.1")
+    // modImplementation(include(fabricApiModule("fabric-api-base"))!!)
+    // modImplementation(include(fabricApiModule("fabric-networking-api-v1"))!!)
+    // modImplementation(include(fabricApiModule("fabric-registry-sync-v0"))!!)
+    // modImplementation(include(fabricApiModule("fabric-resource-loader-v0"))!!)
+
+    // modImplementation(libs.bundles.adventure) {
+    //     exclude(group = "net.fabricmc.fabric-api")
+    //     include(this)
+    // }
+    //
+    // modImplementation(libs.bundles.cloud) {
+    //     exclude(group = "net.fabricmc.fabric-api")
+    //     include(this)
+    // }
+    modImplementation(libs.bundles.silk) {
+        include(this)
     }
-  })
 
-  modImplementation("net.fabricmc:fabric-loader:0.14.21")
+    implementation(libs.slf4k) {
+        include(this)
+    }
 
-  implementation("org.jetbrains:annotations:24.0.1")
-  implementation("org.checkerframework:checker-qual:3.35.0")
+    modImplementation(libs.cloth.config) {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
 
-  fun fabricApiModule(moduleName: String): Dependency =
-    fabricApi.module(moduleName, "0.85.0+1.20.1")
+    modImplementation(include("com.jamieswhiteshirt:reach-entity-attributes:2.4.0")!!)
 
-  modImplementation(include(fabricApiModule("fabric-api-base"))!!)
-  modImplementation(include(fabricApiModule("fabric-networking-api-v1"))!!)
-  modImplementation(include(fabricApiModule("fabric-registry-sync-v0"))!!)
-  modImplementation(include(fabricApiModule("fabric-resource-loader-v0"))!!)
-
-  modImplementation(include("com.jamieswhiteshirt:reach-entity-attributes:2.4.0")!!)
-
-  modRuntimeOnly("com.terraformersmc:modmenu:7.0.1")
+    modImplementation(libs.modmenu)
 }
 
 tasks {
-  compileJava {
-    with(options) {
-      isDeprecation = true
-      encoding = "UTF-8"
-      isFork = true
-      compilerArgs.addAll(
-          listOf(
-              "-Xlint:all", "-Xlint:-processing",
-              // Enable parameter name class metadata 
-              // https://openjdk.java.net/jeps/118
-              "-parameters"
-          )
-      )
-      release.set(17)
-    }
-  }
-
-  processResources {
-    filesMatching("/fabric.mod.json") {
-      expand("version" to project.version)
-    }
-  }
-
-  jar {
-    from("/LICENSE")
-
-    manifest.attributes(
-        "Build-Timestamp" to Instant.now(),
-        "Build-Revision" to versioning.info.commit,
-        "Build-Jvm" to "${
-          System.getProperty("java.version")
-        } (${
-          System.getProperty("java.vendor")
-        } ${
-          System.getProperty("java.vm.version")
-        })",
-        "Built-By" to GradleVersion.current(),
-
-        "Implementation-Title" to project.name,
-        "Implementation-Version" to project.version,
-        "Implementation-Vendor" to project.group,
-
-        "Specification-Title" to "FabricMod",
-        "Specification-Version" to "1.0.0",
-        "Specification-Vendor" to project.group,
-
-        "Sealed" to "true"
-    )
-  }
-
-  if (hasProperty("signing.mods.keyalias")) {
-    val alias = property("signing.mods.keyalias")
-    val keystore = property("signing.mods.keystore")
-    val password = property("signing.mods.password")
-
-    fun Sign.antSignJar(task: Task) = task.outputs.files.forEach { file ->
-      ant.invokeMethod(
-          "signjar", mapOf(
-          "jar" to file,
-          "alias" to alias,
-          "storepass" to password,
-          "keystore" to keystore,
-          "verbose" to true,
-          "preservelastmodified" to true
-      ))
+    withType<JavaCompile>().configureEach {
+        with(options) {
+            isDeprecation = true
+            encoding = "UTF-8"
+            isFork = true
+            compilerArgs.addAll(
+                listOf(
+                    "-Xlint:all", "-Xlint:-processing",
+                    // Enable parameter name class metadata
+                    // https://openjdk.java.net/jeps/118
+                    "-parameters"
+                )
+            )
+        }
     }
 
-    val signJar by creating(Sign::class) {
-      dependsOn(remapJar)
 
-      doFirst {
-        antSignJar(remapJar.get())
-      }
-
-      sign(remapJar.get())
+    processResources {
+        filesMatching("/fabric.mod.json") {
+            expand(
+                "version" to project.version,
+                "versions" to mapOf(
+                    "fabric" to mapOf(
+                        "api" to libs.versions.fabric.api.get(),
+                        "loader" to libs.versions.fabric.loader.get(),
+                        "languageKotlin" to libs.versions.fabric.language.kotlin.get(),
+                    ),
+                    "reachEntityAttributes" to "2.4.0",
+                    "minecraft" to libs.versions.minecraft.get(),
+                )
+            )
+        }
     }
 
-    val signSourcesJar by creating(Sign::class) {
-      dependsOn(remapSourcesJar)
+    withType<Jar>().configureEach {
+        from("LICENSE") {
+            rename { "${it}_${rootProject.name}" }
+        }
 
-      doFirst {
-        antSignJar(remapSourcesJar.get())
-      }
+        manifest.attributes(
+            "Build-Timestamp" to Instant.now(),
+            // "Build-Revision" to versioning.info.commit,
+            "Build-Jvm" to "${
+                System.getProperty("java.version")
+            } (${
+                System.getProperty("java.vendor")
+            } ${
+                System.getProperty("java.vm.version")
+            })",
+            "Built-By" to GradleVersion.current(),
 
-      sign(remapSourcesJar.get())
+            "Implementation-Title" to project.name,
+            "Implementation-Version" to project.version,
+            "Implementation-Vendor" to project.group,
+
+            "Specification-Title" to "FabricMod",
+            "Specification-Version" to "1.0.0",
+            "Specification-Vendor" to project.group,
+
+            "Sealed" to "true"
+        )
     }
+}
 
-    assemble {
-      dependsOn(signJar, signSourcesJar)
+afterEvaluate {
+    loom {
+        runs {
+            configureEach {
+                vmArgs("-Xmx4G", "-XX:+UseZGC")
+
+                property("fabric.development", "true")
+                property("mixin.debug", "true")
+                property("mixin.debug.export.decompile", "false")
+                property("mixin.debug.verbose", "true")
+                property("mixin.dumpTargetOnFailure", "true")
+                // makes silent failures into hard-failures
+                // property("mixin.checks", "true")
+                // property("mixin.hotSwap", "true")
+
+                val mixinJarFile = configurations.compileClasspath.get().files {
+                    it.group == "net.fabricmc" && it.name == "sponge-mixin"
+                }.firstOrNull()
+                if (mixinJarFile != null)
+                    vmArg("-javaagent:$mixinJarFile")
+
+                ideConfigGenerated(true)
+            }
+        }
     }
-  }
 }
