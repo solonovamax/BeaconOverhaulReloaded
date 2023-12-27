@@ -63,6 +63,8 @@ fabric-language-kotlin = { group = "net.fabricmc", name = "fabric-language-kotli
 ## SLF4K is a set of kotlin extensions for SLF4J
 slf4k = { group = "ca.solo-studios", name = "slf4k", version = "0.5.1" }
 
+guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version = "0.1.0" }
+
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
 

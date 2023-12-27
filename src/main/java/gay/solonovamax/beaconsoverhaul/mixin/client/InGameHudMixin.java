@@ -1,6 +1,5 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
-import gay.solonovamax.beaconsoverhaul.BeaconStatusEffects;
 import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

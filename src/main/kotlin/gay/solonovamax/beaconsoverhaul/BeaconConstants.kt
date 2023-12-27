@@ -1,7 +1,7 @@
 package gay.solonovamax.beaconsoverhaul
 
 object BeaconConstants {
-    const val MOD_ID = "BeaconsOverhaulReloaded"
+    const val MOD_NAME = "Beacons Overhaul Reloaded"
 
     const val NAMESPACE = "beaconoverhaul"
 }

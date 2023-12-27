@@ -47,6 +47,7 @@ abstract class BeaconScreenHandlerMixin extends ScreenHandler implements TieredB
     @Override
     @Unique
     public final PotencyTier getTier() {
+        // System.out.println("Here is the shit:", );
         return PotencyTier.values()[this.propertyDelegate.get(3)];
     }
 }

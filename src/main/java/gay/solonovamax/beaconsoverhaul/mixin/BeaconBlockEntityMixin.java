@@ -1,10 +1,13 @@
 package gay.solonovamax.beaconsoverhaul.mixin;
 
+import ca.solostudios.guava.kotlin.collect.MultisetsKt;
+import ca.solostudios.guava.kotlin.collect.MutableMultiset;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import gay.solonovamax.beaconsoverhaul.MutableTieredBeacon;
+import gay.solonovamax.beaconsoverhaul.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.PotencyTier;
 import gay.solonovamax.beaconsoverhaul.TieredBeacon;
+import gay.solonovamax.beaconsoverhaul.util.BeaconBlockEntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -12,16 +15,15 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -36,16 +39,25 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Objects;
 
 @Mixin(BeaconBlockEntity.class)
-abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory, MutableTieredBeacon {
+abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory, MutableTieredBeacon, OverhauledBeacon {
     @Unique
-    private final Multiset<Block> baseBlocks = HashMultiset.create();
+    private final MutableMultiset<Block> baseBlocks = MultisetsKt.toKotlin(HashMultiset.create());
     @Shadow
-    int level;
+    private int level;
     @Unique
     private PotencyTier tier = PotencyTier.NONE;
 
     BeaconBlockEntityMixin(final BlockEntityType<?> type, final BlockPos pos, final BlockState state) {
         super(type, pos, state);
+    }
+
+    @Redirect(
+            method = "tick",
+            at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", value = "INVOKE")
+    )
+    private static int updateLevel(final World world, final int x, final int y, final int z) {
+        // no-op (we have our own implementation)
+        return 0;
     }
 
     @Inject(
@@ -61,52 +73,9 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreen
             require = 1,
             allow = 1
     )
-    private static void updateTier(final World world, final BlockPos pos, final BlockState state, final BeaconBlockEntity beacon,
+    private static void updateTier(final World world, final BlockPos pos, final BlockState beaconState, final BeaconBlockEntity beacon,
                                    final CallbackInfo ci, final int x, final int y, final int z) {
-        PotencyTier tier = PotencyTier.HIGH;
-        int layerOffset = 1;
-
-        layerCheck:
-        while (layerOffset <= 4) {
-            final int yOffset = y - layerOffset;
-
-            if (yOffset < world.getBottomY()) {
-                tier = PotencyTier.NONE;
-                break;
-            }
-
-            for (int xOffset = x - layerOffset; xOffset <= (x + layerOffset); ++xOffset) {
-                for (int zOffset = z - layerOffset; zOffset <= (z + layerOffset); ++zOffset) {
-                    final BlockState stateAt = world.getBlockState(new BlockPos(xOffset, yOffset, zOffset));
-
-                    if (!stateAt.isIn(BlockTags.BEACON_BASE_BLOCKS)) {
-                        if (layerOffset == 1) {
-                            tier = PotencyTier.NONE;
-                        }
-
-                        break layerCheck;
-                    }
-
-                    final PotencyTier tierAt;
-
-                    if (stateAt.isIn(PotencyTier.HIGH_POTENCY_BLOCKS)) {
-                        tierAt = PotencyTier.HIGH;
-                    } else if (stateAt.isIn(PotencyTier.LOW_POTENCY_BLOCKS)) {
-                        tierAt = PotencyTier.LOW;
-                    } else {
-                        tierAt = PotencyTier.NONE;
-                    }
-
-                    if (tierAt.ordinal() < tier.ordinal()) {
-                        tier = tierAt;
-                    }
-                }
-            }
-
-            ++layerOffset;
-        }
-
-        ((MutableTieredBeacon) beacon).setTier(tier);
+        BeaconBlockEntityUtil.updateTier(beacon, world, pos, x, y, z);
     }
 
     @ModifyVariable(
@@ -116,12 +85,14 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreen
             require = 1,
             allow = 1
     )
-    private static double modifyEffectRadius(final double radius, final World level, final BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof final TieredBeacon beacon) {
-            return radius + (10.0 * beacon.getTier().ordinal());
+    private static double modifyRange(final double radius, final World world, final BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
+            System.out.println("Is OverhauledBeacon");
+            return BeaconBlockEntityUtil.computeRange(beacon);
         }
+        System.out.println("Is not OverhauledBeacon");
 
-        return radius; // (levels * 10) + 10
+        return radius; // this is the default radius computation
     }
 
     @ModifyVariable(
@@ -192,6 +163,22 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreen
         }
 
         return secondaryAmplifier; // 0
+    }
+
+    @NotNull
+    @Override
+    public MutableMultiset<Block> getBaseBlocks() {
+        return this.baseBlocks;
+    }
+
+    @Override
+    public int getVanillaLevel() {
+        return this.level;
+    }
+
+    @Override
+    public void setVanillaLevel(final int level) {
+        this.level = level;
     }
 
     @Unique

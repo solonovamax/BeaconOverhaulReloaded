@@ -101,6 +101,9 @@ dependencies {
     implementation(libs.slf4k) {
         include(this)
     }
+    implementation(libs.guava.kotlin) {
+        include(this)
+    }
 
     modImplementation(libs.cloth.config) {
         exclude(group = "net.fabricmc.fabric-api")

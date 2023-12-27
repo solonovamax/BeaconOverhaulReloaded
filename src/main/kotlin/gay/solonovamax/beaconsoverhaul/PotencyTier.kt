@@ -1,6 +1,7 @@
 package gay.solonovamax.beaconsoverhaul
 
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
+import net.minecraft.block.Block
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
 
@@ -11,9 +12,9 @@ enum class PotencyTier {
 
     companion object {
         @JvmField
-        val LOW_POTENCY_BLOCKS = TagKey.of(RegistryKeys.BLOCK, identifierOf(path = "low_potency"))
+        val LOW_POTENCY_BLOCKS: TagKey<Block> = TagKey.of(RegistryKeys.BLOCK, identifierOf(path = "low_potency"))
 
         @JvmField
-        val HIGH_POTENCY_BLOCKS = TagKey.of(RegistryKeys.BLOCK, identifierOf(path = "high_potency"))
+        val HIGH_POTENCY_BLOCKS: TagKey<Block> = TagKey.of(RegistryKeys.BLOCK, identifierOf(path = "high_potency"))
     }
 }
