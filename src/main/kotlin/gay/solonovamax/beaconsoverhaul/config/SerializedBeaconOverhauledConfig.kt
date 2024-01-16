@@ -5,6 +5,7 @@ package gay.solonovamax.beaconsoverhaul.config
 import gay.solonovamax.beaconsoverhaul.config.SerializedBeaconOverhauledConfig.AttributeModifier.Operation
 import gay.solonovamax.beaconsoverhaul.config.serializer.BlockSerializer
 import gay.solonovamax.beaconsoverhaul.config.serializer.StatusEffectSerializer
+import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -44,6 +45,12 @@ data class SerializedBeaconOverhauledConfig(
         Blocks.DIAMOND_BLOCK,
         Blocks.NETHERITE_BLOCK,
     ),
+    val beaconEffectsByTier: BeaconTierEffects = BeaconTierEffects(
+        tierOne = listOf(StatusEffects.SPEED, StatusEffects.HASTE, StatusEffects.NIGHT_VISION),
+        tierTwo = listOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
+        tierThree = listOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION),
+        secondaryEffects = listOf(StatusEffects.REGENERATION, StatusEffects.FIRE_RESISTANCE, StatusEffects.SLOW_FALLING),
+    ),
 ) {
     /*
      Range = base + pts * 2
@@ -71,4 +78,12 @@ data class SerializedBeaconOverhauledConfig(
             MULTIPLICATION;
         }
     }
+
+    @Serializable
+    data class BeaconTierEffects(
+        val tierOne: List<StatusEffect>,
+        val tierTwo: List<StatusEffect>,
+        val tierThree: List<StatusEffect>,
+        val secondaryEffects: List<StatusEffect>,
+    )
 }

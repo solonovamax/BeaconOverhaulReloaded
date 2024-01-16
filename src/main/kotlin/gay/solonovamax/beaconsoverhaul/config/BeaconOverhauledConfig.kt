@@ -18,6 +18,7 @@ class BeaconOverhauledConfig private constructor(
     val maxBeaconLayers: Int,
     val levelOneStatusEffects: List<StatusEffect>,
     val beaconBaseBlocks: List<Block>,
+    val beaconEffectsByTier: SerializedBeaconOverhauledConfig.BeaconTierEffects,
 ) {
     fun calculateRange(beaconPoints: Double): Int {
         return floor(rangeExpression.evaluate(beaconPoints)).toInt()
@@ -76,7 +77,8 @@ class BeaconOverhauledConfig private constructor(
                 secondaryAmplifier,
                 config.maxBeaconLayers,
                 config.levelOneStatusEffects,
-                config.beaconBaseBlocks
+                config.beaconBaseBlocks,
+                config.beaconEffectsByTier,
             )
         }
     }

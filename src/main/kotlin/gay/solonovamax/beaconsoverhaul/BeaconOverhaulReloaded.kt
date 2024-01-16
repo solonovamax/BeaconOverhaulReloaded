@@ -18,7 +18,6 @@ import net.devtech.arrp.api.RuntimeResourcePack
 import net.devtech.arrp.json.tags.JTag
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.resource.ResourcePack
 import net.minecraft.world.GameRules.Category
 import org.slf4j.kotlin.getLogger
@@ -87,11 +86,12 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private fun addStatusEffectsToBeacon() {
         val effectsByLevel = arrayOf(
-            arrayOf(StatusEffects.SPEED, StatusEffects.HASTE, StatusEffects.NIGHT_VISION),
-            arrayOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
-            arrayOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION),
-            arrayOf(StatusEffects.REGENERATION, StatusEffects.FIRE_RESISTANCE, StatusEffects.SLOW_FALLING)
+            config.beaconEffectsByTier.tierOne.toTypedArray(),
+            config.beaconEffectsByTier.tierTwo.toTypedArray(),
+            config.beaconEffectsByTier.tierThree.toTypedArray(),
+            config.beaconEffectsByTier.secondaryEffects.toTypedArray(),
         )
+
         BeaconBlockEntityAccessor.setEffectsByLevel(effectsByLevel)
 
         BeaconBlockEntityAccessor.setEffects(effectsByLevel.flatMapTo(mutableSetOf()) { it.asIterable() })
