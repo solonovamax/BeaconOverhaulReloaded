@@ -4,7 +4,7 @@ import ca.solostudios.guava.kotlin.collect.MultisetsKt;
 import ca.solostudios.guava.kotlin.collect.MutableMultiset;
 import com.google.common.collect.HashMultiset;
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded;
-import gay.solonovamax.beaconsoverhaul.OverhauledBeacon;
+import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeaconPropertyDelegate;
 import gay.solonovamax.beaconsoverhaul.beacon.blockentity.BeaconBlockEntityKt;
 import gay.solonovamax.beaconsoverhaul.beacon.screen.OverhauledBeaconScreenHandler;

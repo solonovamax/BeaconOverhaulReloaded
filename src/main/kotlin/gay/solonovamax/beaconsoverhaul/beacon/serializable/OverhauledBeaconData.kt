@@ -2,7 +2,7 @@
 
 package gay.solonovamax.beaconsoverhaul.beacon.serializable
 
-import gay.solonovamax.beaconsoverhaul.OverhauledBeacon
+import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.config.serializer.BlockSerializer
 import gay.solonovamax.beaconsoverhaul.util.toMap
 import kotlinx.serialization.Serializable

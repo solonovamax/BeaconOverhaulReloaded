@@ -2,7 +2,7 @@ package gay.solonovamax.beaconsoverhaul.beacon.blockentity
 
 import ca.solostudios.guava.kotlin.collect.mutableMultisetOf
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
-import gay.solonovamax.beaconsoverhaul.OverhauledBeacon
+import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.beacon.serializable.OverhauledBeaconData
 import gay.solonovamax.beaconsoverhaul.util.contains
 import gay.solonovamax.beaconsoverhaul.util.get

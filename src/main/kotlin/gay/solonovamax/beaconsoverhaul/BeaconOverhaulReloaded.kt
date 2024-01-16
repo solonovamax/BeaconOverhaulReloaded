@@ -125,7 +125,7 @@ object BeaconOverhaulReloaded : ModInitializer {
     }
 
     private fun writeDefaultConfig(): SerializedBeaconOverhauledConfig {
-        return SerializedBeaconOverhauledConfig().also { config ->
+        return BeaconConstants.DEFAULT_CONFIG.also { config ->
             writeConfig(config)
         }
     }

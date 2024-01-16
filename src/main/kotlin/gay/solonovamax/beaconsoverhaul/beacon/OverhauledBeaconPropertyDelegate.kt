@@ -1,6 +1,5 @@
 package gay.solonovamax.beaconsoverhaul.beacon
 
-import gay.solonovamax.beaconsoverhaul.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.mixin.BeaconBlockEntityAccessor
 import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.entity.effect.StatusEffect

@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul
+package gay.solonovamax.beaconsoverhaul.beacon
 
 import ca.solostudios.guava.kotlin.collect.MutableMultiset
 import net.minecraft.block.Block
