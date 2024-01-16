@@ -162,12 +162,12 @@ class OverhauledBeaconScreen(
         var y = 0
         for (blockEntry in Registries.BLOCK.iterateEntries(BlockTags.BEACON_BASE_BLOCKS)) {
 
-            matrices.push()
-            matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            matrices.scale(1.5f, 2.0f, 1.5f)
-            drawText(textRenderer, "(", 0, 0, Colors.WHITE, true)
-            x += (textRenderer.getWidth("(") * 1.5).toInt() + 2
-            matrices.pop()
+            // matrices.push()
+            // matrices.translate(x.toDouble(), y.toDouble(), 0.0)
+            // matrices.scale(1.5f, 2.0f, 1.5f)
+            // drawText(textRenderer, "(", 0, 0, Colors.WHITE, true)
+            // x += (textRenderer.getWidth("(") * 1.5).toInt() + 2
+            // matrices.pop()
 
             val block = blockEntry.value()
             drawItem(block.asItem().defaultStack, x, y)
@@ -178,16 +178,16 @@ class OverhauledBeaconScreen(
             x += textRenderer.getWidth(countText)
 
 
-            matrices.push()
-            matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            matrices.scale(1.5f, 2.0f, 1.5f)
-            drawText(textRenderer, ")", 0, 0, Colors.WHITE, true)
-            x += (textRenderer.getWidth(")") * 1.5).toInt() + 2
-            matrices.pop()
-
-            val formula = "× [insert formula here]"
-            drawText(textRenderer, formula, x, y + fontOffset, Colors.WHITE, true)
-            x += textRenderer.getWidth(formula)
+            // matrices.push()
+            // matrices.translate(x.toDouble(), y.toDouble(), 0.0)
+            // matrices.scale(1.5f, 2.0f, 1.5f)
+            // drawText(textRenderer, ")", 0, 0, Colors.WHITE, true)
+            // x += (textRenderer.getWidth(")") * 1.5).toInt() + 2
+            // matrices.pop()
+            //
+            // val formula = "× [insert formula here]"
+            // drawText(textRenderer, formula, x, y + fontOffset, Colors.WHITE, true)
+            // x += textRenderer.getWidth(formula)
 
             y += 18
             x = 0

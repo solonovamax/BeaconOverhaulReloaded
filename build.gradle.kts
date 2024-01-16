@@ -152,10 +152,11 @@ tasks {
                         "loader" to libs.versions.fabric.loader.get(),
                         "languageKotlin" to libs.versions.fabric.language.kotlin.get(),
                     ),
-                    "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
-                    "clothconfig" to libs.versions.cloth.config.get(),
                     "arrp" to libs.versions.arrp.get(),
+                    "clothconfig" to libs.versions.cloth.config.get(),
                     "minecraft" to libs.versions.minecraft.get(),
+                    "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
+                    "silk" to libs.versions.silk.get(),
                 )
             )
         }

@@ -5,6 +5,7 @@ package gay.solonovamax.beaconsoverhaul.config
 import gay.solonovamax.beaconsoverhaul.config.SerializedBeaconOverhauledConfig.AttributeModifier.Operation
 import gay.solonovamax.beaconsoverhaul.config.serializer.BlockSerializer
 import gay.solonovamax.beaconsoverhaul.config.serializer.StatusEffectSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import net.minecraft.block.Block
@@ -45,16 +46,16 @@ data class SerializedBeaconOverhauledConfig(
     ),
 ) {
     /*
-    Range = base + pts * 2
-    Duration (ticks) = base + pts
-    Duration (seconds) = base / 20 + pts / 20
+     Range = base + pts * 2
+     Duration (ticks) = base + pts
+     Duration (seconds) = base / 20 + pts / 20
 
-    Copper: x^0.45 * 2
-    Iron: x^0.6 * 2 * 2
-    Gold: x^0.95 * 0.5
-    Emerald: x^0.5 * 7.5
-    Amethyst: x^0.95
-    Diamond: x^0.75 * 5
+     Copper: x^0.45 * 2
+     Iron: x^0.6 * 2 * 2
+     Gold: x^0.95 * 0.5
+     Emerald: x^0.5 * 7.5
+     Amethyst: x^0.95
+     Diamond: x^0.75 * 5
      */
     @Serializable
     data class AttributeModifier(
@@ -63,7 +64,10 @@ data class SerializedBeaconOverhauledConfig(
         val operation: Operation,
     ) {
         enum class Operation {
+            @SerialName("addition")
             ADDITION,
+
+            @SerialName("multiplication")
             MULTIPLICATION;
         }
     }

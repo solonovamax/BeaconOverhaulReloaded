@@ -96,6 +96,7 @@ cloud-fabric = { group = "cloud.commandframework", name = "cloud-fabric", versio
 cloud-minecraft-extras = { group = "cloud.commandframework", name = "cloud-minecraft-extras", version.ref = "cloud" }
 
 
+silk-all = { group = "net.silkmc", name = "silk-all", version.ref = "silk" }
 silk-core = { group = "net.silkmc", name = "silk-core", version.ref = "silk" }
 silk-game = { group = "net.silkmc", name = "silk-game", version.ref = "silk" }
 silk-igui = { group = "net.silkmc", name = "silk-igui", version.ref = "silk" }
