@@ -1,18 +1,21 @@
 [versions]
-# Kotlin
 kotlin = "1.9.21"
 
-# Minecraft
 minecraft = "1.20.1"
-# Loom
+
 loom = "1.4.4"
-# Fabric
+
 fabric-loader = "0.14.24"
 fabric-api = "0.90.7+1.20.1"
 fabric-language-kotlin = "1.10.16+kotlin.1.9.21"
 fabric-yarn = "1.20.1+build.10"
 
+slf4k = "0.5.1"
+
+guava-kotlin = "0.1.0"
+
 cloth-config = "11.1.106"
+
 modmenu = "7.2.2"
 
 mixin = "0.12.5+mixin.0.8.5"
@@ -21,17 +24,17 @@ adventure = "4.14.0"
 adventure-fabric = "5.9.0"
 adventure-kotlin-dsl = "0.1.0"
 
-# Shadow
 shadow = "7.1.2"
 
-# Cloud
 cloud = "1.8.4"
 
-# Silk
 silk = "1.10.0"
 
-# Jackson
-jackson = "2.14.2"
+paralithic = "0.7.1"
+
+reach-entity-attributes = "2.4.0"
+
+arrp = "0.8.1"
 
 [plugins]
 
@@ -61,9 +64,9 @@ fabric-language-kotlin = { group = "net.fabricmc", name = "fabric-language-kotli
 
 # SLF4K
 ## SLF4K is a set of kotlin extensions for SLF4J
-slf4k = { group = "ca.solo-studios", name = "slf4k", version = "0.5.1" }
+slf4k = { group = "ca.solo-studios", name = "slf4k", version.ref = "slf4k" }
 
-guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version = "0.1.0" }
+guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version.ref = "guava-kotlin" }
 
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
@@ -100,6 +103,11 @@ silk-nbt = { group = "net.silkmc", name = "silk-nbt", version.ref = "silk" }
 silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "silk" }
 silk-persistence = { group = "net.silkmc", name = "silk-persistence", version.ref = "silk" }
 
+paralithic = { group = "com.dfsek", name = "paralithic", version.ref = "paralithic" }
+
+entityAttributes-reach = { group = "com.jamieswhiteshirt", name = "reach-entity-attributes", version.ref = "reach-entity-attributes" }
+
+arrp = { group = "net.devtech", name = "arrp", version.ref = "arrp" }
 [bundles]
 adventure = [
     "adventure-api",

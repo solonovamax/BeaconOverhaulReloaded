@@ -10,3 +10,6 @@ accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$EffectButto
 
 #accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconUpgradePowerButton
 accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$LevelTwoEffectButtonWidget
+
+accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;)Lnet/minecraft/screen/ScreenHandlerType;
+accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;[Lnet/minecraft/resource/featuretoggle/FeatureFlag;)Lnet/minecraft/screen/ScreenHandlerType;

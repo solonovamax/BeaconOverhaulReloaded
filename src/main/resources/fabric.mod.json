@@ -11,6 +11,8 @@
         "fabricloader": ">=${versions.fabric.loader}",
         "fabric-language-kotlin": ">=${versions.fabric.languageKotlin}",
         "reach-entity-attributes": ">=${versions.reachEntityAttributes}",
+        "cloth-config": ">=${versions.clothconfig}",
+        "advanced_runtime_resource_pack": ">=${versions.arrp}",
         "minecraft": "~${versions.minecraft}",
         "java": ">=17"
     },
@@ -18,7 +20,19 @@
         "main": [
             {
                 "adapter": "kotlin",
-              "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded"
+                "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded"
+            }
+        ],
+        "client": [
+            {
+                "adapter": "kotlin",
+                "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloadedClient"
+            }
+        ],
+        "_rrp:pregen": [
+            {
+                "adapter": "kotlin",
+                "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaul"
             }
         ]
     },

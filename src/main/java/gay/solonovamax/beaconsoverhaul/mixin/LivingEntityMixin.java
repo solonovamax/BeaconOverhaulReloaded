@@ -18,24 +18,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
     @Unique
-    private @MonotonicNonNull Float baseUpStep;
+    @MonotonicNonNull
+    private Float baseUpStep;
 
     @Unique
-    private boolean stepIncreased;
+    private boolean stepIncreased = false;
 
-    LivingEntityMixin(final EntityType<?> type, final World level) {
+    LivingEntityMixin(EntityType<?> type, World level) {
         super(type, level);
     }
 
     @Inject(method = "baseTick()V", at = @At("HEAD"), require = 1)
-    private void setBaseUpStep(final CallbackInfo ci) {
+    private void setBaseUpStep(CallbackInfo ci) {
         if (this.baseUpStep == null) {
             this.baseUpStep = this.getStepHeight();
         }
     }
 
     @Inject(method = "tickStatusEffects", at = @At("HEAD"), require = 1)
-    private void updateJumpBoostStepAssist(final CallbackInfo ci) {
+    private void updateJumpBoostStepAssist(CallbackInfo ci) {
         if (this.hasStatusEffect(StatusEffects.JUMP_BOOST) && !this.isSneaking()) {
             if (!this.stepIncreased) {
                 this.setStepHeight(1.0F);
@@ -60,7 +61,7 @@ abstract class LivingEntityMixin extends Entity {
             require = 1,
             allow = 1
     )
-    private double dropIfCrouching(final double fallDelta) {
+    private double dropIfCrouching(double fallDelta) {
         return this.isSneaking() ? 0.08 : fallDelta;
     }
 

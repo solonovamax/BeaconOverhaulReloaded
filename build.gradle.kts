@@ -24,11 +24,15 @@ repositories {
     maven("https://masa.dy.fi/maven") {
         name = "Masa Modding"
     }
-    maven("https://maven.shedaniel.me/")
+    maven("https://maven.shedaniel.me/") {
+        name = "Shedaniel"
+    }
     maven("https://maven.terraformersmc.com/releases/")
+    maven("https://repo.codemc.org/repository/maven-public")
     maven("https://maven.wispforest.io") {
         name = "Wisp Forest"
     }
+    maven("https://ueaj.dev/maven")
     maven("https://maven.jamieswhiteshirt.com/libs-release") {
         content {
             includeGroup("com.jamieswhiteshirt")
@@ -101,7 +105,12 @@ dependencies {
     implementation(libs.slf4k) {
         include(this)
     }
+
     implementation(libs.guava.kotlin) {
+        include(this)
+    }
+
+    implementation(libs.paralithic) {
         include(this)
     }
 
@@ -109,9 +118,17 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation(include("com.jamieswhiteshirt:reach-entity-attributes:2.4.0")!!)
+    modImplementation(libs.entityAttributes.reach) {
+        exclude(group = "net.fabricmc.fabric-api")
+        include(this)
+    }
 
-    modImplementation(libs.modmenu)
+    modImplementation(libs.arrp) {
+        exclude(group = "net.fabricmc.fabric-api")
+        modLocalRuntime(this)
+    }
+
+    modLocalRuntime(libs.modmenu)
 }
 
 tasks {
@@ -120,14 +137,7 @@ tasks {
             isDeprecation = true
             encoding = "UTF-8"
             isFork = true
-            compilerArgs.addAll(
-                listOf(
-                    "-Xlint:all", "-Xlint:-processing",
-                    // Enable parameter name class metadata
-                    // https://openjdk.java.net/jeps/118
-                    "-parameters"
-                )
-            )
+            compilerArgs.add("-Xlint:all")
         }
     }
 
@@ -142,7 +152,9 @@ tasks {
                         "loader" to libs.versions.fabric.loader.get(),
                         "languageKotlin" to libs.versions.fabric.language.kotlin.get(),
                     ),
-                    "reachEntityAttributes" to "2.4.0",
+                    "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
+                    "clothconfig" to libs.versions.cloth.config.get(),
+                    "arrp" to libs.versions.arrp.get(),
                     "minecraft" to libs.versions.minecraft.get(),
                 )
             )
@@ -183,13 +195,14 @@ afterEvaluate {
     loom {
         runs {
             configureEach {
-                vmArgs("-Xmx4G", "-XX:+UseZGC")
+                vmArgs("-Xmx2G", "-XX:+UseShenandoahGC")
 
                 property("fabric.development", "true")
                 property("mixin.debug", "true")
                 property("mixin.debug.export.decompile", "false")
                 property("mixin.debug.verbose", "true")
                 property("mixin.dumpTargetOnFailure", "true")
+                property("paralithic.debug.dump", "true")
                 // makes silent failures into hard-failures
                 // property("mixin.checks", "true")
                 // property("mixin.hotSwap", "true")

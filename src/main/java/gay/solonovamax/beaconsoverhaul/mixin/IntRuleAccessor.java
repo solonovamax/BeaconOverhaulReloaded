@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(GameRules.IntRule.class)
 public interface IntRuleAccessor {
     @Invoker("create")
-    static GameRules.Type<GameRules.IntRule> create(final int defaultValue) {
+    static GameRules.Type<GameRules.IntRule> create(int defaultValue) {
         throw new AssertionError();
     }
 }

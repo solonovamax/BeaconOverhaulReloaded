@@ -6,12 +6,11 @@
     "mixins": [
         "BeaconBlockEntityAccessor",
         "BeaconBlockEntityMixin",
-        "BeaconBlockEntityMixin$PropertyDelegateMixin",
-        "BeaconScreenHandlerMixin",
         "GameRulesAccessor",
         "IntRuleAccessor",
         "LivingEntityMixin",
-        "PlayerEntityMixin"
+        "PlayerEntityMixin",
+        "ServerPlayNetworkHandlerMixin"
     ],
     "refmap": "mixins/beaconoverhaul/refmap.json",
     "injectors": {
