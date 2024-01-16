@@ -22,7 +22,6 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.resource.ResourcePack
 import net.minecraft.world.GameRules.Category
 import org.slf4j.kotlin.getLogger
-import org.slf4j.kotlin.info
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
 import kotlin.io.path.inputStream
@@ -54,8 +53,6 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     init {
         loadConfig()
-
-        logger.info { "Here is the config: $config" }
     }
 
     @OptIn(ExperimentalSerializationApi::class)

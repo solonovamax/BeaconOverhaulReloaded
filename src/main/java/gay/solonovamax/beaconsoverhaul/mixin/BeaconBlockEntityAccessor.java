@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Mixin(BeaconBlockEntity.class)
 public interface BeaconBlockEntityAccessor {
-
     @Mutable
     @Accessor("EFFECTS_BY_LEVEL")
     static void setEffectsByLevel(final StatusEffect[][] effectsByLevel) {

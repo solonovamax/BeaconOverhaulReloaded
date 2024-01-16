@@ -2,17 +2,13 @@ package gay.solonovamax.beaconsoverhaul.mixin;
 
 import ca.solostudios.guava.kotlin.collect.MultisetsKt;
 import ca.solostudios.guava.kotlin.collect.MutableMultiset;
-import com.dfsek.paralithic.Expression;
 import com.google.common.collect.HashMultiset;
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded;
-import gay.solonovamax.beaconsoverhaul.MutableTieredBeacon;
 import gay.solonovamax.beaconsoverhaul.OverhauledBeacon;
-import gay.solonovamax.beaconsoverhaul.PotencyTier;
 import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeaconPropertyDelegate;
+import gay.solonovamax.beaconsoverhaul.beacon.blockentity.BeaconBlockEntityKt;
 import gay.solonovamax.beaconsoverhaul.beacon.screen.OverhauledBeaconScreenHandler;
-import gay.solonovamax.beaconsoverhaul.util.BeaconBlockEntityUtil;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -46,30 +42,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.Objects;
 
-@SuppressWarnings({"MethodMayBeStatic", "PackageVisibleField", "DollarSignInName"})
+@SuppressWarnings("PackageVisibleField")
 @Mixin(BeaconBlockEntity.class)
-abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScreenHandlerFactory, MutableTieredBeacon, OverhauledBeacon {
+abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScreenHandlerFactory, OverhauledBeacon {
     @Unique
     private final MutableMultiset<Block> baseBlocks = MultisetsKt.toKotlin(HashMultiset.create());
 
     @Shadow
     int level;
+
     @Shadow
     @Nullable
     StatusEffect primary;
+
     @Shadow
     @Nullable
     StatusEffect secondary;
+
     @Shadow
     List<BeaconBlockEntity.BeamSegment> beamSegments;
-    @Unique
-    private PotencyTier tier = PotencyTier.NONE;
+
     @Final
     @Shadow
     @Mutable
     private PropertyDelegate propertyDelegate;
+
     @Unique
     private double beaconPoints = 0.0;
 
@@ -85,14 +83,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Inject(method = "tick", at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", shift = At.Shift.BY, by = 2, value = "INVOKE", opcode = Opcodes.INVOKESTATIC), require = 1, allow = 1)
     private static void updateTier(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
-        BeaconBlockEntityUtil.updateTier(beacon, world, pos);
+        BeaconBlockEntityKt.updateTier(beacon, world, pos);
     }
 
     @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.DSTORE, ordinal = 0), index = 5, require = 1, allow = 1)
     private static double modifyRange(double radius, World world, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
+        if (world.getBlockEntity(pos) instanceof OverhauledBeacon beacon)
             return beacon.getRange();
-        }
 
         // Default case. Should never happen.
         // Add an exception here?
@@ -103,11 +100,10 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     private static int modifyPrimaryAmplifier(int primaryAmplifier, World level, BlockPos pos, int levels,
                                               @Nullable StatusEffect primaryEffect) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
-            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(primaryEffect)) {
+            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
                 return beacon.getPrimaryAmplifier() - 1;
-            } else {
+            else
                 return 0; // 0 = level 1
-            }
         }
 
         // Default case. Should never happen.
@@ -119,11 +115,10 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     private static int modifyPotentPrimaryAmplifier(int primaryAmplifier, World level, BlockPos pos, int levels,
                                                     @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
-            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(primaryEffect)) {
+            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
                 return beacon.getPrimaryAmplifierPotent() - 1;
-            } else {
+            else
                 return 0;
-            }
         }
 
         // Default case. Should never happen.
@@ -136,11 +131,10 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     private static int modifySecondaryAmplifier(int secondaryAmplifier, World level, BlockPos pos, int levels,
                                                 @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
-            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(secondaryEffect)) {
+            if (!BeaconOverhaulReloaded.getConfig().getLevelOneStatusEffects().contains(secondaryEffect))
                 return beacon.getSecondaryAmplifier() - 1;
-            } else {
+            else
                 return 0;
-            }
         }
 
         // Default case. Should never happen.
@@ -150,9 +144,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 0), index = 8, require = 1, allow = 1)
     private static int modifyDuration(int duration, World level, BlockPos pos, int levels) {
-        if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
+        if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon)
             return beacon.getDuration();
-        }
 
         // Default case. Should never happen.
         // Add an exception here?
@@ -166,13 +159,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Inject(method = "createMenu", at = @At(value = "NEW", target = "(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)Lnet/minecraft/screen/BeaconScreenHandler;"), cancellable = true)
     private void createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity, CallbackInfoReturnable<ScreenHandler> cir) {
-        OverhauledBeaconScreenHandler screenHandler = new OverhauledBeaconScreenHandler(i, playerInventory, this.propertyDelegate, ScreenHandlerContext.create(this.world, this.pos));
-        cir.setReturnValue(screenHandler);
+        ScreenHandlerContext context = ScreenHandlerContext.create(this.world, this.pos);
+        cir.setReturnValue(new OverhauledBeaconScreenHandler(i, playerInventory, this.propertyDelegate, context));
     }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        BeaconBlockEntityUtil.writeScreenOpeningData(this, player, buf);
+        BeaconBlockEntityKt.writeScreenOpeningData(this, player, buf);
     }
 
     @Unique
@@ -197,18 +190,6 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public PotencyTier getTier() {
-        return this.tier;
-    }
-
-    @Unique
-    @Override
-    public void setTier(PotencyTier tier) {
-        this.tier = Objects.requireNonNull(tier);
-    }
-
-    @Unique
-    @Override
     public double getBeaconPoints() {
         return this.beaconPoints;
     }
@@ -222,15 +203,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public int getRange() {
-        Expression rangeExpression = BeaconOverhaulReloaded.getConfig().getRangeExpression();
-        return (int) Math.floor(rangeExpression.evaluate(this.beaconPoints));
+        return BeaconOverhaulReloaded.getConfig().calculateRange(this.beaconPoints);
     }
 
     @Unique
     @Override
     public int getDuration() {
-        Expression durationExpression = BeaconOverhaulReloaded.getConfig().getDurationExpression();
-        return (int) Math.floor(durationExpression.evaluate(this.beaconPoints)) * SharedConstants.TICKS_PER_SECOND;
+        return BeaconOverhaulReloaded.getConfig().calculateDuration(this.beaconPoints);
     }
 
     @Unique
@@ -286,16 +265,16 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Override
     public int getPrimaryAmplifier() {
-        return (int) BeaconOverhaulReloaded.getConfig().getPrimaryAmplifierExpression().evaluate(this.beaconPoints, 0.0 /* isPotent = false*/);
+        return BeaconOverhaulReloaded.getConfig().calculatePrimaryAmplifier(this.beaconPoints, false);
     }
 
     @Override
     public int getPrimaryAmplifierPotent() {
-        return (int) BeaconOverhaulReloaded.getConfig().getPrimaryAmplifierExpression().evaluate(this.beaconPoints, 1.0 /* isPotent = true*/);
+        return BeaconOverhaulReloaded.getConfig().calculatePrimaryAmplifier(this.beaconPoints, true);
     }
 
     @Override
     public int getSecondaryAmplifier() {
-        return (int) BeaconOverhaulReloaded.getConfig().getSecondaryAmplifierExpression().evaluate(this.beaconPoints, 0.0 /* isPotent = false*/);
+        return BeaconOverhaulReloaded.getConfig().calculateSecondaryAmplifier(this.beaconPoints);
     }
 }

@@ -1,9 +1,11 @@
-package gay.solonovamax.beaconsoverhaul.util
+package gay.solonovamax.beaconsoverhaul.beacon.blockentity
 
 import ca.solostudios.guava.kotlin.collect.mutableMultisetOf
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
 import gay.solonovamax.beaconsoverhaul.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.beacon.serializable.OverhauledBeaconData
+import gay.solonovamax.beaconsoverhaul.util.contains
+import gay.solonovamax.beaconsoverhaul.util.get
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.encodeToByteArray
 import net.minecraft.block.Block
@@ -14,9 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import org.slf4j.kotlin.getLogger
-import org.slf4j.kotlin.info
 
-object BeaconBlockEntityUtil {
+object BeaconBlockEntityKt {
     private val logger by getLogger()
 
     @JvmStatic
@@ -64,8 +65,6 @@ object BeaconBlockEntityUtil {
 
         this.level = level
         this.beaconPoints = computePoints(this)
-        logger.info { "The range is $range blocks" }
-        logger.info { "The duration is $duration ticks" }
     }
 
     @JvmStatic
@@ -76,7 +75,6 @@ object BeaconBlockEntityUtil {
             if (block in beacon.baseBlocks) {
                 val expressionResult = expression.evaluate(beacon.baseBlocks[block].toDouble())
                 result += expressionResult
-                logger.info { "Block $block has count ${beacon.baseBlocks[block]}, adding $expressionResult" }
             }
         }
         // multiplication modifiers (ie. netherite)
@@ -84,19 +82,15 @@ object BeaconBlockEntityUtil {
             if (block in beacon.baseBlocks) {
                 val expressionResult = expression.evaluate(beacon.baseBlocks[block].toDouble())
                 result *= expressionResult
-                logger.info { "Block $block has count ${beacon.baseBlocks[block]}, multiplying by $expressionResult" }
             }
         }
-        val points = result
 
-        logger.info { "The points is $points" }
-        return points
+        return result
     }
 
     @JvmStatic
     fun OverhauledBeacon.writeScreenOpeningData(player: ServerPlayerEntity, buf: PacketByteBuf) {
         val data = OverhauledBeaconData.from(this)
-        println("data=$data")
         val bytes = Cbor.encodeToByteArray(data)
         buf.writeByteArray(bytes)
     }

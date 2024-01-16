@@ -53,8 +53,8 @@ class OverhauledBeaconScreen(
             override fun onPropertyUpdate(handler: ScreenHandler, property: Int, value: Int) {
                 handler as OverhauledBeaconScreenHandler
 
-                primaryEffect = handler.getPrimaryEffect()
-                secondaryEffect = handler.getSecondaryEffect()
+                primaryEffect = handler.primaryEffect
+                secondaryEffect = handler.secondaryEffect
             }
         })
     }
@@ -123,7 +123,7 @@ class OverhauledBeaconScreen(
     }
 
     fun tickButtons() {
-        val i = handler.getProperties()
+        val i = handler.level
         buttons.forEach { button ->
             button.tick(i)
         }
@@ -264,7 +264,7 @@ class OverhauledBeaconScreen(
         }
 
         override fun tick(level: Int) {
-            active = screen.handler.hasPayment() && screen.primaryEffect != null
+            active = screen.handler.hasPayment && screen.primaryEffect != null
         }
     }
 

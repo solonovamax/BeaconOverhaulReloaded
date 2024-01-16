@@ -5,7 +5,6 @@
     "package": "gay.solonovamax.beaconsoverhaul.mixin.client",
     "client": [
         "BackgroundRendererMixin",
-        "EffectButtonWidgetMixin",
         "GameRendererMixin",
         "InGameHudMixin",
         "InGameOverlayRendererMixin",

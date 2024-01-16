@@ -1,18 +1,18 @@
 package gay.solonovamax.beaconsoverhaul.beacon.screen
 
 import gay.solonovamax.beaconsoverhaul.beacon.serializable.OverhauledBeaconData
+import gay.solonovamax.beaconsoverhaul.util.PropertyDelegate
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.decodeFromByteArray
 import net.minecraft.block.Blocks
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.inventory.Inventory
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.registry.tag.ItemTags
-import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.PropertyDelegate
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerContext
@@ -22,67 +22,67 @@ import java.util.Optional
 
 class OverhauledBeaconScreenHandler private constructor(
     syncId: Int,
-    inventory: PlayerInventory,
+    inv: PlayerInventory,
     val beaconData: OverhauledBeaconData,
-    val propertyDelegate: PropertyDelegate,
-    val context: ScreenHandlerContext,
+    private val delegate: PropertyDelegate,
+    private val context: ScreenHandlerContext,
 ) : ScreenHandler(ScreenHandlerRegistry.OVERHAULED_BEACON_SCREEN_HANDLER, syncId) {
-    private val PAYMENT_SLOT_ID = 0
-    private val BEACON_INVENTORY_SIZE = 1
-    private val PROPERTY_COUNT = 3
-    private val INVENTORY_START = 1
-    private val INVENTORY_END = 28
-    private val HOTBAR_START = 28
-    private val HOTBAR_END = 37
-    private val payment: Inventory = PaymentInventory()
-
-
     /**
      * Client constructor
      */
+    @OptIn(ExperimentalSerializationApi::class)
     constructor(
         syncId: Int,
-        inventory: PlayerInventory,
+        inv: PlayerInventory,
         buf: PacketByteBuf,
-    ) : this(syncId, inventory, Cbor.decodeFromByteArray(buf.readByteArray()), ArrayPropertyDelegate(3), ScreenHandlerContext.EMPTY)
+    ) : this(syncId, inv, Cbor.decodeFromByteArray(buf.readByteArray()), PropertyDelegate(PROPERTY_COUNT), ScreenHandlerContext.EMPTY)
 
     /**
      * Server constructor
      */
     constructor(
         syncId: Int,
-        inventory: PlayerInventory,
+        inv: PlayerInventory,
         propertyDelegate: PropertyDelegate,
         context: ScreenHandlerContext,
-    ) : this(syncId, inventory, OverhauledBeaconData.EMPTY, propertyDelegate, context)
+    ) : this(syncId, inv, OverhauledBeaconData.EMPTY, propertyDelegate, context)
 
-    /**
-     * Magic number
-     */
-    private var paymentSlot: PaymentSlot = PaymentSlot(payment, 0, 136, 110)
+    private val paymentInventory = PaymentInventory()
+
+    val level: Int
+        get() = delegate[0]
+
+    val primaryEffect: StatusEffect?
+        get() = StatusEffect.byRawId(delegate[1])
+
+    val secondaryEffect: StatusEffect?
+        get() = StatusEffect.byRawId(delegate[2])
+
+    val hasPayment: Boolean
+        get() = !paymentInventory.getStack(PAYMENT_SLOT_ID).isEmpty
+
+    private var paymentSlot: PaymentSlot = PaymentSlot(paymentInventory, PAYMENT_SLOT_ID, 136, 110)
 
     init {
         println("In screen handler with data $beaconData")
-        checkDataCount(propertyDelegate, 3)
+        checkDataCount(delegate, PROPERTY_COUNT)
         addSlot(paymentSlot)
-        addProperties(propertyDelegate)
+        addProperties(delegate)
         val i = 36
         val j = 137
 
-        for (k in 0 until 3) {
-            for (l in 0 until 9) {
-                // Magic numbers!!
-                this.addSlot(Slot(inventory, l + k * 9 + 9, i + l * 18, j + k * 18))
-            }
-        }
+        // Magic numbers!!
+        for (k in 0 until 3)
+            for (l in 0 until 9)
+                this.addSlot(Slot(inv, l + k * 9 + 9, i + l * 18, j + k * 18))
 
-        for (k in 0 until 9) {
-            this.addSlot(Slot(inventory, k, 36 + k * 18, 195))
-        }
+        for (k in 0 until 9)
+            this.addSlot(Slot(inv, k, 36 + k * 18, 195))
     }
 
     override fun onClosed(player: PlayerEntity) {
         super.onClosed(player)
+
         if (!player.world.isClient) {
             val itemStack = paymentSlot.takeStack(paymentSlot.maxItemCount)
 
@@ -91,9 +91,7 @@ class OverhauledBeaconScreenHandler private constructor(
         }
     }
 
-    override fun canUse(player: PlayerEntity?): Boolean {
-        return canUse(this.context, player, Blocks.BEACON)
-    }
+    override fun canUse(player: PlayerEntity?): Boolean = canUse(this.context, player, Blocks.BEACON)
 
     override fun setProperty(id: Int, value: Int) {
         super.setProperty(id, value)
@@ -101,92 +99,65 @@ class OverhauledBeaconScreenHandler private constructor(
     }
 
     override fun quickMove(player: PlayerEntity?, slotId: Int): ItemStack {
-        var itemStack = ItemStack.EMPTY
         val slot = slots[slotId]
-        if (slot.hasStack()) {
-            val itemStack2 = slot.stack
-            itemStack = itemStack2.copy()
+
+        return if (slot.hasStack()) {
+            val sourceStack = slot.stack
+            val inputStack = sourceStack.copy()
+
             if (slotId == 0) {
-                if (!this.insertItem(itemStack2, INVENTORY_START, HOTBAR_END, false))
+                if (!this.insertItem(sourceStack, INVENTORY_START, HOTBAR_END, false))
                     return ItemStack.EMPTY
 
-                slot.onQuickTransfer(itemStack2, itemStack)
-            } else if (!paymentSlot.hasStack() && paymentSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 0, 1, false)) {
-                return ItemStack.EMPTY
+                slot.onQuickTransfer(sourceStack, inputStack)
+            } else if (!paymentSlot.hasStack() && paymentSlot.canInsert(sourceStack)) {
+                if (!this.insertItem(sourceStack, PAYMENT_SLOT_ID, BEACON_INVENTORY_SIZE, false))
+                    return ItemStack.EMPTY
             }
 
-            // else if (!paymentSlot.hasStack() && paymentSlot.canInsert(itemStack2)) {
-            //     if (!this.insertItem(itemStack2, 0, 1, false))
-            //         return ItemStack.EMPTY
-            // } else if (slotId in INVENTORY_START until HOTBAR_START) {
-            //     if (!this.insertItem(itemStack2, HOTBAR_START, HOTBAR_END, false))
-            //         return ItemStack.EMPTY
-            // } else if (slotId in HOTBAR_START until HOTBAR_END) {
-            //     if (!this.insertItem(itemStack2, INVENTORY_START, HOTBAR_START, false))
-            //         return ItemStack.EMPTY
-            // } else if (!this.insertItem(itemStack2, INVENTORY_START, HOTBAR_END, false)) {
-            //     return ItemStack.EMPTY
-            // }
-
-            if (itemStack2.isEmpty) {
+            if (sourceStack.isEmpty)
                 slot.stack = ItemStack.EMPTY
-            } else {
+            else
                 slot.markDirty()
-            }
 
-            if (itemStack2.count == itemStack.count) {
+            if (sourceStack.count == inputStack.count)
                 return ItemStack.EMPTY
-            }
 
-            slot.onTakeItem(player, itemStack2)
-        }
+            slot.onTakeItem(player, sourceStack)
 
-        return itemStack
+            inputStack
+        } else ItemStack.EMPTY
     }
 
-    fun getProperties(): Int {
-        return propertyDelegate[0]
-    }
-
-    fun getPrimaryEffect(): StatusEffect? {
-        return StatusEffect.byRawId(propertyDelegate[1])
-    }
-
-    fun getSecondaryEffect(): StatusEffect? {
-        return StatusEffect.byRawId(propertyDelegate[2])
-    }
-
-    fun setEffects(primary: Optional<StatusEffect?>, secondary: Optional<StatusEffect?>) {
+    fun setEffects(primary: Optional<StatusEffect>, secondary: Optional<StatusEffect>) {
         if (paymentSlot.hasStack()) {
-            propertyDelegate[1] = primary.map(StatusEffect::getRawId).orElse(-1)
-            propertyDelegate[2] = secondary.map(StatusEffect::getRawId).orElse(-1)
+            delegate[1] = primary.map(StatusEffect::getRawId).orElse(-1)
+            delegate[2] = secondary.map(StatusEffect::getRawId).orElse(-1)
             paymentSlot.takeStack(1)
             context.run(World::markDirty)
         }
     }
 
-    fun hasPayment(): Boolean {
-        return !payment.getStack(0).isEmpty
+    internal class PaymentSlot(
+        inventory: PaymentInventory,
+        index: Int = PAYMENT_SLOT_ID,
+        x: Int = 136,
+        y: Int = 110,
+    ) : Slot(inventory, index, x, y) {
+        override fun canInsert(stack: ItemStack): Boolean = stack.isIn(ItemTags.BEACON_PAYMENT_ITEMS)
+        override fun getMaxItemCount(): Int = 1
     }
 
-    internal class PaymentSlot(inventory: Inventory?, index: Int, x: Int, y: Int) : Slot(inventory, index, x, y) {
-        override fun canInsert(stack: ItemStack): Boolean {
-            return stack.isIn(ItemTags.BEACON_PAYMENT_ITEMS)
-        }
-
-        override fun getMaxItemCount(): Int {
-            return 1
-        }
+    internal class PaymentInventory : SimpleInventory(BEACON_INVENTORY_SIZE) {
+        override fun isValid(slot: Int, stack: ItemStack): Boolean = stack.isIn(ItemTags.BEACON_PAYMENT_ITEMS)
+        override fun getMaxCountPerStack(): Int = 1
     }
 
-    internal class PaymentInventory : SimpleInventory(1) {
-        override fun isValid(slot: Int, stack: ItemStack): Boolean {
-            return stack.isIn(ItemTags.BEACON_PAYMENT_ITEMS)
-        }
-
-        override fun getMaxCountPerStack(): Int {
-            return 1
-        }
+    companion object {
+        private const val PAYMENT_SLOT_ID = 0
+        private const val BEACON_INVENTORY_SIZE = 1
+        private const val PROPERTY_COUNT = 3
+        private const val INVENTORY_START = 1
+        private const val HOTBAR_END = 37
     }
-
 }

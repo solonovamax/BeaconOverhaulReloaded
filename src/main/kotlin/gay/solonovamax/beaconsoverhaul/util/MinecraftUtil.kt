@@ -8,6 +8,7 @@ import net.minecraft.registry.Registry
 import net.minecraft.registry.entry.RegistryEntryList
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.resource.featuretoggle.FeatureSet
+import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.util.Identifier
@@ -33,3 +34,5 @@ fun <T : ScreenHandler?> ScreenHandlerType(
 
 val Block.id: Identifier
     get() = Registries.BLOCK.getId(this)
+
+fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(size)
