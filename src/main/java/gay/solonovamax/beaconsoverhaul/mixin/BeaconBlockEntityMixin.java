@@ -82,7 +82,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     }
 
     @Inject(method = "tick", at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", shift = At.Shift.BY, by = 2, value = "INVOKE", opcode = Opcodes.INVOKESTATIC), require = 1, allow = 1)
-    private static void updateTier(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
+    private static void calculatePoints(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
         BeaconBlockEntityKt.updateTier(beacon, world, pos);
     }
 

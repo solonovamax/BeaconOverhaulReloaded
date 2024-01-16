@@ -76,7 +76,6 @@ object BeaconOverhaulReloaded : ModInitializer {
     }
 
     override fun onInitialize() {
-
         logger.info { "Loading ${BeaconConstants.MOD_NAME}" }
 
         addStatusEffectsToBeacon()
@@ -100,9 +99,10 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private fun modifyBeaconBaseBlocksTag() {
         val beaconBaseBlocksTag = JTag()
-        for (block in config.beaconBaseBlocks) {
+
+        for (block in config.beaconBaseBlocks)
             beaconBaseBlocksTag.add(block.id)
-        }
+
         RESOURCE_PACK.addTag(identifierOf(namespace = "minecraft", path = "blocks/beacon_base_blocks"), beaconBaseBlocksTag)
 
         RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
