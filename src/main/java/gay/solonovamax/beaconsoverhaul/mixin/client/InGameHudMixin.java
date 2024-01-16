@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
-abstract class InGameHudMixin {
+class InGameHudMixin {
     @Shadow
     private int scaledHeight;
 

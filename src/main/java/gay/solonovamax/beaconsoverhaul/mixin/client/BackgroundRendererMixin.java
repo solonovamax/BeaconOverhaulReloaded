@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(BackgroundRenderer.class)
-abstract class BackgroundRendererMixin {
+@SuppressWarnings({"StaticVariableMayNotBeInitialized", "FieldNamingConvention"})
+class BackgroundRendererMixin {
     @Shadow
     private static float red;
 

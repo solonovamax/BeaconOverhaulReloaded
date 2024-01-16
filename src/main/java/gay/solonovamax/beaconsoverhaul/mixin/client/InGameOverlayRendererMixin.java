@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameOverlayRenderer.class)
-abstract class InGameOverlayRendererMixin {
+class InGameOverlayRendererMixin {
     @Inject(method = "renderFireOverlay", at = @At("HEAD"), require = 1, allow = 1, cancellable = true)
     private static void omitFireOverlayIfResistant(final MinecraftClient client, final MatrixStack matrices, final CallbackInfo ci) {
         if ((client.player != null) && client.player.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LightmapTextureManager.class)
-abstract class LightmapTextureManagerMixin {
+class LightmapTextureManagerMixin {
     @Final
     @Shadow
     private MinecraftClient client;

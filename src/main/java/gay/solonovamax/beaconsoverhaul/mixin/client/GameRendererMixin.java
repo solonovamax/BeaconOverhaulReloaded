@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
-abstract class GameRendererMixin {
+class GameRendererMixin {
     @Inject(
             method = "getNightVisionStrength",
             at = @At(shift = At.Shift.BY, by = -2, value = "CONSTANT", args = "intValue=200"),
