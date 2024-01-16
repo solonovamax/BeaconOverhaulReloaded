@@ -14,7 +14,7 @@ class NutritionStatusEffect : StatusEffect(StatusEffectCategory.BENEFICIAL, 0xC7
     }
 
     override fun canApplyUpdateEffect(duration: Int, amplifier: Int): Boolean {
-        // what the hell is this ??
-        return 100 shr amplifier <= 0 || duration % (100 shr amplifier) == 0
+        // magic shit
+        return if (50 shr amplifier > 0) duration % (50 shr amplifier) == 0 else true
     }
 }
