@@ -36,7 +36,7 @@ abstract class InGameHudMixin {
 
         if ((player != null) && !player.getHungerManager().isNotFull()) {
             if (player.hasStatusEffect(StatusEffectRegistry.NUTRITION)) {
-                return this.scaledHeight - 39;
+                return this.scaledHeight - 39; // reset it to the default value
             }
         }
 

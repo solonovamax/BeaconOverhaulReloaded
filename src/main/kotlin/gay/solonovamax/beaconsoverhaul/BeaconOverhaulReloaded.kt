@@ -22,6 +22,7 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.resource.ResourcePack
 import net.minecraft.world.GameRules.Category
 import org.slf4j.kotlin.getLogger
+import org.slf4j.kotlin.info
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
 import kotlin.io.path.inputStream
@@ -57,7 +58,6 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     @OptIn(ExperimentalSerializationApi::class)
     fun loadConfig() {
-
         if (configDir.notExists())
             configDir.createDirectories()
 
@@ -76,6 +76,9 @@ object BeaconOverhaulReloaded : ModInitializer {
     }
 
     override fun onInitialize() {
+
+        logger.info { "Loading ${BeaconConstants.MOD_NAME}" }
+
         addStatusEffectsToBeacon()
         modifyBeaconBaseBlocksTag()
 

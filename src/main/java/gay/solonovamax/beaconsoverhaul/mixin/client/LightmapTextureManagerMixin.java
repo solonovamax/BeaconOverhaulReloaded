@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Environment(EnvType.CLIENT)
@@ -27,7 +26,7 @@ abstract class LightmapTextureManagerMixin {
             method = "update",
             at = @At(
                     target = "Lorg/joml/Vector3f;<init>(Lorg/joml/Vector3fc;)V",
-                    shift = Shift.BEFORE,
+                    shift = At.Shift.BEFORE,
                     value = "INVOKE",
                     opcode = Opcodes.INVOKESPECIAL,
                     ordinal = 0,
@@ -45,6 +44,7 @@ abstract class LightmapTextureManagerMixin {
         }
 
         final @Nullable StatusEffectInstance nightVision = player.getStatusEffect(StatusEffects.NIGHT_VISION);
+        // magic number
         return ((nightVision != null) && (nightVision.getAmplifier() > 0)) ? 15.0F : skyLight;
     }
 }
