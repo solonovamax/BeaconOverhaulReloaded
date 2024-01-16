@@ -11,6 +11,8 @@ class NutritionStatusEffect : StatusEffect(StatusEffectCategory.BENEFICIAL, 0xC7
             return
 
         entity.hungerManager.add(1, 0.0f)
+        if (entity.hungerManager.saturationLevel <= 2.0)
+            entity.hungerManager.saturationLevel += 1.0f
     }
 
     override fun canApplyUpdateEffect(duration: Int, amplifier: Int): Boolean {
