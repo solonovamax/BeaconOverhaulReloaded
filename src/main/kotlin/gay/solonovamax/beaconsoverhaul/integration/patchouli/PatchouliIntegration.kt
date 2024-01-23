@@ -35,7 +35,7 @@ object PatchouliIntegration {
                     |Information about Conduits and how they work.
                     |
                     |TODO. Not yet implemented/complete.
-                """.trimMargin("|"),
+                """.trimMargin("|").replace("\n", "\$(br)"),
                 icon = "minecraft:conduit"
             )
         )

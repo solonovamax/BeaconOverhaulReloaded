@@ -10,7 +10,7 @@
                     "functions": [
                         {
                             "function": "minecraft:set_nbt",
-                            "tag": "{\"patchouli:book\": \"beaconoverhaul:beacon_guide\"}"
+                            "tag": "{\"patchouli:book\": \"beaconoverhaul:guide\"}"
                         }
                     ]
                 }

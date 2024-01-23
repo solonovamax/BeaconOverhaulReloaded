@@ -1,6 +1,8 @@
 {
     "effect.beaconoverhaul.long_reach": "Long Reach",
     "effect.beaconoverhaul.nutrition": "Nutrition",
+    "effect.beaconoverhaul.long_reach.description": "Increases the reach distance of the player",
+    "effect.beaconoverhaul.nutrition.description": "Slowly refills the hunger bar of the player",
     "_": "_",
     "item.beaconoverhaul.book": "Overhauled Beacons",
     "item.beaconoverhaul.book.landing_text": "All about the Overhauled Beacons Reloaded mod"

@@ -52,8 +52,8 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private val configDir = FabricLoader.getInstance().configDir(BeaconConstants.NAMESPACE)
 
-    private val modContainer = FabricLoader.getInstance().getModContainer(BeaconConstants.IDENTIFIER)
-        .orElseThrow { error("Could not find mod with id ${BeaconConstants.IDENTIFIER}") }
+    private val modContainer = FabricLoader.getInstance().getModContainer(BeaconConstants.NAMESPACE)
+        .orElseThrow { error("Could not find mod with id ${BeaconConstants.NAMESPACE}") }
 
     init {
         loadConfig()
