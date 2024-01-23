@@ -13,6 +13,8 @@ object BeaconConstants {
 
     const val NAMESPACE = "beaconoverhaul"
 
+    const val IDENTIFIER = "beacon-overhaul-reloaded"
+
     val DEFAULT_CONFIG = SerializedBeaconOverhauledConfig(
         pointsModifiers = listOf(
             AttributeModifier(Blocks.COPPER_BLOCK, "(blocks)^0.45 * 2", Operation.ADDITION),

@@ -36,6 +36,10 @@ reach-entity-attributes = "2.4.0"
 
 arrp = "0.8.1"
 
+patchouli = "1.20.1-83-FABRIC"
+
+colormath = "3.3.3"
+
 [plugins]
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -104,11 +108,21 @@ silk-nbt = { group = "net.silkmc", name = "silk-nbt", version.ref = "silk" }
 silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "silk" }
 silk-persistence = { group = "net.silkmc", name = "silk-persistence", version.ref = "silk" }
 
+
 paralithic = { group = "com.dfsek", name = "paralithic", version.ref = "paralithic" }
+
 
 entityAttributes-reach = { group = "com.jamieswhiteshirt", name = "reach-entity-attributes", version.ref = "reach-entity-attributes" }
 
+
 arrp = { group = "net.devtech", name = "arrp", version.ref = "arrp" }
+
+
+patchouli = { group = "vazkii.patchouli", name = "Patchouli", version.ref = "patchouli" }
+
+
+colormath = { group = "com.github.ajalt.colormath", name = "colormath", version.ref = "colormath" }
+
 [bundles]
 adventure = [
     "adventure-api",

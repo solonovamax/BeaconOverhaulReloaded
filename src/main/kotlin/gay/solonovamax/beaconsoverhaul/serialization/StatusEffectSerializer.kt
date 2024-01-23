@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul.config.serializer
+package gay.solonovamax.beaconsoverhaul.serialization
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

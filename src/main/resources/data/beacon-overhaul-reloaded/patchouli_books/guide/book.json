@@ -1,0 +1,13 @@
+{
+    "name": "item.beaconoverhaul.book",
+    "landing_text": "item.beaconoverhaul.book.landing_text",
+    "model": "patchouli:book_purple",
+    "show_progress": false,
+    "version": "1",
+    "creative_tab": "minecraft:tools_and_utilities",
+    "show_toasts": false,
+    "pamphlet": false,
+    "i18n": true,
+    "use_resource_pack": true,
+    "use_blocky_font": true
+}

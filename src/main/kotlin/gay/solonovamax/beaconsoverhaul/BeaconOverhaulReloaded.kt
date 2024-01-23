@@ -4,6 +4,7 @@ import gay.solonovamax.beaconsoverhaul.beacon.screen.ScreenHandlerRegistry
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig
 import gay.solonovamax.beaconsoverhaul.config.SerializedBeaconOverhauledConfig
 import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.integration.patchouli.PatchouliIntegration
 import gay.solonovamax.beaconsoverhaul.mixin.BeaconBlockEntityAccessor
 import gay.solonovamax.beaconsoverhaul.mixin.GameRulesAccessor
 import gay.solonovamax.beaconsoverhaul.util.configDir
@@ -33,7 +34,7 @@ import gay.solonovamax.beaconsoverhaul.mixin.IntRuleAccessor as IntRule
 object BeaconOverhaulReloaded : ModInitializer {
     val LONG_REACH_INCREMENT = GameRulesAccessor.register("longReachIncrement", Category.PLAYER, IntRule.create(2))
 
-    val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon_base_blocks"))
+    val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
 
     @JvmStatic
     lateinit var config: BeaconOverhauledConfig
@@ -50,6 +51,9 @@ object BeaconOverhaulReloaded : ModInitializer {
     }
 
     private val configDir = FabricLoader.getInstance().configDir(BeaconConstants.NAMESPACE)
+
+    private val modContainer = FabricLoader.getInstance().getModContainer(BeaconConstants.IDENTIFIER)
+        .orElseThrow { error("Could not find mod with id ${BeaconConstants.IDENTIFIER}") }
 
     init {
         loadConfig()
@@ -77,11 +81,14 @@ object BeaconOverhaulReloaded : ModInitializer {
     override fun onInitialize() {
         logger.info { "Loading ${BeaconConstants.MOD_NAME}" }
 
+
         addStatusEffectsToBeacon()
-        modifyBeaconBaseBlocksTag()
+        createRuntimeResourcepack()
 
         StatusEffectRegistry.register()
         ScreenHandlerRegistry.register()
+
+        // PatchouliIntegration.multiblockForTier()
     }
 
     private fun addStatusEffectsToBeacon() {
@@ -97,13 +104,16 @@ object BeaconOverhaulReloaded : ModInitializer {
         BeaconBlockEntityAccessor.setEffects(effectsByLevel.flatMapTo(mutableSetOf()) { it.asIterable() })
     }
 
-    private fun modifyBeaconBaseBlocksTag() {
-        val beaconBaseBlocksTag = JTag()
+    private fun createRuntimeResourcepack() {
+        val beaconBaseBlocksTag = JTag().apply {
+            for (block in config.beaconBaseBlocks)
+                add(block.id)
 
-        for (block in config.beaconBaseBlocks)
-            beaconBaseBlocksTag.add(block.id)
+            RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
+        }
 
-        RESOURCE_PACK.addTag(identifierOf(namespace = "minecraft", path = "blocks/beacon_base_blocks"), beaconBaseBlocksTag)
+        PatchouliIntegration.writePatchouliBook(RESOURCE_PACK)
+        // loadPatchouliBook(RESOURCE_PACK)
 
         RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
             resourcePacks.add(RESOURCE_PACK)
@@ -111,6 +121,17 @@ object BeaconOverhaulReloaded : ModInitializer {
 
         RESOURCE_PACK.dump()
     }
+
+    // private fun loadPatchouliBook(resourcePack: RuntimeResourcePack) {
+    //     val fabricXplatMod = FabricXplatModContainer(modContainer)
+    //     val bookResourceSupplier = resourcePack.open(ResourceType.SERVER_DATA, PatchouliIntegration.PATCHOULI_BOOK_JSON)
+    //     if (bookResourceSupplier != null) {
+    //         logger.info { "Loading patchouli book" }
+    //         BookRegistry.INSTANCE.loadBook(fabricXplatMod, PatchouliIntegration.GUIDE_IDENTIFIER, bookResourceSupplier.get(), false)
+    //     } else {
+    //         logger.info { "Patchouli book could not be loaded" }
+    //     }
+    // }
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun writeConfig(config: SerializedBeaconOverhauledConfig) {

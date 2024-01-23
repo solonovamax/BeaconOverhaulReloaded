@@ -9,12 +9,12 @@ import net.minecraft.entity.effect.StatusEffect
 import kotlin.math.floor
 
 class BeaconOverhauledConfig private constructor(
-    val additionModifiers: List<Pair<Block, Expression>>,
-    val multiplicationModifiers: List<Pair<Block, Expression>>,
-    val rangeExpression: Expression,
-    val durationExpression: Expression,
-    val primaryAmplifierExpression: Expression,
-    val secondaryAmplifierExpression: Expression,
+    val additionModifiers: List<Pair<Block, BeaconExpression>>,
+    val multiplicationModifiers: List<Pair<Block, BeaconExpression>>,
+    val rangeExpression: BeaconExpression,
+    val durationExpression: BeaconExpression,
+    val primaryAmplifierExpression: BeaconExpression,
+    val secondaryAmplifierExpression: BeaconExpression,
     val maxBeaconLayers: Int,
     val levelOneStatusEffects: List<StatusEffect>,
     val beaconBaseBlocks: List<Block>,
@@ -29,44 +29,50 @@ class BeaconOverhauledConfig private constructor(
     }
 
     fun calculatePrimaryAmplifier(points: Double, isPotent: Boolean): Int {
-        @Suppress("InconsistentCommentForJavaParameter")
         return primaryAmplifierExpression.evaluate(points, /* isPotent = */ if (isPotent) 1.0 else 0.0).toInt()
     }
 
     fun calculateSecondaryAmplifier(points: Double): Int {
-        return secondaryAmplifierExpression.evaluate(points, 0.0 /* isPotent = false */).toInt()
+        return secondaryAmplifierExpression.evaluate(points, /* isPotent = false */ 0.0).toInt()
+    }
+
+    data class BeaconExpression(
+        val expression: Expression,
+        val expressionString: String,
+    ) {
+        fun evaluate(vararg args: Double): Double = expression.evaluate(*args)
     }
 
     companion object {
         fun from(config: SerializedBeaconOverhauledConfig): BeaconOverhauledConfig {
             val parser = Parser()
 
-            val blockModifierParserScope = Scope()
-            blockModifierParserScope.addInvocationVariable("blocks")
+            val blockModifiersScope = Scope()
+            blockModifiersScope.addInvocationVariable("blocks")
 
             val additionModifiers = config.pointsModifiers.filter {
                 it.operation == SerializedBeaconOverhauledConfig.AttributeModifier.Operation.ADDITION
             }.map {
-                it.block to parser.parse(it.expression, blockModifierParserScope)
+                it.block to BeaconExpression(parser.parse(it.expression, blockModifiersScope), it.expression)
             }
             val multiplicationModifiers = config.pointsModifiers.filter {
                 it.operation == SerializedBeaconOverhauledConfig.AttributeModifier.Operation.MULTIPLICATION
             }.map {
-                it.block to parser.parse(it.expression, blockModifierParserScope)
+                it.block to BeaconExpression(parser.parse(it.expression, blockModifiersScope), it.expression)
             }
 
-            val totalsParserScope = Scope()
-            totalsParserScope.addInvocationVariable("pts")
+            val totalsScope = Scope()
+            totalsScope.addInvocationVariable("pts")
 
-            val range = parser.parse(config.range, totalsParserScope)
-            val duration = parser.parse(config.duration, totalsParserScope)
+            val range = BeaconExpression(parser.parse(config.range, totalsScope), config.range)
+            val duration = BeaconExpression(parser.parse(config.duration, totalsScope), config.duration)
 
-            val amplifierExpressionScope = Scope()
-            amplifierExpressionScope.addInvocationVariable("pts")
-            amplifierExpressionScope.addInvocationVariable("isPotent")
+            val amplifierScope = Scope()
+            amplifierScope.addInvocationVariable("pts")
+            amplifierScope.addInvocationVariable("isPotent")
 
-            val primaryAmplifier = parser.parse(config.primaryAmplifier, amplifierExpressionScope)
-            val secondaryAmplifier = parser.parse(config.secondaryAmplifier, amplifierExpressionScope);
+            val primaryAmplifier = BeaconExpression(parser.parse(config.primaryAmplifier, amplifierScope), config.primaryAmplifier)
+            val secondaryAmplifier = BeaconExpression(parser.parse(config.secondaryAmplifier, amplifierScope), config.secondaryAmplifier)
 
             return BeaconOverhauledConfig(
                 additionModifiers,

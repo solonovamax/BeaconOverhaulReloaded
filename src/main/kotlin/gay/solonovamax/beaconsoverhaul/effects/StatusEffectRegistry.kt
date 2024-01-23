@@ -1,11 +1,10 @@
 package gay.solonovamax.beaconsoverhaul.effects
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes
-import gay.solonovamax.beaconsoverhaul.BeaconConstants
+import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
-import net.minecraft.util.Identifier
 
 object StatusEffectRegistry {
     @JvmField
@@ -24,7 +23,7 @@ object StatusEffectRegistry {
     val NUTRITION = NutritionStatusEffect()
 
     fun register() {
-        Registry.register(Registries.STATUS_EFFECT, Identifier(BeaconConstants.NAMESPACE, "long_reach"), LONG_REACH)
-        Registry.register(Registries.STATUS_EFFECT, Identifier(BeaconConstants.NAMESPACE, "nutrition"), NUTRITION)
+        Registry.register(Registries.STATUS_EFFECT, identifierOf("long_reach"), LONG_REACH)
+        Registry.register(Registries.STATUS_EFFECT, identifierOf("nutrition"), NUTRITION)
     }
 }

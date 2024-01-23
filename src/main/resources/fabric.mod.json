@@ -20,7 +20,8 @@
         "silk-igui": ">=${versions.silk}",
         "silk-nbt": ">=${versions.silk}",
         "silk-network": ">=${versions.silk}",
-        "silk-persistence": ">=${versions.silk}"
+        "silk-persistence": ">=${versions.silk}",
+        "patchouli": ">=${versions.patchouli}"
     },
     "conflicts": {
         "beaconoverhaul": "*"

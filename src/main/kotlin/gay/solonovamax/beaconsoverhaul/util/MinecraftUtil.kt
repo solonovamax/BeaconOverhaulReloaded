@@ -1,8 +1,11 @@
+@file:Suppress("FunctionName")
+
 package gay.solonovamax.beaconsoverhaul.util
 
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
+import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
 import net.minecraft.registry.entry.RegistryEntryList
@@ -12,8 +15,16 @@ import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.util.Identifier
+import vazkii.patchouli.common.util.ItemStackUtil
 
-fun identifierOf(path: String, namespace: String = BeaconConstants.NAMESPACE): Identifier = Identifier(namespace, path)
+fun identifierOf(identifier: String): Identifier {
+    return if (identifier.contains(':'))
+        identifier.split(':').let { (namespace, path) -> identifierOf(namespace, path) }
+    else
+        identifierOf(path = identifier)
+}
+
+fun identifierOf(namespace: String = BeaconConstants.IDENTIFIER, path: String): Identifier = Identifier(namespace, path)
 
 operator fun TagKey<Block>.contains(state: BlockState): Boolean {
     return state.isIn(this)
@@ -36,3 +47,5 @@ val Block.id: Identifier
     get() = Registries.BLOCK.getId(this)
 
 fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(size)
+
+fun String.toItemStack(): ItemStack = ItemStackUtil.loadStackFromString(this)

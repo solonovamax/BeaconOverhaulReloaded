@@ -3,9 +3,9 @@
 package gay.solonovamax.beaconsoverhaul.config
 
 import gay.solonovamax.beaconsoverhaul.config.SerializedBeaconOverhauledConfig.AttributeModifier.Operation
-import gay.solonovamax.beaconsoverhaul.config.serializer.BlockSerializer
-import gay.solonovamax.beaconsoverhaul.config.serializer.StatusEffectSerializer
 import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.serialization.BlockSerializer
+import gay.solonovamax.beaconsoverhaul.serialization.StatusEffectSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers

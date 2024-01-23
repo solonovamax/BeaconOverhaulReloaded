@@ -1,4 +1,7 @@
 {
-  "effect.beaconoverhaul.long_reach": "Long Reach",
-  "effect.beaconoverhaul.nutrition": "Nutrition"
+    "effect.beaconoverhaul.long_reach": "Long Reach",
+    "effect.beaconoverhaul.nutrition": "Nutrition",
+    "_": "_",
+    "item.beaconoverhaul.book": "Overhauled Beacons",
+    "item.beaconoverhaul.book.landing_text": "All about the Overhauled Beacons Reloaded mod"
 }

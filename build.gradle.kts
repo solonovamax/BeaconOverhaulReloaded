@@ -27,6 +27,7 @@ repositories {
     maven("https://maven.shedaniel.me/") {
         name = "Shedaniel"
     }
+    maven("https://maven.blamejared.com")
     maven("https://maven.terraformersmc.com/releases/")
     maven("https://repo.codemc.org/repository/maven-public")
     maven("https://maven.wispforest.io") {
@@ -82,13 +83,6 @@ dependencies {
 
     annotationProcessor(libs.sponge.mixin)
 
-    // fun fabricApiModule(moduleName: String): Dependency =
-    //     fabricApi.module(moduleName, "0.85.0+1.20.1")
-    // modImplementation(include(fabricApiModule("fabric-api-base"))!!)
-    // modImplementation(include(fabricApiModule("fabric-networking-api-v1"))!!)
-    // modImplementation(include(fabricApiModule("fabric-registry-sync-v0"))!!)
-    // modImplementation(include(fabricApiModule("fabric-resource-loader-v0"))!!)
-
     // modImplementation(libs.bundles.adventure) {
     //     exclude(group = "net.fabricmc.fabric-api")
     //     include(this)
@@ -99,6 +93,7 @@ dependencies {
     //     include(this)
     // }
     modImplementation(libs.bundles.silk) {
+        exclude(group = "net.fabricmc.fabric-api")
         include(this)
     }
 
@@ -114,6 +109,10 @@ dependencies {
         include(this)
     }
 
+    implementation(libs.colormath) {
+        include(this)
+    }
+
     modImplementation(libs.cloth.config) {
         exclude(group = "net.fabricmc.fabric-api")
     }
@@ -126,6 +125,10 @@ dependencies {
     modImplementation(libs.arrp) {
         exclude(group = "net.fabricmc.fabric-api")
         modLocalRuntime(this)
+    }
+
+    modImplementation(libs.patchouli) {
+        exclude(group = "net.fabricmc.fabric-api")
     }
 
     modLocalRuntime(libs.modmenu)
@@ -157,6 +160,7 @@ tasks {
                     "minecraft" to libs.versions.minecraft.get(),
                     "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
                     "silk" to libs.versions.silk.get(),
+                    "patchouli" to libs.versions.patchouli.get(),
                 )
             )
         }
