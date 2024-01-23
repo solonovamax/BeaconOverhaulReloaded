@@ -83,7 +83,10 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Inject(method = "tick", at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", shift = At.Shift.BY, by = 2, value = "INVOKE", opcode = Opcodes.INVOKESTATIC), require = 1, allow = 1)
     private static void calculatePoints(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
-        BeaconBlockEntityKt.updateTier(beacon, world, pos);
+        // TODO: 2024-01-23 Make this configurable
+        // Vanilla does time % 80, so if we do time % 3, then it will only happen 1/3rd of the time, resulting in it happening every 240 ticks
+        if (world.getTime() % 3 == 0)
+            BeaconBlockEntityKt.updateTier(beacon, world, pos);
     }
 
     @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.DSTORE, ordinal = 0), index = 5, require = 1, allow = 1)
