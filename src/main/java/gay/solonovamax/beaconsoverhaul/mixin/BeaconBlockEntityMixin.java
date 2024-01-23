@@ -85,8 +85,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     private static void calculatePoints(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
         // TODO: 2024-01-23 Make this configurable
         // Vanilla does time % 80, so if we do time % 3, then it will only happen 1/3rd of the time, resulting in it happening every 240 ticks
-        if (world.getTime() % 3 == 0)
-            BeaconBlockEntityKt.updateTier(beacon, world, pos);
+        // if (world.getTime() % 3 == 0) // actually this doesn't work lol (am dumb)
+        BeaconBlockEntityKt.updateTier(beacon, world, pos);
     }
 
     @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.DSTORE, ordinal = 0), index = 5, require = 1, allow = 1)
