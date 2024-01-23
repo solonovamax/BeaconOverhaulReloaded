@@ -10,6 +10,7 @@ import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.encodeToByteArray
 import net.minecraft.block.Block
 import net.minecraft.block.entity.BeaconBlockEntity
+import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.server.network.ServerPlayerEntity
@@ -64,23 +65,23 @@ object BeaconBlockEntityKt {
         }
 
         this.level = level
-        this.beaconPoints = computePoints(this)
+        this.beaconPoints = this.computePoints()
     }
 
     @JvmStatic
-    fun computePoints(beacon: OverhauledBeacon): Double {
+    private fun OverhauledBeacon.computePoints(): Double {
         var result = 0.0
         // addition modifiers (ie. most blocks)
         for ((block, expression) in BeaconOverhaulReloaded.config.additionModifiers) {
-            if (block in beacon.baseBlocks) {
-                val expressionResult = expression.evaluate(beacon.baseBlocks[block].toDouble())
+            if (block in baseBlocks) {
+                val expressionResult = expression.evaluate(baseBlocks[block].toDouble())
                 result += expressionResult
             }
         }
         // multiplication modifiers (ie. netherite)
         for ((block, expression) in BeaconOverhaulReloaded.config.multiplicationModifiers) {
-            if (block in beacon.baseBlocks) {
-                val expressionResult = expression.evaluate(beacon.baseBlocks[block].toDouble())
+            if (block in baseBlocks) {
+                val expressionResult = expression.evaluate(baseBlocks[block].toDouble())
                 result *= expressionResult
             }
         }
@@ -93,5 +94,25 @@ object BeaconBlockEntityKt {
         val data = OverhauledBeaconData.from(this)
         val bytes = Cbor.encodeToByteArray(data)
         buf.writeByteArray(bytes)
+    }
+
+    @JvmStatic
+    fun OverhauledBeacon.canApplyEffect(effect: StatusEffect): Boolean {
+        if (level == 0)
+            return false
+
+        if (level <= 1)
+            if (effect in BeaconBlockEntity.EFFECTS_BY_LEVEL[1])
+                return false
+
+        if (level <= 2)
+            if (effect in BeaconBlockEntity.EFFECTS_BY_LEVEL[2])
+                return false
+
+        if (level <= 3)
+            if (effect in BeaconBlockEntity.EFFECTS_BY_LEVEL[3])
+                return false
+
+        return true
     }
 }

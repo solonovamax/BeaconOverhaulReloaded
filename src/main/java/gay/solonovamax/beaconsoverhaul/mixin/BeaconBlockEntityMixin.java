@@ -168,6 +168,11 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         BeaconBlockEntityKt.writeScreenOpeningData(this, player, buf);
     }
 
+    @Override
+    public boolean canApplyEffect(@NotNull StatusEffect effect) {
+        return BeaconBlockEntityKt.canApplyEffect(this, effect);
+    }
+
     @Unique
     @NotNull
     @Override

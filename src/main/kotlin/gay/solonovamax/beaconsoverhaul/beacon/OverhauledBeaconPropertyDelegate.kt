@@ -20,26 +20,37 @@ class OverhauledBeaconPropertyDelegate(
     }
 
     override fun set(index: Int, value: Int) {
+        var updatedEffects = false
         when (index) {
             0 -> overhauledBeacon.level = value
             1 -> {
-                if (!overhauledBeacon.world!!.isClient && overhauledBeacon.beamSegments.isNotEmpty()) {
-                    BeaconBlockEntity.playSound(
-                        overhauledBeacon.world,
-                        overhauledBeacon.pos,
-                        SoundEvents.BLOCK_BEACON_POWER_SELECT
-                    )
+                val newEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
+                when {
+                    newEffect == null -> overhauledBeacon.primaryEffect = null
+                    overhauledBeacon.canApplyEffect(newEffect) && newEffect != overhauledBeacon.primaryEffect -> {
+                        updatedEffects = true
+                        overhauledBeacon.primaryEffect = newEffect
+                    }
                 }
-
-                overhauledBeacon.primaryEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
             }
 
-            2 -> overhauledBeacon.secondaryEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
+            2 -> {
+                val newEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
+                when {
+                    newEffect == null -> overhauledBeacon.secondaryEffect = null
+                    overhauledBeacon.canApplyEffect(newEffect) && newEffect != overhauledBeacon.secondaryEffect -> {
+                        updatedEffects = true
+                        overhauledBeacon.secondaryEffect = newEffect
+                    }
+                }
+            }
             // 3 -> (overhauledBeacon as MutableTieredBeacon).tier = PotencyTier.entries[value]
         }
+
+        if (updatedEffects)
+            if (!overhauledBeacon.world!!.isClient && overhauledBeacon.beamSegments.isNotEmpty())
+                BeaconBlockEntity.playSound(overhauledBeacon.world, overhauledBeacon.pos, SoundEvents.BLOCK_BEACON_POWER_SELECT)
     }
 
-    override fun size(): Int {
-        return 3
-    }
+    override fun size() = 3
 }

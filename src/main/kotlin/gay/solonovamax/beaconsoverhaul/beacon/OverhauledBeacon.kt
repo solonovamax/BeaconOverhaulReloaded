@@ -25,4 +25,6 @@ interface OverhauledBeacon {
     val primaryAmplifier: Int
     val primaryAmplifierPotent: Int
     val secondaryAmplifier: Int
+
+    fun canApplyEffect(effect: StatusEffect): Boolean
 }
