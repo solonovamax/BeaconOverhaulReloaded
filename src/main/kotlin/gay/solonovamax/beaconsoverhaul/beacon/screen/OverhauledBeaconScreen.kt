@@ -34,6 +34,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import java.util.Optional
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 @Environment(EnvType.CLIENT)
 class OverhauledBeaconScreen(
@@ -93,14 +94,14 @@ class OverhauledBeaconScreen(
         }
 
         val secondaryEffectsCount = BeaconBlockEntity.EFFECTS_BY_LEVEL[3].size
-        val xCenterOffset = (secondaryEffectsCount % 2 + 1) * 22 + (secondaryEffectsCount % 2) * 2
-
+        val effectsPerLine = ((secondaryEffectsCount + 1) / 2.0).roundToInt()
+        val xCenterOffset = (effectsPerLine) * 22 + (effectsPerLine - 1) * 2
 
         for (effectIndex in 0 until secondaryEffectsCount) {
             val effectButtonWidget = EffectButtonWidget(
                 this,
-                x + 167 + ((effectIndex % 2) * 24) - xCenterOffset / 2,
-                y + 47 + ((effectIndex / 2) * 24),
+                x + 167 + ((effectIndex % effectsPerLine) * 24) - xCenterOffset / 2,
+                y + 47 + ((effectIndex / effectsPerLine) * 24),
                 BeaconBlockEntity.EFFECTS_BY_LEVEL[3][effectIndex],
                 false,
                 3
@@ -110,8 +111,8 @@ class OverhauledBeaconScreen(
         }
         val primaryEffectLevelTwoButton = LevelTwoEffectButtonWidget(
             this,
-            x + 167 + ((secondaryEffectsCount % 2) * 24) - xCenterOffset / 2,
-            y + 47 + ((secondaryEffectsCount / 2) * 24),
+            x + 167 + ((secondaryEffectsCount % effectsPerLine) * 24) - xCenterOffset / 2,
+            y + 47 + ((secondaryEffectsCount / effectsPerLine) * 24),
             BeaconBlockEntity.EFFECTS_BY_LEVEL[0][0]
         )
         primaryEffectLevelTwoButton.visible = true
@@ -171,7 +172,7 @@ class OverhauledBeaconScreen(
         drawCenteredTextWithShadow(textRenderer, pointsText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 3, WHITE)
         val rangeText = "Range: %d blocks".format(data.range)
         drawCenteredTextWithShadow(textRenderer, rangeText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 2, WHITE)
-        val durationText = "Duration: %d seconds".format(data.duration)
+        val durationText = "Duration: %s".format(data.duration.seconds / 20)
         drawCenteredTextWithShadow(textRenderer, durationText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 1, WHITE)
 
         matrices.push()
