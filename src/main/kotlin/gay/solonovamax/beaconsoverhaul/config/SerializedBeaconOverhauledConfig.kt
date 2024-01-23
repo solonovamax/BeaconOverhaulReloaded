@@ -46,10 +46,15 @@ data class SerializedBeaconOverhauledConfig(
         Blocks.NETHERITE_BLOCK,
     ),
     val beaconEffectsByTier: BeaconTierEffects = BeaconTierEffects(
-        tierOne = listOf(StatusEffects.SPEED, StatusEffects.HASTE, StatusEffects.NIGHT_VISION),
+        tierOne = listOf(StatusEffects.SPEED, StatusEffects.HASTE),
         tierTwo = listOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
-        tierThree = listOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION),
-        secondaryEffects = listOf(StatusEffects.REGENERATION, StatusEffects.FIRE_RESISTANCE, StatusEffects.SLOW_FALLING),
+        tierThree = listOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION, StatusEffects.HEALTH_BOOST),
+        secondaryEffects = listOf(
+            StatusEffects.REGENERATION,
+            StatusEffects.FIRE_RESISTANCE,
+            StatusEffects.SLOW_FALLING,
+            StatusEffects.NIGHT_VISION
+        ),
     ),
 ) {
     /*
