@@ -1,9 +1,13 @@
 package gay.solonovamax.beaconsoverhaul.beacon.screen
 
+import com.github.ajalt.colormath.model.SRGB
 import com.google.common.collect.Lists
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
 import gay.solonovamax.beaconsoverhaul.beacon.serializable.OverhauledBeaconData
 import gay.solonovamax.beaconsoverhaul.util.asRomanNumeral
+import gay.solonovamax.beaconsoverhaul.util.drawCenteredTextWithShadow
+import gay.solonovamax.beaconsoverhaul.util.drawItem
+import gay.solonovamax.beaconsoverhaul.util.drawTextWithShadow
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.block.entity.BeaconBlockEntity
@@ -27,9 +31,9 @@ import net.minecraft.screen.ScreenHandlerListener
 import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
-import net.minecraft.util.Colors
 import net.minecraft.util.Identifier
 import java.util.Optional
+import kotlin.math.roundToInt
 
 @Environment(EnvType.CLIENT)
 class OverhauledBeaconScreen(
@@ -70,51 +74,49 @@ class OverhauledBeaconScreen(
         addButton(DoneButtonWidget(this, x + 164, y + 107))
         addButton(CancelButtonWidget(this, x + 190, y + 107))
 
-        for (i in 0..2) {
-            val j = BeaconBlockEntity.EFFECTS_BY_LEVEL[i].size
-            val k = j * 22 + (j - 1) * 2
+        for (effectTier in 0..2) {
+            val tierEffectsCount = BeaconBlockEntity.EFFECTS_BY_LEVEL[effectTier].size
+            val xCenterOffset = tierEffectsCount * 22 + (tierEffectsCount - 1) * 2
 
-            for (l in 0 until j) {
-                val statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[i][l]
-                val effectButtonWidget = EffectButtonWidget(
+            for (effectIndex in 0 until tierEffectsCount) {
+                val effectButton = EffectButtonWidget(
                     this,
-                    x + 76 + (l * 24) - k / 2,
-                    y + 22 + (i * 25),
-                    statusEffect,
+                    x + 76 + (effectIndex * 24) - xCenterOffset / 2,
+                    y + 22 + (effectTier * 25),
+                    BeaconBlockEntity.EFFECTS_BY_LEVEL[effectTier][effectIndex],
                     true,
-                    i
+                    effectTier
                 )
-                effectButtonWidget.active = false
-                addButton(effectButtonWidget)
+                effectButton.active = false
+                addButton(effectButton)
             }
         }
 
-        val i = 3
-        val j = BeaconBlockEntity.EFFECTS_BY_LEVEL[3].size + 1
-        val k = j * 22 + (j - 1) * 2
+        val secondaryEffectsCount = BeaconBlockEntity.EFFECTS_BY_LEVEL[3].size
+        val xCenterOffset = (secondaryEffectsCount % 2 + 1) * 22 + (secondaryEffectsCount % 2) * 2
 
-        for (l in 0 until j - 1) {
-            val statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][l]
+
+        for (effectIndex in 0 until secondaryEffectsCount) {
             val effectButtonWidget = EffectButtonWidget(
                 this,
-                x + 167 + (l * 24) - k / 2,
-                y + 47,
-                statusEffect,
+                x + 167 + ((effectIndex % 2) * 24) - xCenterOffset / 2,
+                y + 47 + ((effectIndex / 2) * 24),
+                BeaconBlockEntity.EFFECTS_BY_LEVEL[3][effectIndex],
                 false,
                 3
             )
             effectButtonWidget.active = false
             addButton(effectButtonWidget)
         }
-
-        val effectButtonWidget2: EffectButtonWidget = LevelTwoEffectButtonWidget(
+        val primaryEffectLevelTwoButton = LevelTwoEffectButtonWidget(
             this,
-            x + 167 + ((j - 1) * 24) - k / 2,
-            y + 47,
+            x + 167 + ((secondaryEffectsCount % 2) * 24) - xCenterOffset / 2,
+            y + 47 + ((secondaryEffectsCount / 2) * 24),
             BeaconBlockEntity.EFFECTS_BY_LEVEL[0][0]
         )
-        effectButtonWidget2.visible = false
-        addButton(effectButtonWidget2)
+        primaryEffectLevelTwoButton.visible = true
+        primaryEffectLevelTwoButton.active = false
+        addButton(primaryEffectLevelTwoButton)
     }
 
     public override fun handledScreenTick() {
@@ -129,69 +131,69 @@ class OverhauledBeaconScreen(
         }
     }
 
-    override fun drawForeground(context: DrawContext, mouseX: Int, mouseY: Int) {
-        context.drawCenteredTextWithShadow(textRenderer, PRIMARY_POWER_TEXT, 62, 10, 14737632)
-        context.drawCenteredTextWithShadow(textRenderer, SECONDARY_POWER_TEXT, 169, 10, 14737632)
+    override fun drawForeground(context: DrawContext, mouseX: Int, mouseY: Int) = context.drawForeground(mouseX, mouseY)
+
+    @JvmName("drawForegroundExtension")
+    private fun DrawContext.drawForeground(mouseX: Int, mouseY: Int) {
+        drawCenteredTextWithShadow(textRenderer, PRIMARY_POWER_TEXT, 62, 10, POWER_TEXT_COLOR)
+        drawCenteredTextWithShadow(textRenderer, SECONDARY_POWER_TEXT, 169, 10, POWER_TEXT_COLOR)
     }
 
-    override fun drawBackground(context: DrawContext, delta: Float, mouseX: Int, mouseY: Int) {
+    override fun drawBackground(context: DrawContext, delta: Float, mouseX: Int, mouseY: Int) =
+        context.drawBackground(delta, mouseX, mouseY)
+
+    @JvmName("drawBackgroundExtension")
+    private fun DrawContext.drawBackground(delta: Float, mouseX: Int, mouseY: Int) {
         val initialX = (width - backgroundWidth) / 2
         val initialY = (height - backgroundHeight) / 2
-        context.drawTexture(BEACON_CONTAINER_TEXTURE, initialX, initialY, 0, 0, backgroundWidth, backgroundHeight)
-        context.matrices.push()
-        context.matrices.translate(0.0f, 0.0f, 100.0f)
-        context.drawItem(ItemStack(Items.NETHERITE_INGOT), initialX + 20, initialY + 109)
-        context.drawItem(ItemStack(Items.EMERALD), initialX + 41, initialY + 109)
-        context.drawItem(ItemStack(Items.DIAMOND), initialX + 41 + 22, initialY + 109)
-        context.drawItem(ItemStack(Items.GOLD_INGOT), initialX + 42 + 44, initialY + 109)
-        context.drawItem(ItemStack(Items.IRON_INGOT), initialX + 42 + 66, initialY + 109)
 
-        context.drawBeaconSidebar(delta, mouseX, mouseY, initialX + backgroundWidth + 2, initialY)
+        drawTexture(BEACON_CONTAINER_TEXTURE, initialX, initialY, 0, 0, backgroundWidth, backgroundHeight)
 
-        context.matrices.pop()
+        matrices.push()
+        matrices.translate(0.0f, 0.0f, 100.0f)
+
+        val beaconPaymentY = initialY + 109
+
+        // why this formula? It aligns almost (R^2=0.9998) perfectly with mc's GUI
+        for ((index, item) in BEACON_PAYMENT_ITEMS.withIndex())
+            drawItem(item, initialX + (22.0375 * index + 19.4).roundToInt(), beaconPaymentY)
+
+        drawBeaconInformation(delta, mouseX, mouseY, initialX + backgroundWidth + 2, initialY, initialX + backgroundWidth / 2)
+
+        matrices.pop()
     }
 
-    private fun DrawContext.drawBeaconSidebar(delta: Float, mouseX: Int, mouseY: Int, initialX: Int, initialY: Int) {
-        val fontOffset = (16 - textRenderer.fontHeight) / 2
+
+    private fun DrawContext.drawBeaconInformation(delta: Float, mouseX: Int, mouseY: Int, initialX: Int, initialY: Int, centerX: Int) {
+        val fontOffset = (16 /* icon size */ - textRenderer.fontHeight) / 2
+
+        val pointsText = "Points: %.1f".format(data.beaconPoints)
+        drawCenteredTextWithShadow(textRenderer, pointsText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 3, WHITE)
+        val rangeText = "Range: %d blocks".format(data.range)
+        drawCenteredTextWithShadow(textRenderer, rangeText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 2, WHITE)
+        val durationText = "Duration: %d seconds".format(data.duration)
+        drawCenteredTextWithShadow(textRenderer, durationText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 1, WHITE)
 
         matrices.push()
         matrices.translate(initialX.toDouble(), initialY.toDouble(), 0.0)
-        // if (client!!.window.scaleFactor >= 3.0)
-        //     matrices.scale(0.75f, 0.75f, 1.0f) // only scale if the gui scale is at least 2
-        var x = 0
-        var y = 0
+
+        var line = 0
         for (blockEntry in Registries.BLOCK.iterateEntries(BlockTags.BEACON_BASE_BLOCKS)) {
-
-            // matrices.push()
-            // matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            // matrices.scale(1.5f, 2.0f, 1.5f)
-            // drawText(textRenderer, "(", 0, 0, Colors.WHITE, true)
-            // x += (textRenderer.getWidth("(") * 1.5).toInt() + 2
-            // matrices.pop()
-
+            val x = 0
+            val y = (ITEM_ICON_SIZE + PADDING) * line
             val block = blockEntry.value()
-            drawItem(block.asItem().defaultStack, x, y)
-            x += 18
             val count = data.baseBlocks[block] ?: 0
-            val countText = "×$count"
-            drawText(textRenderer, countText, x, y + fontOffset, Colors.WHITE, true)
-            x += textRenderer.getWidth(countText)
 
+            if (count == 0)
+                continue
 
-            // matrices.push()
-            // matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            // matrices.scale(1.5f, 2.0f, 1.5f)
-            // drawText(textRenderer, ")", 0, 0, Colors.WHITE, true)
-            // x += (textRenderer.getWidth(")") * 1.5).toInt() + 2
-            // matrices.pop()
-            //
-            // val formula = "× [insert formula here]"
-            // drawText(textRenderer, formula, x, y + fontOffset, Colors.WHITE, true)
-            // x += textRenderer.getWidth(formula)
+            drawItem(block.asItem().defaultStack, x, y)
 
-            y += 18
-            x = 0
+            drawTextWithShadow(textRenderer, "×$count", x + ITEM_ICON_SIZE + PADDING, y + fontOffset, WHITE)
+
+            line++
         }
+
         matrices.pop()
     }
 
@@ -202,37 +204,41 @@ class OverhauledBeaconScreen(
     }
 
     @Environment(EnvType.CLIENT)
+    interface BeaconButtonWidget {
+        fun tick(level: Int)
+    }
+
+    @Environment(EnvType.CLIENT)
     abstract class BaseButtonWidget(
         val screen: OverhauledBeaconScreen,
         x: Int,
         y: Int,
         message: Text = ScreenTexts.EMPTY,
-    ) :
-        PressableWidget(x, y, 22, 22, message), BeaconButtonWidget {
+    ) : PressableWidget(x, y, 22, 22, message), BeaconButtonWidget {
         var isDisabled: Boolean = false
 
         public override fun renderButton(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+            context.renderButton()
+        }
+
+        @JvmName("renderButtonExtension")
+        private fun DrawContext.renderButton() {
             val j = when {
                 !active -> width * 2
                 isDisabled -> width * 1
-                this.isSelected -> width * 3
+                isSelected -> width * 3
                 else -> 0
             }
 
-            context.drawTexture(BEACON_CONTAINER_TEXTURE, x, y, j, 219, width, height)
-            renderExtra(context)
+            drawTexture(BEACON_CONTAINER_TEXTURE, x, y, j, 219, width, height)
+            renderExtra()
         }
 
-        protected abstract fun renderExtra(context: DrawContext)
+        protected abstract fun DrawContext.renderExtra()
 
         public override fun appendClickableNarrations(builder: NarrationMessageBuilder) {
             appendDefaultNarrations(builder)
         }
-    }
-
-    @Environment(EnvType.CLIENT)
-    interface BeaconButtonWidget {
-        fun tick(level: Int)
     }
 
     @Environment(EnvType.CLIENT)
@@ -260,7 +266,7 @@ class OverhauledBeaconScreen(
                     Optional.ofNullable(screen.primaryEffect), Optional.ofNullable(screen.secondaryEffect)
                 )
             )
-            screen.client!!.player!!.closeHandledScreen()
+            screen.client?.player?.closeHandledScreen()
         }
 
         override fun tick(level: Int) {
@@ -310,8 +316,8 @@ class OverhauledBeaconScreen(
             }
         }
 
-        override fun renderExtra(context: DrawContext) {
-            context.drawSprite(x + 2, y + 2, 0, 18, 18, sprite)
+        override fun DrawContext.renderExtra() {
+            drawSprite(x + 2, y + 2, 0, 18, 18, sprite)
         }
 
         override fun tick(level: Int) {
@@ -333,8 +339,8 @@ class OverhauledBeaconScreen(
         private val v: Int,
         text: Text,
     ) : BaseButtonWidget(screen, i, j, text) {
-        override fun renderExtra(context: DrawContext) {
-            context.drawTexture(BEACON_CONTAINER_TEXTURE, x + 2, y + 2, u, v, 18, 18)
+        override fun DrawContext.renderExtra() {
+            drawTexture(BEACON_CONTAINER_TEXTURE, x + 2, y + 2, u, v, 18, 18)
         }
     }
 
@@ -348,10 +354,11 @@ class OverhauledBeaconScreen(
         override fun getEffectName(statusEffect: StatusEffect): MutableText {
             val text = Text.translatable(statusEffect.translationKey)
             val amplifier = screen.data.primaryAmplifierPotent
-            if (statusEffect !in BeaconOverhaulReloaded.config.levelOneStatusEffects && amplifier > 1) {
+
+            if (statusEffect !in BeaconOverhaulReloaded.config.levelOneStatusEffects && amplifier > 1)
                 text.append(" ")
                     .append(amplifier.asRomanNumeral())
-            }
+
             return text
         }
 
@@ -362,14 +369,28 @@ class OverhauledBeaconScreen(
                 init(primaryEffect)
                 super.tick(level)
             } else {
-                visible = false
+                visible = true
             }
         }
     }
 
     companion object {
-        private val BEACON_CONTAINER_TEXTURE: Identifier = Identifier("textures/gui/container/beacon.png")
-        private val PRIMARY_POWER_TEXT: Text = Text.translatable("block.minecraft.beacon.primary")
-        private val SECONDARY_POWER_TEXT: Text = Text.translatable("block.minecraft.beacon.secondary")
+        private val BEACON_PAYMENT_ITEMS = listOf(
+            Items.NETHERITE_INGOT,
+            Items.EMERALD,
+            Items.DIAMOND,
+            Items.GOLD_INGOT,
+            Items.IRON_INGOT
+        )
+
+        private val BEACON_CONTAINER_TEXTURE = Identifier("textures/gui/container/beacon.png")
+        private val PRIMARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.primary")
+
+        private val SECONDARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.secondary")
+        private const val ITEM_ICON_SIZE = 16
+
+        private const val PADDING = 2
+        private val POWER_TEXT_COLOR = SRGB.from255(224, 224, 224)
+        private val WHITE = SRGB(1.0, 1.0, 1.0)
     }
 }
