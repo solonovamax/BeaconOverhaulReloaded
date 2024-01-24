@@ -18,6 +18,8 @@ import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerContext
 import net.minecraft.screen.slot.Slot
 import net.minecraft.world.World
+import org.slf4j.kotlin.debug
+import org.slf4j.kotlin.getLogger
 import java.util.Optional
 
 class OverhauledBeaconScreenHandler private constructor(
@@ -27,6 +29,8 @@ class OverhauledBeaconScreenHandler private constructor(
     private val delegate: PropertyDelegate,
     private val context: ScreenHandlerContext,
 ) : ScreenHandler(ScreenHandlerRegistry.OVERHAULED_BEACON_SCREEN_HANDLER, syncId) {
+    private val logger by getLogger()
+
     /**
      * Client constructor
      */
@@ -64,7 +68,8 @@ class OverhauledBeaconScreenHandler private constructor(
     private var paymentSlot: PaymentSlot = PaymentSlot(paymentInventory, PAYMENT_SLOT_ID, 136, 110)
 
     init {
-        println("In screen handler with data $beaconData")
+        logger.debug { "Overhauled beacon screen handler opened with data $beaconData." }
+
         checkDataCount(delegate, PROPERTY_COUNT)
         addSlot(paymentSlot)
         addProperties(delegate)
@@ -126,7 +131,9 @@ class OverhauledBeaconScreenHandler private constructor(
             slot.onTakeItem(player, sourceStack)
 
             inputStack
-        } else ItemStack.EMPTY
+        } else {
+            ItemStack.EMPTY
+        }
     }
 
     fun setEffects(primary: Optional<StatusEffect>, secondary: Optional<StatusEffect>) {

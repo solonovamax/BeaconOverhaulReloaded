@@ -5,10 +5,14 @@ import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.screen.PropertyDelegate
 import net.minecraft.sound.SoundEvents
+import org.slf4j.kotlin.getLogger
+import org.slf4j.kotlin.info
 
 class OverhauledBeaconPropertyDelegate(
     private val overhauledBeacon: OverhauledBeacon,
 ) : PropertyDelegate {
+    private val logger by getLogger()
+
     override fun get(index: Int): Int {
         return when (index) {
             0 -> overhauledBeacon.level
@@ -27,9 +31,13 @@ class OverhauledBeaconPropertyDelegate(
                 val newEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
                 when {
                     newEffect == null -> overhauledBeacon.primaryEffect = null
-                    overhauledBeacon.canApplyEffect(newEffect) && newEffect != overhauledBeacon.primaryEffect -> {
-                        updatedEffects = true
-                        overhauledBeacon.primaryEffect = newEffect
+                    overhauledBeacon.canApplyEffect(newEffect) -> {
+                        if (newEffect != overhauledBeacon.primaryEffect) {
+                            updatedEffects = true
+                            overhauledBeacon.primaryEffect = newEffect
+                        } else {
+                            logger.info { "Attempted to set inaccessible beacon effect at position ${overhauledBeacon.pos}" }
+                        }
                     }
                 }
             }
@@ -38,9 +46,13 @@ class OverhauledBeaconPropertyDelegate(
                 val newEffect = BeaconBlockEntityAccessor.getPotionEffectById(value)
                 when {
                     newEffect == null -> overhauledBeacon.secondaryEffect = null
-                    overhauledBeacon.canApplyEffect(newEffect) && newEffect != overhauledBeacon.secondaryEffect -> {
-                        updatedEffects = true
-                        overhauledBeacon.secondaryEffect = newEffect
+                    overhauledBeacon.canApplyEffect(newEffect) -> {
+                        if (newEffect != overhauledBeacon.secondaryEffect) {
+                            updatedEffects = true
+                            overhauledBeacon.secondaryEffect = newEffect
+                        } else {
+                            logger.info { "Attempted to set inaccessible beacon effect at position ${overhauledBeacon.pos}" }
+                        }
                     }
                 }
             }

@@ -32,6 +32,7 @@ import net.minecraft.screen.ScreenTexts
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import org.slf4j.kotlin.getLogger
 import java.util.Optional
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -42,6 +43,8 @@ class OverhauledBeaconScreen(
     inventory: PlayerInventory?,
     title: Text,
 ) : HandledScreen<OverhauledBeaconScreenHandler>(handler, inventory, title) {
+    private val logger by getLogger()
+
     private val buttons: MutableList<BeaconButtonWidget> = Lists.newArrayList()
     var primaryEffect: StatusEffect? = null
     var secondaryEffect: StatusEffect? = null
@@ -132,19 +135,19 @@ class OverhauledBeaconScreen(
         }
     }
 
-    override fun drawForeground(context: DrawContext, mouseX: Int, mouseY: Int) = context.drawForeground(mouseX, mouseY)
+    override fun drawForeground(context: DrawContext, mouseX: Int, mouseY: Int) = context.drawForeground()
 
     @JvmName("drawForegroundExtension")
-    private fun DrawContext.drawForeground(mouseX: Int, mouseY: Int) {
+    private fun DrawContext.drawForeground() {
         drawCenteredTextWithShadow(textRenderer, PRIMARY_POWER_TEXT, 62, 10, POWER_TEXT_COLOR)
         drawCenteredTextWithShadow(textRenderer, SECONDARY_POWER_TEXT, 169, 10, POWER_TEXT_COLOR)
     }
 
     override fun drawBackground(context: DrawContext, delta: Float, mouseX: Int, mouseY: Int) =
-        context.drawBackground(delta, mouseX, mouseY)
+        context.drawBackground()
 
     @JvmName("drawBackgroundExtension")
-    private fun DrawContext.drawBackground(delta: Float, mouseX: Int, mouseY: Int) {
+    private fun DrawContext.drawBackground() {
         val initialX = (width - backgroundWidth) / 2
         val initialY = (height - backgroundHeight) / 2
 
@@ -159,13 +162,13 @@ class OverhauledBeaconScreen(
         for ((index, item) in BEACON_PAYMENT_ITEMS.withIndex())
             drawItem(item, initialX + (22.0375 * index + 19.4).roundToInt(), beaconPaymentY)
 
-        drawBeaconInformation(delta, mouseX, mouseY, initialX + backgroundWidth + 2, initialY, initialX + backgroundWidth / 2)
+        drawBeaconInformation(initialX + backgroundWidth + 2, initialY, initialX + backgroundWidth / 2)
 
         matrices.pop()
     }
 
 
-    private fun DrawContext.drawBeaconInformation(delta: Float, mouseX: Int, mouseY: Int, initialX: Int, initialY: Int, centerX: Int) {
+    private fun DrawContext.drawBeaconInformation(initialX: Int, initialY: Int, centerX: Int) {
         val fontOffset = (16 /* icon size */ - textRenderer.fontHeight) / 2
 
         val pointsText = "Points: %.1f".format(data.beaconPoints)
