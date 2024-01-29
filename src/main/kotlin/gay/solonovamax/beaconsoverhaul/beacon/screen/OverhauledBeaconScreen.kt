@@ -81,7 +81,7 @@ class OverhauledBeaconScreen(
         super.init()
         buttons.clear()
         addButton(DoneButtonWidget(this, x + 164, y + 107))
-        addButton(CancelButtonWidget(this, x + 190, y + 107))
+        // addButton(CancelButtonWidget(this, x + 190, y + 107))
 
         for (effectTier in 0..2) {
             val tierEffectsCount = BeaconBlockEntity.EFFECTS_BY_LEVEL[effectTier].size
