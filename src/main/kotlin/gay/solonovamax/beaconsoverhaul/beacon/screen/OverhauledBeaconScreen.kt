@@ -51,6 +51,11 @@ class OverhauledBeaconScreen(
     private val data: OverhauledBeaconData
         get() = handler.beaconData
 
+    private val pointsText = "Points: %.1f".format(data.beaconPoints)
+    private val rangeText = "Range: %d blocks".format(data.range)
+    private val durationText = "Duration: %s".format(data.duration.seconds / 20)
+
+
     init {
         backgroundWidth = 230
         backgroundHeight = 219
@@ -171,11 +176,8 @@ class OverhauledBeaconScreen(
     private fun DrawContext.drawBeaconInformation(initialX: Int, initialY: Int, centerX: Int) {
         val fontOffset = (16 /* icon size */ - textRenderer.fontHeight) / 2
 
-        val pointsText = "Points: %.1f".format(data.beaconPoints)
         drawCenteredTextWithShadow(textRenderer, pointsText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 3, WHITE)
-        val rangeText = "Range: %d blocks".format(data.range)
         drawCenteredTextWithShadow(textRenderer, rangeText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 2, WHITE)
-        val durationText = "Duration: %s".format(data.duration.seconds / 20)
         drawCenteredTextWithShadow(textRenderer, durationText, centerX, initialY - (textRenderer.fontHeight + PADDING) * 1, WHITE)
 
         matrices.push()
