@@ -1,5 +1,7 @@
 package gay.solonovamax.beaconsoverhaul.beacon.blockentity
 
+import ca.solostudios.guava.kotlin.collect.Multiset
+import ca.solostudios.guava.kotlin.collect.MutableMultiset
 import ca.solostudios.guava.kotlin.collect.mutableMultisetOf
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
 import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeacon
@@ -22,54 +24,80 @@ object BeaconBlockEntityKt {
     private val logger by getLogger()
 
     @JvmStatic
-    fun BeaconBlockEntity.updateTier(world: World, pos: BlockPos) {
-        val x = pos.x
-        val y = pos.y
-        val z = pos.z
+    fun <T> T.updateTier(world: World, pos: BlockPos) where T : OverhauledBeacon {
+        if (!shouldUpdateBeacon(world, pos))
+            return
+
+        val (level, baseBlocks) = buildBlockMultiset(pos.y, world, pos.x, pos.z)
+        this.baseBlocks = baseBlocks
+        this.level = level
+        this.beaconPoints = computePoints(baseBlocks)
+    }
+
+    private fun buildBlockMultiset(
+        y: Int,
+        world: World,
+        x: Int,
+        z: Int,
+    ): Pair<Int, MutableMultiset<Block>> {
         var level = 0
-        var layerOffset = 1
 
-        this as OverhauledBeacon
+        val baseBlocks = mutableMultisetOf<Block>()
 
-        baseBlocks.clear()
-
-        while (layerOffset <= BeaconOverhaulReloaded.config.maxBeaconLayers) {
+        for (layerOffset in 1..BeaconOverhaulReloaded.config.maxBeaconLayers) {
             val yOffset = y - layerOffset
+
             if (yOffset < world.bottomY)
                 break
 
-            var isLayerFull = true
             val layerContents = mutableMultisetOf<Block>()
-            var xOffset = x - layerOffset
-            // for (int xOffset = x - layerOffset; xOffset <= x + layerOffset && isLayerFull; ++xOffset) {
-            while (xOffset <= x + layerOffset && isLayerFull) {
+            for (xOffset in x - layerOffset..x + layerOffset) {
                 for (zOffset in z - layerOffset..z + layerOffset) {
                     val state = world.getBlockState(BlockPos(xOffset, yOffset, zOffset))
 
-                    if (state in BlockTags.BEACON_BASE_BLOCKS) {
-                        layerContents.add(state.block)
-                    } else {
-                        // note: setting `isLayerFull` to `false` will stop the outer for loop from continuing.
-                        isLayerFull = false
-                        break
-                    }
+                    if (state !in BlockTags.BEACON_BASE_BLOCKS)
+                        return level to baseBlocks
+
+                    layerContents.add(state.block)
                 }
-                ++xOffset
             }
 
-            if (!isLayerFull)
-                break
-
-            baseBlocks += layerContents
-            level = layerOffset++
+            baseBlocks.addAll(layerContents)
+            level = layerOffset
         }
 
-        this.level = level
-        this.beaconPoints = this.computePoints()
+        return level to baseBlocks
+    }
+
+    private fun OverhauledBeacon.shouldUpdateBeacon(world: World, pos: BlockPos): Boolean {
+        val time = world.time
+        val updateDelay = BeaconOverhaulReloaded.config.beaconUpdateDelayTicks
+        val quickCheckDelay = BeaconOverhaulReloaded.config.beaconQuickCheckDelayTicks
+
+        when {
+            // always update every `updateDelay` ticks
+            time % updateDelay == 0L -> return true
+
+            // if not first condition && level greater than 0 do not update
+            level > 0 -> return false
+
+            // if not first condition && not second condition && not on a tick mod quickCheckDelay, do not update
+            time % quickCheckDelay != 0L -> return false
+
+            // Test if we should update
+            else -> {
+                for (xOffset in -1..1)
+                    for (zOffset in -1..1)
+                        if (world.getBlockState(pos.add(xOffset, -1, zOffset)) !in BlockTags.BEACON_BASE_BLOCKS)
+                            return false
+
+                return true
+            }
+        }
     }
 
     @JvmStatic
-    private fun OverhauledBeacon.computePoints(): Double {
+    private fun computePoints(baseBlocks: Multiset<Block>): Double {
         var result = 0.0
         // addition modifiers (ie. most blocks)
         for ((block, expression) in BeaconOverhaulReloaded.config.additionModifiers) {

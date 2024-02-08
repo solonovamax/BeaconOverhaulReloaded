@@ -19,6 +19,8 @@ class BeaconOverhauledConfig private constructor(
     val levelOneStatusEffects: List<StatusEffect>,
     val beaconBaseBlocks: List<Block>,
     val beaconEffectsByTier: SerializedBeaconOverhauledConfig.BeaconTierEffects,
+    val beaconUpdateDelayTicks: Int,
+    val beaconQuickCheckDelayTicks: Int,
 ) {
     fun calculateRange(beaconPoints: Double): Int {
         return floor(rangeExpression.evaluate(beaconPoints)).toInt()
@@ -85,6 +87,8 @@ class BeaconOverhauledConfig private constructor(
                 config.levelOneStatusEffects,
                 config.beaconBaseBlocks,
                 config.beaconEffectsByTier,
+                config.beaconUpdateDelayTicks,
+                config.beaconQuickCheckDelayTicks,
             )
         }
     }

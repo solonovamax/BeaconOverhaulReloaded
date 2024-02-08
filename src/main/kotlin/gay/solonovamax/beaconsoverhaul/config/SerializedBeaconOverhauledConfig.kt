@@ -56,6 +56,8 @@ data class SerializedBeaconOverhauledConfig(
             StatusEffects.NIGHT_VISION
         ),
     ),
+    val beaconUpdateDelayTicks: Int = 80,
+    val beaconQuickCheckDelayTicks: Int = 10,
 ) {
     /*
      Range = base + pts * 2

@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 interface OverhauledBeacon {
-    val baseBlocks: MutableMultiset<Block>
+    var baseBlocks: MutableMultiset<Block>
     var level: Int
 
     var beaconPoints: Double

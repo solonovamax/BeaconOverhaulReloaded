@@ -2,7 +2,6 @@ package gay.solonovamax.beaconsoverhaul.mixin;
 
 import ca.solostudios.guava.kotlin.collect.MultisetsKt;
 import ca.solostudios.guava.kotlin.collect.MutableMultiset;
-import com.google.common.collect.HashMultiset;
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded;
 import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.beacon.OverhauledBeaconPropertyDelegate;
@@ -46,9 +45,6 @@ import java.util.List;
 @SuppressWarnings("PackageVisibleField")
 @Mixin(BeaconBlockEntity.class)
 abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScreenHandlerFactory, OverhauledBeacon {
-    @Unique
-    private final MutableMultiset<Block> baseBlocks = MultisetsKt.toKotlin(HashMultiset.create());
-
     @Shadow
     int level;
 
@@ -63,6 +59,9 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Shadow
     List<BeaconBlockEntity.BeamSegment> beamSegments;
 
+    @Unique
+    private MutableMultiset<Block> baseBlocks = MultisetsKt.mutableMultisetOf();
+
     @Final
     @Shadow
     @Mutable
@@ -75,21 +74,47 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         super(type, pos, state);
     }
 
-    @Redirect(method = "tick", at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", value = "INVOKE"))
+    @Redirect(
+            method = "tick",
+            at = @At(
+                    target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I",
+                    value = "INVOKE"
+            )
+    )
     private static int updateLevel(World world, int x, int y, int z) {
         // no-op (we have our own implementation)
-        return 0;
+        BlockEntity blockEntity = world.getBlockEntity(new BlockPos(x, y, z));
+        if (blockEntity instanceof OverhauledBeacon beacon)
+            return beacon.getLevel();
+        else
+            return 0; // should never happen (error?)
     }
 
-    @Inject(method = "tick", at = @At(target = "Lnet/minecraft/block/entity/BeaconBlockEntity;updateLevel(Lnet/minecraft/world/World;III)I", shift = At.Shift.BY, by = 2, value = "INVOKE", opcode = Opcodes.INVOKESTATIC), require = 1, allow = 1)
+    @Inject(
+            method = "tick",
+            at = @At(
+                    target = "Lnet/minecraft/block/entity/BeaconBlockEntity;level:I",
+                    shift = At.Shift.BY,
+                    by = 2,
+                    value = "FIELD",
+                    opcode = Opcodes.INVOKESTATIC,
+                    ordinal = 0
+            )
+    )
     private static void calculatePoints(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
         // TODO: 2024-01-23 Make this configurable
         // Vanilla does time % 80, so if we do time % 3, then it will only happen 1/3rd of the time, resulting in it happening every 240 ticks
         // if (world.getTime() % 3 == 0) // actually this doesn't work lol (am dumb)
-        BeaconBlockEntityKt.updateTier(beacon, world, pos);
+        BeaconBlockEntityKt.updateTier((BeaconBlockEntity & OverhauledBeacon) beacon, world, pos);
     }
 
-    @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.DSTORE, ordinal = 0), index = 5, require = 1, allow = 1)
+    @ModifyVariable(
+            method = "applyPlayerEffects",
+            at = @At(value = "STORE", opcode = Opcodes.DSTORE, ordinal = 0),
+            index = 5,
+            require = 1,
+            allow = 1
+    )
     private static double modifyRange(double radius, World world, BlockPos pos) {
         if (world.getBlockEntity(pos) instanceof OverhauledBeacon beacon)
             return beacon.getRange();
@@ -99,7 +124,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         return radius; // this is the default radius computation
     }
 
-    @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 0), index = 7, require = 1, allow = 1)
+    @ModifyVariable(
+            method = "applyPlayerEffects",
+            at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 0),
+            index = 7,
+            require = 1,
+            allow = 1
+    )
     private static int modifyPrimaryAmplifier(int primaryAmplifier, World level, BlockPos pos, int levels,
                                               @Nullable StatusEffect primaryEffect) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
@@ -114,7 +145,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         return primaryAmplifier; // 0
     }
 
-    @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 1), index = 7, require = 1, allow = 1)
+    @ModifyVariable(
+            method = "applyPlayerEffects",
+            at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 1),
+            index = 7,
+            require = 1,
+            allow = 1
+    )
     private static int modifyPotentPrimaryAmplifier(int primaryAmplifier, World level, BlockPos pos, int levels,
                                                     @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon) {
@@ -145,7 +182,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         return secondaryAmplifier; // 0
     }
 
-    @ModifyVariable(method = "applyPlayerEffects", at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 0), index = 8, require = 1, allow = 1)
+    @ModifyVariable(
+            method = "applyPlayerEffects",
+            at = @At(value = "STORE", opcode = Opcodes.ISTORE, ordinal = 0),
+            index = 8,
+            require = 1,
+            allow = 1
+    )
     private static int modifyDuration(int duration, World level, BlockPos pos, int levels) {
         if (level.getBlockEntity(pos) instanceof OverhauledBeacon beacon)
             return beacon.getDuration();
@@ -160,7 +203,14 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         this.propertyDelegate = new OverhauledBeaconPropertyDelegate(this);
     }
 
-    @Inject(method = "createMenu", at = @At(value = "NEW", target = "(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)Lnet/minecraft/screen/BeaconScreenHandler;"), cancellable = true)
+    @Inject(
+            method = "createMenu",
+            at = @At(
+                    value = "NEW",
+                    target = "(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)Lnet/minecraft/screen/BeaconScreenHandler;"
+            ),
+            cancellable = true
+    )
     private void createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity, CallbackInfoReturnable<ScreenHandler> cir) {
         ScreenHandlerContext context = ScreenHandlerContext.create(this.world, this.pos);
         cir.setReturnValue(new OverhauledBeaconScreenHandler(i, playerInventory, this.propertyDelegate, context));
@@ -179,9 +229,14 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @NotNull
     @Override
-    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
     public MutableMultiset<Block> getBaseBlocks() {
         return this.baseBlocks;
+    }
+
+    @Unique
+    @Override
+    public void setBaseBlocks(@NotNull MutableMultiset<Block> baseBlocks) {
+        this.baseBlocks = baseBlocks;
     }
 
     @Unique
