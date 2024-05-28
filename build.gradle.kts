@@ -150,6 +150,7 @@ dependencies {
 
     modImplementation(libs.lavender)
     modImplementation(libs.owo.lib)
+    modImplementationInclude(libs.owo.sentinel)
 
     modImplementation(libs.modmenu)
 

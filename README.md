@@ -1,6 +1,6 @@
 # Beacon Overhaul
 
-**A mod for Minecraft that introduces a tier system and better effect scaling for beacons**
+**A mod for Minecraft that improves game mechanics around beacons**
 
 - Night vision, fire resistance, nutrition, long reach, slow falling, and health boost are new effects that can be given by a beacon.
 - A points system for beacons, with where more expensive materials grant a more potent effect.
