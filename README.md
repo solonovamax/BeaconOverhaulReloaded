@@ -1,4 +1,4 @@
-# Beacon Overhaul
+# Beacon Overhaul Reloaded
 
 **A mod for Minecraft that improves game mechanics around beacons**
 
