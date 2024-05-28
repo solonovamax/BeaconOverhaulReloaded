@@ -2,22 +2,48 @@
 
 **A mod for Minecraft that introduces a tier system and better effect scaling for beacons**
 
-- Adds night vision, fire resistance, *nutrition*, *long reach*, and slow falling as beacon effects
-- Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency
-- Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects
-- Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels
-- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage
-- Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied
-  - Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect
+- Night vision, fire resistance, nutrition, long reach, slow falling, and health boost are new effects that can be given by a beacon.
+- A points system for beacons, with where more expensive materials grant a more potent effect.
+- Higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects.
+- 2 new effects, Long Reach, which increases interaction reach, and Nutrition, which passively restoring food levels.
+- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage.
+- Increases step height with jump boost, allowing the player to step up blocks instantaneously when the effect is applied.
+  - Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect.
+- Beacon beam redirection using amethyst clusters. (Credit to vazkii & Quark contributors)
+- Smooths out beacon beam colour changes
+- Use tinted glass to make the beacon beam transparent
+- More blocks can be used in the beacon base: Copper & Amethyst
+- New & Improved beacon UI
+- Extremely configurable
 
-*In future releases higher potency night vision, long reach, and nutrition may be separated into other mods for modularity.*
-
-**The latest version of this mod requires Minecraft 1.17 Pre-Release 1 or newer**
-
-![In-game screenshot of additional effects in beacon menu](https://i.imgur.com/A8q0WBK.png)
-
-![In-game screenshot of higher potency night vision](https://i.imgur.com/bpYifIW.png)
-
-![In-game screenshot of interaction with long reach](https://i.imgur.com/KyiAKFg.png)
 
 ***Logo design by [@voxel_dani](https://twitter.com/voxel_dani)***
+
+### Beacon Beam Redirection & Tinting, With Smooth Colours
+
+![Beacon beam redirection & Tinting, with smooth colours](/assets/images/beacon_beam_redirection_tinting.png)
+
+### Improved Beacon UI
+
+![Improved Beacon UI](/assets/images/improved_beacon_ui.png)
+
+## TODO/Future Features
+
+- Beacon
+  - [x] Revamp UI
+  - [x] Points system
+  - [x] Smooth beacon beams
+  - [x] Beacon beam redirection using amethyst clusters
+  - [ ] When the beam is obstructed, still render it, but blink red. Don't grant effects.
+  - [ ] More effects? (smth to remove phantoms/patrols? maybe this could be for the corrupted beacon...)
+  - [ ] Allow Lapis & Redstone to be used in the base. (what can make them different from other blocks?)
+  - [ ] Integration with other mods (how?)
+- Conduit
+  - [ ] Multiple tiers
+  - [ ] New block that uses the Heart of the Sea to increase potency/range/etc.
+  - [ ] Increase visibility underwater
+- Implement additional relics/monuments
+  - [ ] Conduits
+  - [ ] new block: Corrupted Beacon
+  - [ ] new block: Corrupted Conduit (?)
+  - [ ] Enchanting Tables (?)
