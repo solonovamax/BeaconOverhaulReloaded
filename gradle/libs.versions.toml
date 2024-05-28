@@ -1,24 +1,33 @@
 [versions]
-kotlin = "1.9.21"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.21"
+
+nyx = "0.1.7"
+
+axion-release = "1.17.2"
 
 minecraft = "1.20.1"
 
-loom = "1.4.4"
+loom = "1.6.7"
 
-fabric-loader = "0.14.24"
-fabric-api = "0.90.7+1.20.1"
-fabric-language-kotlin = "1.10.16+kotlin.1.9.21"
+fabric-loader = "0.15.11"
+fabric-api = "0.92.1+1.20.1"
+fabric-language-kotlin = "1.11.0+kotlin.2.0.0"
 fabric-yarn = "1.20.1+build.10"
+
+quilt-mappings = "1.20.1+build.23"
 
 slf4k = "0.5.1"
 
-guava-kotlin = "0.1.0"
+guava-kotlin = "0.1.2"
 
-cloth-config = "11.1.106"
+arrow = "1.2.0"
+
+cloth-config = "11.1.118"
 
 modmenu = "7.2.2"
 
-mixin = "0.12.5+mixin.0.8.5"
+mixin = "0.13.4+mixin.0.8.5"
 
 adventure = "4.14.0"
 adventure-fabric = "5.9.0"
@@ -28,7 +37,7 @@ shadow = "7.1.2"
 
 cloud = "1.8.4"
 
-silk = "1.10.0"
+silk = "1.10.1"
 
 paralithic = "0.7.1"
 
@@ -40,15 +49,27 @@ patchouli = "1.20.1-83-FABRIC"
 
 colormath = "3.3.3"
 
-[plugins]
+owo = "0.11.2+1.20"
+lavender = "0.1.9+1.20"
 
+emi = "1.1.6+1.20.1"
+rei = "12.1.725"
+jei = "15.3.0.4"
+
+[plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+nyx = { id = "ca.solo-studios.nyx", version.ref = "nyx" }
+
+axion-release = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion-release" }
 
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }
+quilt-loom = { id = "org.quiltmc.loom", version.ref = "loom" }
+
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 
 [libraries]
 
@@ -59,6 +80,7 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", versio
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 
 yarn-mappings = { group = "net.fabricmc", name = "yarn", version.ref = "fabric-yarn" }
+quilt-mappings = { group = "org.quiltmc", name = "quilt-mappings", version.ref = "quilt-mappings" }
 
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
@@ -71,6 +93,11 @@ fabric-language-kotlin = { group = "net.fabricmc", name = "fabric-language-kotli
 slf4k = { group = "ca.solo-studios", name = "slf4k", version.ref = "slf4k" }
 
 guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version.ref = "guava-kotlin" }
+
+arrow-core = { group = "io.arrow-kt", name = "arrow-core", version.ref = "arrow" }
+arrow-optics = { group = "io.arrow-kt", name = "arrow-optics", version.ref = "arrow" }
+arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", version.ref = "arrow" }
+arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines", version.ref = "arrow" }
 
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
@@ -121,9 +148,27 @@ arrp = { group = "net.devtech", name = "arrp", version.ref = "arrp" }
 patchouli = { group = "vazkii.patchouli", name = "Patchouli", version.ref = "patchouli" }
 
 
-colormath = { group = "com.github.ajalt.colormath", name = "colormath", version.ref = "colormath" }
+colormath = { group = "com.github.ajalt.colormath", name = "colormath-jvm", version.ref = "colormath" }
+
+
+owo-lib = { group = "io.wispforest", name = "owo-lib", version.ref = "owo" }
+owo-sentinel = { group = "io.wispforest", name = "owo-sentinel", version.ref = "owo" }
+lavender = { group = "io.wispforest", name = "lavender", version.ref = "lavender" }
+
+
+emi = { group = "dev.emi", name = "emi-fabric", version.ref = "emi" }
+
+rei-api-fabric = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "rei" }
+rei-default-plugin-fabric = { group = "me.shedaniel", name = "RoughlyEnoughItems-default-plugin-fabric", version.ref = "rei" }
+
+jei-fabric = { group = "mezz.jei", name = "jei-1.20.1-fabric", version.ref = "jei" }
 
 [bundles]
+arrow = [
+    "arrow-core",
+    "arrow-optics",
+    "arrow-fx-coroutines"
+]
 adventure = [
     "adventure-api",
     "adventure-fabric",
@@ -150,4 +195,9 @@ silk = [
     "silk-nbt",
     "silk-network",
     "silk-persistence",
+]
+
+rei = [
+    "rei-api-fabric",
+    "rei-default-plugin-fabric",
 ]

@@ -1,0 +1,11 @@
+{
+    "keys":   {
+        "s": "minecraft:soul_sand",
+        "h": "beaconoverhaul:fake_wither_skeleton_skull"
+    },
+    "layers": [
+        [ " s " ],
+        [ "sss" ],
+        [ "hhh" ]
+    ]
+}

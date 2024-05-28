@@ -1,4 +1,4 @@
-import java.time.Instant
+@file:Suppress("UnstableApiUsage")
 
 plugins {
     `maven-publish`
@@ -6,72 +6,107 @@ plugins {
     alias(libs.plugins.fabric.loom)
 
     alias(libs.plugins.kotlin.jvm)
-
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+
+    alias(libs.plugins.axion.release)
+
+    alias(libs.plugins.nyx)
 }
 
-group = "gay.solonovamax"
-version = "2.0.0+1.20"
+fabricApi {
+    configureDataGeneration()
+}
+
+nyx {
+    compile {
+        // withJavadocJar()
+        withSourcesJar()
+
+        allWarnings = true
+        // warningsAsErrors = true
+        distributeLicense = true
+        buildDependsOnJar = true
+        jvmTarget = 17
+        reproducibleBuilds = true
+
+        kotlin {
+            compilerArgs.add("-Xcontext-receivers")
+            optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
+        }
+    }
+
+    project {
+        name = "Beacon Overhaul Reloaded"
+        group = "gay.solonovamax"
+        module = "beacon-overhaul-reloaded"
+        version = scmVersion.version
+        description = """
+            Introduces a tier system and better effect scaling for beacons
+            - Adds night vision, fire resistance, nutrition, long reach, and slow falling as beacon effects
+            - Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency
+            - Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects
+            - Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels
+            - Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage
+            - Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied (Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)
+        """.trimIndent()
+
+        developer {
+            id = "solonovamax"
+            name = "solonovamax"
+            email = "solonovamax@12oclockpoint.com"
+            url = "https://solonovamax.gay"
+        }
+        developer {
+            id = "ChloeDawn"
+            name = "Chloe Dawn"
+            email = "chloe@sapphic.dev"
+            url = "https://github.com/ChloeDawn"
+        }
+
+        repository.fromGithub("solonovamax", "BeaconOverhaulReloaded")
+        license.useApachev2()
+    }
+
+    minecraft {
+        accessWidener("beaconoverhaulreloaded")
+
+        mixin {
+            hotswapMixins = true
+            debug = false
+            verbose = true
+            dumpTargetOnFailure = true
+            checks = false
+            verify = false
+
+            mixinRefmapName(name)
+        }
+    }
+}
 
 repositories {
-    mavenCentral()
     maven("https://maven.solo-studios.ca/releases/") {
         name = "Solo Studios"
     }
     maven("https://maven.fabricmc.net/") {
-        name = "FabricMC"
-    }
-    maven("https://masa.dy.fi/maven") {
-        name = "Masa Modding"
-    }
-    maven("https://maven.shedaniel.me/") {
-        name = "Shedaniel"
-    }
-    maven("https://maven.blamejared.com")
-    maven("https://maven.terraformersmc.com/releases/")
-    maven("https://repo.codemc.org/repository/maven-public")
-    maven("https://maven.wispforest.io") {
-        name = "Wisp Forest"
-    }
-    maven("https://ueaj.dev/maven")
-    maven("https://maven.jamieswhiteshirt.com/libs-release") {
+        name = "Fabric"
         content {
-            includeGroup("com.jamieswhiteshirt")
+            includeGroupAndSubgroups("net.fabricmc")
+            includeModule("me.zeroeightsix", "fiber")
+            includeModule("io.github.llamalad7", "mixinextras-fabric")
         }
     }
-    maven("https://oss.sonatype.org/content/repositories/snapshots") {
-        mavenContent {
-            snapshotsOnly()
-        }
-    }
-}
-
-java {
-    withSourcesJar()
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-loom {
-    accessWidenerPath = sourceSets["main"].resources.srcDirs.map { it.resolve("beaconoverhaulreloaded.accesswidener") }
-        .first { it.exists() }
-
-    mixin {
-        defaultRefmapName.set("mixins/beaconoverhaul/refmap.json")
-    }
+    mavenCentral()
 }
 
 dependencies {
     minecraft(libs.minecraft)
 
-    mappings(variantOf(libs.yarn.mappings) { classifier("v2") })
-    // mappings(loom.layered {
-    //     officialMojangMappings {
-    //         nameSyntheticMembers = true
-    //     }
-    // })
+    // the last item has the highest priority
+    mappings(loom.layered {
+        mappings(variantOf(libs.quilt.mappings) { classifier("intermediary-v2") })
+        mappings(variantOf(libs.yarn.mappings) { classifier("v2") })
+    })
 
     modImplementation(libs.fabric.loader)
 
@@ -83,67 +118,54 @@ dependencies {
 
     annotationProcessor(libs.sponge.mixin)
 
-    // modImplementation(libs.bundles.adventure) {
-    //     exclude(group = "net.fabricmc.fabric-api")
-    //     include(this)
-    // }
-    //
     // modImplementation(libs.bundles.cloud) {
     //     exclude(group = "net.fabricmc.fabric-api")
     //     include(this)
     // }
-    modImplementation(libs.bundles.silk) {
-        exclude(group = "net.fabricmc.fabric-api")
-        include(this)
-    }
-
-    implementation(libs.slf4k) {
-        include(this)
-    }
-
-    implementation(libs.guava.kotlin) {
-        include(this)
-    }
-
-    implementation(libs.paralithic) {
-        include(this)
-    }
-
-    implementation(libs.colormath) {
-        include(this)
-    }
-
-    modImplementation(libs.cloth.config) {
+    modImplementationInclude(libs.bundles.silk) {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation(libs.entityAttributes.reach) {
-        exclude(group = "net.fabricmc.fabric-api")
-        include(this)
-    }
+    implementationInclude(libs.slf4k)
+    implementationInclude(libs.guava.kotlin)
 
-    modImplementation(libs.arrp) {
-        exclude(group = "net.fabricmc.fabric-api")
-        modLocalRuntime(this)
-    }
+    implementationInclude(libs.paralithic)
+    implementationInclude(libs.colormath)
 
-    modImplementation(libs.patchouli) {
+    modImplementationInclude(libs.cloth.config) {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modLocalRuntime(libs.modmenu)
+    modImplementationInclude(libs.entityAttributes.reach) {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+
+    modImplementationInclude(libs.arrp) {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+
+    modImplementationInclude(libs.patchouli) {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+
+    modImplementation(libs.lavender)
+    modImplementation(libs.owo.lib)
+
+    modImplementation(libs.modmenu)
+
+    modCompileOnly(libs.emi)
+
+    modCompileOnly(libs.bundles.rei) {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+    // modCompileOnlyApi(libs.jei.common.api)
+    modCompileOnly(libs.jei.fabric) {
+        exclude(group = "mezz.jei")
+    }
 }
 
 tasks {
-    withType<JavaCompile>().configureEach {
-        with(options) {
-            isDeprecation = true
-            encoding = "UTF-8"
-            isFork = true
-            compilerArgs.add("-Xlint:all")
-        }
-    }
-
+    val runDatagen by named("runDatagen")
 
     processResources {
         filesMatching("/fabric.mod.json") {
@@ -161,65 +183,19 @@ tasks {
                     "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
                     "silk" to libs.versions.silk.get(),
                     "patchouli" to libs.versions.patchouli.get(),
-                )
+                ),
             )
         }
     }
 
-    withType<Jar>().configureEach {
-        from("LICENSE") {
-            rename { "${it}_${rootProject.name}" }
-        }
-
-        manifest.attributes(
-            "Build-Timestamp" to Instant.now(),
-            // "Build-Revision" to versioning.info.commit,
-            "Build-Jvm" to "${
-                System.getProperty("java.version")
-            } (${
-                System.getProperty("java.vendor")
-            } ${
-                System.getProperty("java.vm.version")
-            })",
-            "Built-By" to GradleVersion.current(),
-
-            "Implementation-Title" to project.name,
-            "Implementation-Version" to project.version,
-            "Implementation-Vendor" to project.group,
-
-            "Specification-Title" to "FabricMod",
-            "Specification-Version" to "1.0.0",
-            "Specification-Vendor" to project.group,
-
-            "Sealed" to "true"
-        )
+    jar {
+        dependsOn(runDatagen)
+    }
+    runClient {
+        dependsOn(runDatagen)
+    }
+    runServer {
+        dependsOn(runDatagen)
     }
 }
 
-afterEvaluate {
-    loom {
-        runs {
-            configureEach {
-                vmArgs("-Xmx2G", "-XX:+UseShenandoahGC")
-
-                property("fabric.development", "true")
-                property("mixin.debug", "true")
-                property("mixin.debug.export.decompile", "false")
-                property("mixin.debug.verbose", "true")
-                property("mixin.dumpTargetOnFailure", "true")
-                property("paralithic.debug.dump", "true")
-                // makes silent failures into hard-failures
-                // property("mixin.checks", "true")
-                // property("mixin.hotSwap", "true")
-
-                val mixinJarFile = configurations.compileClasspath.get().files {
-                    it.group == "net.fabricmc" && it.name == "sponge-mixin"
-                }.firstOrNull()
-                if (mixinJarFile != null)
-                    vmArg("-javaagent:$mixinJarFile")
-
-                ideConfigGenerated(true)
-            }
-        }
-    }
-}

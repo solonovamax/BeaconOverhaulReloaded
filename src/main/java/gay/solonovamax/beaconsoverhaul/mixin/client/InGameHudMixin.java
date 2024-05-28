@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
-import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry;
+import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
-class InGameHudMixin {
+abstract class InGameHudMixin {
     @Shadow
     private int scaledHeight;
 
@@ -44,7 +44,5 @@ class InGameHudMixin {
     }
 
     @Shadow
-    private PlayerEntity getCameraPlayer() {
-        throw new AssertionError();
-    }
+    protected abstract PlayerEntity getCameraPlayer();
 }

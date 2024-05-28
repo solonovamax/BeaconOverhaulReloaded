@@ -5,6 +5,7 @@
     "package": "gay.solonovamax.beaconsoverhaul.mixin.client",
     "client": [
         "BackgroundRendererMixin",
+        "BeaconBlockEntityRendererMixin",
         "GameRendererMixin",
         "InGameHudMixin",
         "InGameOverlayRendererMixin",

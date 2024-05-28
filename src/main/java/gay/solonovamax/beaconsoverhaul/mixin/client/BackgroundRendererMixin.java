@@ -1,15 +1,19 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,9 +36,12 @@ class BackgroundRendererMixin {
 
     @Inject(
             method = "render",
-            at = @At(target = "Lnet/minecraft/client/render/GameRenderer;getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
-                    shift = At.Shift.BY, by = -4, value = "INVOKE", opcode = Opcodes.INVOKESTATIC),
-            require = 1, allow = 1, cancellable = true)
+            at = @At(
+                    target = "Lnet/minecraft/client/render/GameRenderer;getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
+                    shift = At.Shift.BY, by = -4, value = "INVOKE", opcode = Opcodes.INVOKESTATIC
+            ),
+            require = 1, allow = 1, cancellable = true
+    )
     private static void skipNightVisionColorShift(final Camera camera, final float tickDelta, final ClientWorld world,
                                                   final int viewDistance, final float skyDarkness,
                                                   final CallbackInfo ci) {
@@ -49,5 +56,28 @@ class BackgroundRendererMixin {
                 ci.cancel();
             }
         }
+    }
+
+    @ModifyExpressionValue(
+            method = "applyFog",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/render/CameraSubmersionType;WATER:Lnet/minecraft/client/render/CameraSubmersionType;"
+            )
+    )
+    private static CameraSubmersionType removeWaterOverlay(final CameraSubmersionType original, final Camera camera,
+                                                           final BackgroundRenderer.FogType fogType,
+                                                           final float viewDistance, final boolean thickFog, final float tickDelta) {
+        final PlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player == null)
+            return original;
+
+        final StatusEffectInstance effect = player.getStatusEffect(StatusEffects.CONDUIT_POWER);
+
+        if (effect != null && effect.getAmplifier() >= 1)
+            return null; // return null to fail check, because camera submersion type should never be null (I hope)
+        else
+            return original;
     }
 }

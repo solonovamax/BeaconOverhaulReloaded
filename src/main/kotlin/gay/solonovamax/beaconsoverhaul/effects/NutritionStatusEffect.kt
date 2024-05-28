@@ -11,12 +11,16 @@ class NutritionStatusEffect : StatusEffect(StatusEffectCategory.BENEFICIAL, 0xC7
             return
 
         entity.hungerManager.add(1, 0.0f)
-        if (entity.hungerManager.saturationLevel <= 2.0)
+        if (entity.hungerManager.saturationLevel <= amplifier)
             entity.hungerManager.saturationLevel += 1.0f
     }
 
     override fun canApplyUpdateEffect(duration: Int, amplifier: Int): Boolean {
         // magic shit
-        return if (50 shr amplifier > 0) duration % (50 shr amplifier) == 0 else true
+        val i = 50 shr amplifier
+        return if (i > 0)
+            duration % i == 0
+        else
+            true
     }
 }

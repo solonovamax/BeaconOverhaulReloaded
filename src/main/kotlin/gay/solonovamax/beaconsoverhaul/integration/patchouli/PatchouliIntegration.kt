@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.integration.patchouli
 
-import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
+import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
 import gay.solonovamax.beaconsoverhaul.integration.patchouli.api.templates.categories.BookCategory
 import gay.solonovamax.beaconsoverhaul.integration.patchouli.api.templates.entries.BookEntry
 import gay.solonovamax.beaconsoverhaul.integration.patchouli.api.templates.entries.pages.MultiblockPage
@@ -10,6 +10,7 @@ import gay.solonovamax.beaconsoverhaul.integration.patchouli.api.templates.entri
 import gay.solonovamax.beaconsoverhaul.util.addAsset
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.devtech.arrp.api.RuntimeResourcePack
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags
 import net.minecraft.item.Items
 
 object PatchouliIntegration {
@@ -25,6 +26,18 @@ object PatchouliIntegration {
                 name = "Beacons",
                 description = "Information about Beacons and how they work.",
                 icon = "minecraft:beacon"
+            )
+        )
+        resourcePack.addAsset(
+            identifierOf("patchouli_books/guide/en_us/categories/corrupted_beacon.json"),
+            BookCategory(
+                name = "Corrupted Beacons",
+                description = """
+                    |Information about Corrupted Beacons and how they work.
+                    |
+                    |TODO. Not yet implemented/complete.
+                """.trimMargin("|").replace("\n", "\$(br)"),
+                icon = "minecraft:crying_obsidian"
             )
         )
         resourcePack.addAsset(
@@ -44,7 +57,7 @@ object PatchouliIntegration {
             identifierOf("patchouli_books/guide/en_us/entries/beacon/beacon_structure.json"),
             BookEntry(
                 name = "Beacon Structure",
-                icon = "minecraft:beacon",
+                icon = Items.BEACON,
                 category = BEACON_CATEGORY,
                 pages = buildList {
                     SpotlightPage(
@@ -83,13 +96,40 @@ object PatchouliIntegration {
         )
 
         resourcePack.addAsset(
+            identifierOf("patchouli_books/guide/en_us/entries/beacon/beacon_customization.json"),
+            BookEntry(
+                name = "Beacon Customization",
+                icon = Items.PURPLE_STAINED_GLASS,
+                category = BEACON_CATEGORY,
+                pages = buildList {
+                    SpotlightPage(
+                        itemTag = ConventionalItemTags.GLASS_BLOCKS,
+                        title = "Colour",
+                        text = """
+                            |You can change the colour of a beacon by placing a piece of stained glass in front of it.
+                        """.trimMargin().replace("\n", "\$(br)")
+                    ).run(::add)
+                    SpotlightPage(
+                        item = Items.AMETHYST_CLUSTER,
+                        title = "Redirection",
+                        text = """
+                            |Beacon beams can be redirected using Amethyst Clusters!
+                            |
+                            |Simply place a cluster in the path of the beam, and the beam will be redirected in the direction of the cluster.
+                        """.trimMargin("|").replace("\n", "\$(br)")
+                    ).run(::add)
+                }
+            )
+        )
+
+        resourcePack.addAsset(
             identifierOf("patchouli_books/guide/en_us/entries/beacon/beacon_base_blocks.json"),
             BookEntry(
                 name = "Beacon Base Blocks",
-                icon = "minecraft:emerald_block",
+                icon = Items.EMERALD_BLOCK,
                 category = BEACON_CATEGORY,
                 pages = buildList {
-                    for ((material, expression) in BeaconOverhaulReloaded.config.additionModifiers) {
+                    for ((material, expression) in BeaconOverhaulConfigManager.config.additionModifierBlocks) {
                         SpotlightPage(
                             item = material.asItem(),
                             text = """
@@ -99,7 +139,7 @@ object PatchouliIntegration {
                         ).run(::add)
                     }
 
-                    for ((material, expression) in BeaconOverhaulReloaded.config.multiplicationModifiers) {
+                    for ((material, expression) in BeaconOverhaulConfigManager.config.multiplicationModifierBlocks) {
                         SpotlightPage(
                             item = material.asItem(),
                             text = """
@@ -117,7 +157,7 @@ object PatchouliIntegration {
             identifierOf("patchouli_books/guide/en_us/entries/beacon/beacon_points.json"),
             BookEntry(
                 name = "Beacon Formulas",
-                icon = "minecraft:redstone",
+                icon = Items.REDSTONE,
                 category = BEACON_CATEGORY,
                 pages = buildList {
                     TextPage(
@@ -133,7 +173,7 @@ object PatchouliIntegration {
                         title = "Range Formula",
                         text = """
                             |The range of the beacon (in blocks) is computed according to:
-                            |${BeaconOverhaulReloaded.config.rangeExpression.expressionString}
+                            |${BeaconOverhaulConfigManager.config.range.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has.
                         """.trimMargin("|").replace("\n", "\$(br)")
@@ -142,7 +182,7 @@ object PatchouliIntegration {
                         title = "Duration Formula",
                         text = """
                             |The duration of the beacon effects (in seconds) is computed according to:
-                            |${BeaconOverhaulReloaded.config.durationExpression.expressionString}
+                            |${BeaconOverhaulConfigManager.config.duration.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has.
                         """.trimMargin("|").replace("\n", "\$(br)")
@@ -151,10 +191,10 @@ object PatchouliIntegration {
                         title = "Effect Level Formula",
                         text = """
                             |The level of the primary effect from beacons is computed according to:
-                            |${BeaconOverhaulReloaded.config.primaryAmplifierExpression.expressionString}
+                            |${BeaconOverhaulConfigManager.config.primaryAmplifier.expressionString}
                             |
                             |The level of the secondary effect from beacons is computed according to:
-                            |${BeaconOverhaulReloaded.config.secondaryAmplifierExpression.expressionString}
+                            |${BeaconOverhaulConfigManager.config.secondaryAmplifier.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has, and 'isPotent' 1 if no secondary effect is selected, and 0 if a secondary effect is selected, at tier 4 or higher.
                         """.trimMargin("|").replace("\n", "\$(br)")

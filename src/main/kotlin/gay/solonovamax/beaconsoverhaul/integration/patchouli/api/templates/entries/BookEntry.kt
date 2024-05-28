@@ -6,11 +6,14 @@ import gay.solonovamax.beaconsoverhaul.integration.patchouli.api.templates.entri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import net.minecraft.item.Item
+import net.minecraft.registry.Registries
+import net.minecraft.registry.tag.TagKey
 import net.minecraft.util.Identifier
 import net.silkmc.silk.core.serialization.serializers.ResourceLocationSerializer
 
 @Serializable
-data class BookEntry(
+data class BookEntry private constructor(
     @SerialName("name")
     val name: String,
     @SerialName("category")
@@ -35,4 +38,88 @@ data class BookEntry(
     val turnIn: String? = null,
     @SerialName("extra_recipe_mappings")
     val extraRecipeMappings: Map<String, Int>? = null,
-)
+) {
+    constructor(
+        name: String,
+        category: Identifier,
+        icon: Item,
+        pages: List<EntryPage>,
+        advancement: String? = null,
+        flag: String? = null,
+        priority: Boolean? = null,
+        secret: Boolean? = null,
+        readByDefault: Boolean? = null,
+        sortingNumber: Int? = null,
+        turnIn: String? = null,
+        extraRecipeMappings: Map<String, Int>? = null,
+    ) : this(
+        name,
+        category,
+        Registries.ITEM.getId(icon).toString(),
+        pages,
+        advancement,
+        flag,
+        priority,
+        secret,
+        readByDefault,
+        sortingNumber,
+        turnIn,
+        extraRecipeMappings
+    )
+
+    constructor(
+        name: String,
+        category: Identifier,
+        icons: List<Item>,
+        pages: List<EntryPage>,
+        advancement: String? = null,
+        flag: String? = null,
+        priority: Boolean? = null,
+        secret: Boolean? = null,
+        readByDefault: Boolean? = null,
+        sortingNumber: Int? = null,
+        turnIn: String? = null,
+        extraRecipeMappings: Map<String, Int>? = null,
+    ) : this(
+        name,
+        category,
+        icons.joinToString { item -> Registries.ITEM.getId(item).toString() },
+        pages,
+        advancement,
+        flag,
+        priority,
+        secret,
+        readByDefault,
+        sortingNumber,
+        turnIn,
+        extraRecipeMappings
+    )
+
+    constructor(
+        name: String,
+        category: Identifier,
+        icon: TagKey<Item>,
+        pages: List<EntryPage>,
+        advancement: String? = null,
+        flag: String? = null,
+        priority: Boolean? = null,
+        secret: Boolean? = null,
+        readByDefault: Boolean? = null,
+        sortingNumber: Int? = null,
+        turnIn: String? = null,
+        extraRecipeMappings: Map<String, Int>? = null,
+    ) : this(
+        name,
+        category,
+        "tag:" + icon.id.toString(),
+        pages,
+        advancement,
+        flag,
+        priority,
+        secret,
+        readByDefault,
+        sortingNumber,
+        turnIn,
+        extraRecipeMappings
+    )
+}

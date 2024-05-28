@@ -1,54 +1,79 @@
 {
     "schemaVersion": 1,
-    "id": "beaconoverhaul",
-    "name": "Beacon Overhaul Reloaded",
-    "version": "${version}",
-    "description": "Introduces a tier system and better effect scaling for beacons\n- Adds night vision, fire resistance, §onutrition§r, §olong reach§r, and slow falling as beacon effects\n- Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency\n- Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects\n- Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels\n- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage\n- Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied §8(Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)§r",
-    "license": "Apache-2.0",
-    "icon": "pack.png",
-    "depends": {
+    "id":            "beaconoverhaul",
+    "name":          "Beacon Overhaul Reloaded",
+    "version":       "${version}",
+    "description":   "Introduces a tier system and better effect scaling for beacons\n- Adds night vision, fire resistance, §onutrition§r, §olong reach§r, and slow falling as beacon effects\n- Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency\n- Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects\n- Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels\n- Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage\n- Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied §8(Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)§r",
+    "license":       "Apache-2.0",
+    "icon":          "pack.png",
+    "accessWidener": "beaconoverhaulreloaded.accesswidener",
+    "depends":       {
         "advanced_runtime_resource_pack": ">=${versions.arrp}",
-        "cloth-config": ">=${versions.clothconfig}",
-        "fabric-api": ">=${versions.fabric.api}",
+        "cloth-config":           ">=${versions.clothconfig}",
+        "fabric-api":             ">=${versions.fabric.api}",
         "fabric-language-kotlin": ">=${versions.fabric.languageKotlin}",
-        "fabricloader": ">=${versions.fabric.loader}",
-        "java": ">=17",
-        "minecraft": "~${versions.minecraft}",
+        "fabricloader":           ">=${versions.fabric.loader}",
+        "java":                   ">=17",
+        "minecraft":              "~${versions.minecraft}",
         "reach-entity-attributes": ">=${versions.reachEntityAttributes}",
-        "silk-core": ">=${versions.silk}",
-        "silk-game": ">=${versions.silk}",
-        "silk-igui": ">=${versions.silk}",
-        "silk-nbt": ">=${versions.silk}",
-        "silk-network": ">=${versions.silk}",
-        "silk-persistence": ">=${versions.silk}",
-        "patchouli": ">=${versions.patchouli}"
+        "silk-core":              ">=${versions.silk}",
+        "silk-game":              ">=${versions.silk}",
+        "silk-igui":              ">=${versions.silk}",
+        "silk-nbt":               ">=${versions.silk}",
+        "silk-network":           ">=${versions.silk}",
+        "silk-persistence":       ">=${versions.silk}",
+        "patchouli":              ">=${versions.patchouli}"
     },
-    "entrypoints": {
-        "main": [
+    "entrypoints":   {
+        "main":           [
             {
                 "adapter": "kotlin",
                 "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded"
             }
         ],
-        "client": [
+        "client":         [
             {
                 "adapter": "kotlin",
                 "value": "gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloadedClient"
             }
+        ],
+        "fabric-datagen": [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.datagen.BeaconOverhaulReloadedDataGenerator"
+            }
+        ],
+        "emi":            [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.integration.emi.BeaconOverhaulReloadedEmiCompat"
+            }
+        ],
+        "rei_client":     [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.integration.rei.BeaconOverhaulReloadedReiCompat"
+            }
+        ],
+        "jei_mod_plugin": [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.integration.jei.BeaconOverhaulReloadedJeiCompat"
+            }
         ]
     },
-    "mixins": [
+    "mixins":        [
         "mixins/beaconoverhaul/mixins.client.json",
         "mixins/beaconoverhaul/mixins.server.json"
     ],
-    "authors": [
+    "authors":       [
         "Chloe Dawn",
         "solonovamax"
     ],
-    "contributors": [
+    "contributors":  [
         "Daniel Amberson"
     ],
-    "contact": {
+    "contact":       {
         "homepage": "https://www.curseforge.com/minecraft/mc-mods/beaconoverhaul",
         "sources": "https://github.com/ChloeDawn/BeaconOverhaul/",
         "issues": "https://github.com/ChloeDawn/BeaconOverhaul/issues"

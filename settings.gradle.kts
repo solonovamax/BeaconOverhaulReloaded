@@ -1,7 +1,10 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
+        mavenLocal()
+        maven("https://maven.solo-studios.ca/releases/")
         maven("https://maven.fabricmc.net")
+        gradlePluginPortal()
+        mavenLocal()
     }
 }
 

@@ -1,33 +1,28 @@
 package gay.solonovamax.beaconsoverhaul
 
-import gay.solonovamax.beaconsoverhaul.beacon.screen.ScreenHandlerRegistry
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig
-import gay.solonovamax.beaconsoverhaul.config.SerializedBeaconOverhauledConfig
-import gay.solonovamax.beaconsoverhaul.effects.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
+import gay.solonovamax.beaconsoverhaul.conduit.data.OverhauledConduitData
+import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
 import gay.solonovamax.beaconsoverhaul.integration.patchouli.PatchouliIntegration
 import gay.solonovamax.beaconsoverhaul.mixin.BeaconBlockEntityAccessor
 import gay.solonovamax.beaconsoverhaul.mixin.GameRulesAccessor
-import gay.solonovamax.beaconsoverhaul.util.configDir
+import gay.solonovamax.beaconsoverhaul.registry.BlockRegistry
+import gay.solonovamax.beaconsoverhaul.registry.CriterionRegistry
+import gay.solonovamax.beaconsoverhaul.registry.ScreenHandlerRegistry
+import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.registry.TagRegistry
 import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.json.encodeToStream
 import net.devtech.arrp.api.RRPCallback
 import net.devtech.arrp.api.RuntimeResourcePack
 import net.devtech.arrp.json.tags.JTag
 import net.fabricmc.api.ModInitializer
-import net.fabricmc.loader.api.FabricLoader
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.minecraft.resource.ResourcePack
 import net.minecraft.world.GameRules.Category
+import net.silkmc.silk.network.packet.s2cPacket
 import org.slf4j.kotlin.getLogger
 import org.slf4j.kotlin.info
-import kotlin.io.path.createDirectories
-import kotlin.io.path.createDirectory
-import kotlin.io.path.inputStream
-import kotlin.io.path.notExists
-import kotlin.io.path.outputStream
 import gay.solonovamax.beaconsoverhaul.mixin.IntRuleAccessor as IntRule
 
 
@@ -36,67 +31,37 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
 
-    @JvmStatic
-    lateinit var config: BeaconOverhauledConfig
-        private set
-
     private val logger by getLogger()
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val json = Json {
-        encodeDefaults = true
-        prettyPrint = true
-        coerceInputValues = true
-        decodeEnumsCaseInsensitive = true
-    }
+    val updateBeaconPacket = s2cPacket<OverhauledBeaconData>(identifierOf("beacon_update"))
 
-    private val configDir = FabricLoader.getInstance().configDir(BeaconConstants.NAMESPACE)
-
-    private val modContainer = FabricLoader.getInstance().getModContainer(BeaconConstants.NAMESPACE)
-        .orElseThrow { error("Could not find mod with id ${BeaconConstants.NAMESPACE}") }
-
-    init {
-        loadConfig()
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    fun loadConfig() {
-        if (configDir.notExists())
-            configDir.createDirectories()
-
-        val configFile = configDir.resolve("config.json")
-
-        val config = when {
-            configFile.notExists() -> writeDefaultConfig()
-            else -> try {
-                json.decodeFromStream<SerializedBeaconOverhauledConfig>(configFile.inputStream())
-            } catch (e: Exception) {
-                writeDefaultConfig()
-            }
-        }
-
-        this.config = BeaconOverhauledConfig.from(config)
-    }
+    val updateConduitPacket = s2cPacket<OverhauledConduitData>(identifierOf("conduit_update"))
 
     override fun onInitialize() {
         logger.info { "Loading ${BeaconConstants.MOD_NAME}" }
 
-
-        addStatusEffectsToBeacon()
-        createRuntimeResourcepack()
-
+        // Make sure we register shit first lol
+        BlockRegistry.register()
         StatusEffectRegistry.register()
         ScreenHandlerRegistry.register()
+        CriterionRegistry.register()
+        TagRegistry.register()
 
-        // PatchouliIntegration.multiblockForTier()
+        createRuntimeResourcepack()
+
+        ServerLifecycleEvents.SERVER_STARTING.register {
+            logger.info { "Applying status effect shit" }
+            // add the status effects a bit later in the lifecycle
+            addStatusEffectsToBeacon()
+        }
     }
 
     private fun addStatusEffectsToBeacon() {
         val effectsByLevel = arrayOf(
-            config.beaconEffectsByTier.tierOne.toTypedArray(),
-            config.beaconEffectsByTier.tierTwo.toTypedArray(),
-            config.beaconEffectsByTier.tierThree.toTypedArray(),
-            config.beaconEffectsByTier.secondaryEffects.toTypedArray(),
+            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierOne.toTypedArray(),
+            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierTwo.toTypedArray(),
+            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierThree.toTypedArray(),
+            BeaconOverhaulConfigManager.config.beaconEffectsByTier.secondaryEffects.toTypedArray(),
         )
 
         BeaconBlockEntityAccessor.setEffectsByLevel(effectsByLevel)
@@ -106,7 +71,7 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private fun createRuntimeResourcepack() {
         val beaconBaseBlocksTag = JTag().apply {
-            for (block in config.beaconBaseBlocks)
+            for (block in BeaconOverhaulConfigManager.config.beaconBaseBlocks)
                 add(block.id)
 
             RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
@@ -132,22 +97,4 @@ object BeaconOverhaulReloaded : ModInitializer {
     //         logger.info { "Patchouli book could not be loaded" }
     //     }
     // }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private fun writeConfig(config: SerializedBeaconOverhauledConfig) {
-        val configDir = FabricLoader.getInstance().configDir(BeaconConstants.NAMESPACE)
-
-        if (configDir.notExists())
-            configDir.createDirectory()
-
-        val configFile = configDir.resolve("config.json")
-
-        json.encodeToStream<SerializedBeaconOverhauledConfig>(config, configFile.outputStream())
-    }
-
-    private fun writeDefaultConfig(): SerializedBeaconOverhauledConfig {
-        return BeaconConstants.DEFAULT_CONFIG.also { config ->
-            writeConfig(config)
-        }
-    }
 }

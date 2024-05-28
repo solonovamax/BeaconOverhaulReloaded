@@ -1,0 +1,126 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.20/owo-ui.xsd">
+    <templates>
+        <!-- Structure previews: base element, with/without slider -->
+
+        <template name="beaconoverhaul:structure-preview-base">
+            <flow-layout direction="vertical">
+                <children>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                     u="267" v="0" region-width="100" region-height="100">
+                                <blend>true</blend>
+                                <positioning type="absolute">0,0</positioning>
+                            </texture>
+
+                            <beaconoverhaul.structure structure-id="{{structure}}" id="structure" display-angle="{{angle}}">
+                                <sizing>
+                                    <horizontal method="fixed">100</horizontal>
+                                    <vertical method="fixed">100</vertical>
+                                </sizing>
+                            </beaconoverhaul.structure>
+
+                            <template-child id="slider-anchor"/>
+                        </children>
+
+                        <vertical-alignment>top</vertical-alignment>
+                    </flow-layout>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+            </flow-layout>
+        </template>
+
+        <template name="beaconoverhaul:structure-preview">
+            <template name="beaconoverhaul:structure-preview-base">
+                <child id="slider-anchor">
+                    <flow-layout direction="vertical"/>
+                </child>
+            </template>
+        </template>
+
+        <template name="beaconoverhaul:structure-preview-with-layers">
+            <template name="beaconoverhaul:structure-preview-base">
+                <child id="slider-anchor">
+                    <flow-layout direction="vertical">
+                        <children>
+                            <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                     u="367" v="1" region-width="13" region-height="72">
+                                <blend>true</blend>
+                                <positioning type="absolute">0,1</positioning>
+                            </texture>
+
+                            <slim-slider direction="vertical" id="layer-slider">
+                                <sizing>
+                                    <vertical method="fixed">66</vertical>
+                                </sizing>
+                                <step-size>1</step-size>
+
+                                <margins>
+                                    <right>2</right>
+                                    <vertical>4</vertical>
+                                </margins>
+                            </slim-slider>
+
+                            <small-checkbox id="show-layers-checkbox">
+                                <checked>true</checked>
+                                <margins>
+                                    <horizontal>0</horizontal>
+                                    <top>13</top>
+                                </margins>
+                            </small-checkbox>
+                        </children>
+
+                        <horizontal-alignment>center</horizontal-alignment>
+
+                        <margins>
+                            <left>-1</left>
+                        </margins>
+                    </flow-layout>
+                </child>
+            </template>
+        </template>
+
+        <!-- Entity model previews -->
+
+        <template name="beaconoverhaul:entity-model-preview">
+            <flow-layout direction="vertical">
+                <children>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                     u="267" v="0" region-width="100" region-height="100">
+                                <blend>true</blend>
+                                <positioning type="absolute">0,0</positioning>
+                            </texture>
+
+                            <beaconoverhaul.entity-model type="{{entity}}" id="entity-model">
+                                <!--<look-at-cursor>true</look-at-cursor>-->
+                                <cursor-style>hand</cursor-style>
+                                <mouse-rotation>true</mouse-rotation>
+                                <scale-to-fit>true</scale-to-fit>
+                                <sizing>
+                                    <horizontal method="fixed">100</horizontal>
+                                    <vertical method="fixed">100</vertical>
+                                </sizing>
+                            </beaconoverhaul.entity-model>
+                        </children>
+
+                        <vertical-alignment>center</vertical-alignment>
+                    </flow-layout>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+            </flow-layout>
+        </template>
+    </templates>
+</owo-ui>

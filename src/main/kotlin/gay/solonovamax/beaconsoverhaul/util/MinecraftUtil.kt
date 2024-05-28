@@ -5,6 +5,7 @@ package gay.solonovamax.beaconsoverhaul.util
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
+import net.minecraft.entity.Entity
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
@@ -15,6 +16,8 @@ import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.Box
+import net.minecraft.world.World
 import vazkii.patchouli.common.util.ItemStackUtil
 
 fun identifierOf(identifier: String): Identifier {
@@ -49,3 +52,7 @@ val Block.id: Identifier
 fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(size)
 
 fun String.toItemStack(): ItemStack = ItemStackUtil.loadStackFromString(this)
+
+inline fun <reified T : Entity> World.getNonSpectatingEntities(box: Box): List<T> {
+    return getNonSpectatingEntities(T::class.java, box)
+}

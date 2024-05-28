@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin;
 
-import gay.solonovamax.beaconsoverhaul.beacon.screen.OverhauledBeaconScreenHandler;
+import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreenHandler;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -24,11 +24,11 @@ public class ServerPlayNetworkHandlerMixin {
     public ServerPlayerEntity player;
 
     @Inject(method = "onUpdateBeacon", at = @At("TAIL"))
-    private void onUpdateBeacon(UpdateBeaconC2SPacket packet, CallbackInfo ci) {
-        ScreenHandler screenHandler = this.player.currentScreenHandler;
-        if (screenHandler instanceof OverhauledBeaconScreenHandler beaconScreenHandler) {
+    private void onUpdateBeacon(final UpdateBeaconC2SPacket packet, final CallbackInfo ci) {
+        final ScreenHandler screenHandler = this.player.currentScreenHandler;
+        if (screenHandler instanceof final OverhauledBeaconScreenHandler beaconScreenHandler) {
             if (!this.player.currentScreenHandler.canUse(this.player)) {
-                logger.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
+                ServerPlayNetworkHandlerMixin.logger.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
                 return;
             }
 
