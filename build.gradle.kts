@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.apache.commons.text.StringEscapeUtils
+
+
 plugins {
     `maven-publish`
 
@@ -42,13 +45,21 @@ nyx {
         module = "beacon-overhaul-reloaded"
         version = scmVersion.version
         description = """
-            Introduces a tier system and better effect scaling for beacons
-            - Adds night vision, fire resistance, nutrition, long reach, and slow falling as beacon effects
-            - Adds a tier system for beacons, with diamond and netherite structures providing progressively increased effect potency
-            - Adds a higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects
-            - Adds 2 new effects to the game, Long Reach, increasing interaction reach, and Nutrition, passively restoring food levels
-            - Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage
-            - Adds an increased step height to jump boost, allowing the player to step up blocks instantaneously when the effect is applied (Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect)
+            A mod for Minecraft that improves game mechanics around beacons
+
+            - Night vision, fire resistance, nutrition, long reach, slow falling, and health boost are new effects that can be given by a beacon.
+            - A points system for beacons, with where more expensive materials grant a more potent effect.
+            - Higher potency of night vision, allowing the player to see everything with midday lighting (full bright) and no fog effects.
+            - 2 new effects, Long Reach, which increases interaction reach, and Nutrition, which passively restoring food levels.
+            - Adds a dropping mechanic to slow falling, allowing sneaking to cause a fall at normal velocity whilst still negating damage.
+            - Increases step height with jump boost, allowing the player to step up blocks instantaneously when the effect is applied.
+              - Note: Auto-jump takes precedence, and will need to be disabled for this to have any effect.
+            - Beacon beam redirection using amethyst clusters. (Credit to vazkii & Quark contributors)
+            - Smooths out beacon beam colour changes
+            - Use tinted glass to make the beacon beam transparent
+            - More blocks can be used in the beacon base: Copper & Amethyst
+            - New & Improved beacon UI
+            - Extremely configurable
         """.trimIndent()
 
         developer {
@@ -150,7 +161,7 @@ dependencies {
 
     modImplementation(libs.lavender)
     modImplementation(libs.owo.lib)
-    modImplementationInclude(libs.owo.sentinel)
+    include(libs.owo.sentinel)
 
     modImplementation(libs.modmenu)
 
@@ -159,7 +170,7 @@ dependencies {
     modCompileOnly(libs.bundles.rei) {
         exclude(group = "net.fabricmc.fabric-api")
     }
-    // modCompileOnlyApi(libs.jei.common.api)
+
     modCompileOnly(libs.jei.fabric) {
         exclude(group = "mezz.jei")
     }
@@ -171,6 +182,7 @@ tasks {
     processResources {
         filesMatching("/fabric.mod.json") {
             expand(
+                "description" to StringEscapeUtils.escapeJson(project.description),
                 "version" to project.version,
                 "versions" to mapOf(
                     "fabric" to mapOf(
