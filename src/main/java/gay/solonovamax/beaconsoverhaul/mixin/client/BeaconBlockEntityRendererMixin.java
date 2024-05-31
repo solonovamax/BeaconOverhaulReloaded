@@ -1,6 +1,8 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
 import gay.solonovamax.beaconsoverhaul.block.beacon.render.BeaconBlockEntityRendererKt;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
@@ -10,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(BeaconBlockEntityRenderer.class)
 public class BeaconBlockEntityRendererMixin {
     @Inject(
@@ -17,10 +20,9 @@ public class BeaconBlockEntityRendererMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void render(final BeaconBlockEntity beaconBlockEntity, final float partialTicks, final MatrixStack matrixStack,
-                        final VertexConsumerProvider bufferIn, final int combinedLightIn, final int combinedOverlayIn,
-                        final CallbackInfo ci) {
-        final boolean succeeded = BeaconBlockEntityRendererKt.render(beaconBlockEntity, partialTicks, matrixStack, bufferIn, combinedLightIn, combinedOverlayIn);
+    private void render(BeaconBlockEntity beaconBlockEntity, float partialTicks, MatrixStack matrixStack, VertexConsumerProvider bufferIn,
+                        int combinedLightIn, int combinedOverlayIn, CallbackInfo ci) {
+        boolean succeeded = BeaconBlockEntityRendererKt.render(beaconBlockEntity, partialTicks, matrixStack, bufferIn, combinedLightIn, combinedOverlayIn);
 
         if (succeeded)
             ci.cancel();

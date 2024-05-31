@@ -22,8 +22,8 @@ import io.wispforest.owo.ui.core.ParentComponent
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
-class BeaconOverhaulStructureFeature(
-    val bookComponentSource: ComponentSource,
+class StructureFeature(
+    private val componentSource: ComponentSource,
 ) : MarkdownFeature {
 
     override fun name(): String {
@@ -62,7 +62,7 @@ class BeaconOverhaulStructureFeature(
     override fun registerNodes(registrar: MarkdownFeature.NodeRegistrar) {
         registrar.registerNode(
             { _, structureToken, _ ->
-                StructureNode(structureToken.structure, structureToken.angle, structureToken.placeable, bookComponentSource)
+                StructureNode(structureToken.structure, structureToken.angle, structureToken.placeable, componentSource)
             },
             { token, _ -> if (token is StructureToken) token else null }
         )
@@ -79,10 +79,10 @@ class BeaconOverhaulStructureFeature(
         private val structure: StructureTemplate,
         private val angle: Int,
         private val placeable: Boolean,
-        private val bookComponentSource: ComponentSource,
+        private val componentSource: ComponentSource,
     ) : Parser.Node() {
         override fun visitStart(compiler: MarkdownCompiler<*>) {
-            val structureComponent: ParentComponent = bookComponentSource.template<ParentComponent>(
+            val structureComponent: ParentComponent = componentSource.template<ParentComponent>(
                 identifierOf("book_components"),
                 if (structure.ySize > 1) "$NAMESPACE:structure-preview-with-layers" else "$NAMESPACE:structure-preview",
                 mapOf(
@@ -91,7 +91,7 @@ class BeaconOverhaulStructureFeature(
                 )
             )
 
-            val structurePreview = structureComponent.childById<BeaconOverhaulStructureComponent>("structure")!!
+            val structurePreview = structureComponent.childById<StructureComponent>("structure")!!
             structurePreview.placeable = placeable
 
             val layerSlider = structureComponent.childById<SlimSliderComponent>("layer-slider")

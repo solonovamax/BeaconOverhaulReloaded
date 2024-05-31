@@ -1,15 +1,19 @@
 {
-    "effect.beaconoverhaul.long_reach":                               "Long Reach",
-    "effect.beaconoverhaul.nutrition":                                "Nutrition",
-    "effect.beaconoverhaul.long_reach.description":                   "Increases the reach distance of the player",
-    "effect.beaconoverhaul.nutrition.description":                    "Slowly replenishes the hunger bar of the player",
+    "effect.beaconoverhaul.long_reach":                                   "Long Reach",
+    "effect.beaconoverhaul.nutrition":                                    "Nutrition",
+    "effect.beaconoverhaul.long_reach.description":                       "Increases the reach distance of the player",
+    "effect.beaconoverhaul.nutrition.description":                        "Slowly replenishes the hunger bar of the player",
 
-    "block.minecraft.beacon.points":                                  "Points:",
-    "block.minecraft.beacon.range":                                   "Range:",
-    "block.minecraft.beacon.duration":                                "Duration:",
+    "block.minecraft.beacon.points":                                      "Points:",
+    "block.minecraft.beacon.range":                                       "Range:",
+    "block.minecraft.beacon.duration":                                    "Duration:",
 
-    "advancements.nether.beaconoverhaul.redirect_beacon.title":       "See The Lights",
-    "advancements.nether.beaconoverhaul.redirect_beacon.description": "Redirect a Beacon beam's direction using Amethyst Clusters",
+    "advancements.nether.beaconoverhaul.redirect_beacon.title":           "See The Lights",
+    "advancements.nether.beaconoverhaul.redirect_beacon.description":     "Redirect a Beacon beam's direction using Amethyst Clusters",
 
-    "guidebook.beaconoverhauled.structure_component.layer_checkbox":  "Toggle showing layers below current layer"
+    "guidebook.beaconoverhauled.structure_component.layer_checkbox":      "Toggle showing layers below current layer",
+    "guidebook.beaconoverhauled.beacon_structure_component.tier_label":   "Beacon Tier",
+    "guidebook.beaconoverhauled.beacon_structure_component.tier_tooltip": "Tier: %d",
+
+    "structure.beaconoverhaul.structure.beacon":                          "Tier %s Beacon"
 }

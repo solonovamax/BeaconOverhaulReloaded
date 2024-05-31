@@ -1,11 +1,8 @@
 package gay.solonovamax.beaconsoverhaul
 
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
-import gay.solonovamax.beaconsoverhaul.conduit.data.OverhauledConduitData
+import gay.solonovamax.beaconsoverhaul.block.conduit.data.OverhauledConduitData
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
-import gay.solonovamax.beaconsoverhaul.integration.patchouli.PatchouliIntegration
-import gay.solonovamax.beaconsoverhaul.mixin.BeaconBlockEntityAccessor
-import gay.solonovamax.beaconsoverhaul.mixin.GameRulesAccessor
 import gay.solonovamax.beaconsoverhaul.registry.BlockRegistry
 import gay.solonovamax.beaconsoverhaul.registry.CriterionRegistry
 import gay.solonovamax.beaconsoverhaul.registry.ScreenHandlerRegistry
@@ -18,16 +15,17 @@ import net.devtech.arrp.api.RuntimeResourcePack
 import net.devtech.arrp.json.tags.JTag
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
+import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.resource.ResourcePack
+import net.minecraft.world.GameRules
 import net.minecraft.world.GameRules.Category
 import net.silkmc.silk.network.packet.s2cPacket
 import org.slf4j.kotlin.getLogger
 import org.slf4j.kotlin.info
-import gay.solonovamax.beaconsoverhaul.mixin.IntRuleAccessor as IntRule
 
 
 object BeaconOverhaulReloaded : ModInitializer {
-    val LONG_REACH_INCREMENT = GameRulesAccessor.register("longReachIncrement", Category.PLAYER, IntRule.create(2))
+    val LONG_REACH_INCREMENT = GameRules.register("longReachIncrement", Category.PLAYER, GameRules.IntRule.create(2))
 
     val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
 
@@ -50,7 +48,6 @@ object BeaconOverhaulReloaded : ModInitializer {
         createRuntimeResourcepack()
 
         ServerLifecycleEvents.SERVER_STARTING.register {
-            logger.info { "Applying status effect shit" }
             // add the status effects a bit later in the lifecycle
             addStatusEffectsToBeacon()
         }
@@ -64,9 +61,8 @@ object BeaconOverhaulReloaded : ModInitializer {
             BeaconOverhaulConfigManager.config.beaconEffectsByTier.secondaryEffects.toTypedArray(),
         )
 
-        BeaconBlockEntityAccessor.setEffectsByLevel(effectsByLevel)
-
-        BeaconBlockEntityAccessor.setEffects(effectsByLevel.flatMapTo(mutableSetOf()) { it.asIterable() })
+        BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel
+        BeaconBlockEntity.EFFECTS = effectsByLevel.flatMapTo(mutableSetOf()) { it.asIterable() }
     }
 
     private fun createRuntimeResourcepack() {
@@ -77,8 +73,7 @@ object BeaconOverhaulReloaded : ModInitializer {
             RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
         }
 
-        PatchouliIntegration.writePatchouliBook(RESOURCE_PACK)
-        // loadPatchouliBook(RESOURCE_PACK)
+        // PatchouliIntegration.writePatchouliBook(RESOURCE_PACK)
 
         RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
             resourcePacks.add(RESOURCE_PACK)

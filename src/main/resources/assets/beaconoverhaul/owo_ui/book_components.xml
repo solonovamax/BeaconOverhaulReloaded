@@ -1,6 +1,105 @@
 <owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.20/owo-ui.xsd">
     <templates>
+
+        <!-- Beacon structure preview -->
+        <template name="beaconoverhaul:beacon-structure-preview">
+            <flow-layout direction="vertical">
+                <children>
+                    <flow-layout direction="horizontal">
+                        <children>
+                            <flow-layout direction="vertical">
+                                <children>
+                                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                             u="267" v="0" region-width="100" region-height="100">
+                                        <blend>true</blend>
+                                        <positioning type="absolute">0,0</positioning>
+                                    </texture>
+
+                                    <beaconoverhaul.beacon-structure id="structure" display-angle="{{angle}}">
+                                        <sizing>
+                                            <horizontal method="fixed">100</horizontal>
+                                            <vertical method="fixed">100</vertical>
+                                        </sizing>
+                                    </beaconoverhaul.beacon-structure>
+
+                                    <label>
+                                        <color>black</color>
+                                        <text translate="true">guidebook.beaconoverhauled.beacon_structure_component.tier_label</text>
+                                        <vertical-text-alignment>center</vertical-text-alignment>
+                                        <horizontal-text-alignment>center</horizontal-text-alignment>
+                                        <margins>
+                                            <all>2</all>
+                                            <bottom>1</bottom>
+                                        </margins>
+                                    </label>
+
+                                    <slim-slider direction="horizontal" id="tier-slider">
+                                        <sizing>
+                                            <horizontal method="fixed">80</horizontal> <!-- 100 - 4 - 4 -->
+                                        </sizing>
+                                        <step-size>1</step-size>
+
+                                        <margins>
+                                            <horizontal>2</horizontal>
+                                            <vertical>0</vertical>
+                                        </margins>
+                                    </slim-slider>
+                                </children>
+
+                                <horizontal-alignment>center</horizontal-alignment>
+                                <vertical-alignment>center</vertical-alignment>
+                            </flow-layout>
+
+                            <flow-layout direction="vertical">
+                                <children>
+                                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                             u="367" v="1" region-width="13" region-height="72">
+                                        <blend>true</blend>
+                                        <positioning type="absolute">0,1</positioning>
+                                    </texture>
+
+                                    <slim-slider direction="vertical" id="layer-slider">
+                                        <sizing>
+                                            <vertical method="fixed">66</vertical>
+                                        </sizing>
+                                        <step-size>1</step-size>
+
+                                        <margins>
+                                            <right>2</right>
+                                            <vertical>4</vertical>
+                                        </margins>
+                                    </slim-slider>
+
+                                    <small-checkbox id="show-layers-checkbox">
+                                        <checked>true</checked>
+                                        <margins>
+                                            <horizontal>0</horizontal>
+                                            <top>13</top>
+                                        </margins>
+                                    </small-checkbox>
+                                </children>
+
+                                <horizontal-alignment>center</horizontal-alignment>
+
+                                <margins>
+                                    <left>-1</left>
+                                </margins>
+                            </flow-layout>
+                        </children>
+
+                        <vertical-alignment>top</vertical-alignment>
+
+                        <sizing>
+                            <horizontal method="fill">100</horizontal>
+                        </sizing>
+                    </flow-layout>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+            </flow-layout>
+        </template>
+
         <!-- Structure previews: base element, with/without slider -->
 
         <template name="beaconoverhaul:structure-preview-base">

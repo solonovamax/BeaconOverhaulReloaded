@@ -3,15 +3,17 @@
     "compatibilityLevel": "JAVA_17",
     "required": true,
     "package": "gay.solonovamax.beaconsoverhaul.mixin.client",
-    "client": [
+    "client":  [
         "BackgroundRendererMixin",
         "BeaconBlockEntityRendererMixin",
         "GameRendererMixin",
         "InGameHudMixin",
         "InGameOverlayRendererMixin",
-        "LightmapTextureManagerMixin"
+        "LightmapTextureManagerMixin",
+        "TranslationStorageMixin",
+        "lavender.LavenderStructuresMixin"
     ],
-    "refmap": "mixins/beaconoverhaul/refmap.json",
+    "refmap":  "mixins/beaconoverhaul/refmap.json",
     "injectors": {
         "maxShiftBy": 5
     }

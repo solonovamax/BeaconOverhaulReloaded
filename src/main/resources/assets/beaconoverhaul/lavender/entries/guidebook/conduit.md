@@ -3,7 +3,7 @@
     "title":           "Crafting",
     "icon":            "minecraft:heart_of_the_sea",
     "category":        "beaconoverhaul:conduit",
-    "associate_items": [
+    "associated_items": [
         "minecraft:conduit"
     ]
 }

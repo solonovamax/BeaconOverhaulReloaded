@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.screen
 
-import gay.solonovamax.beaconsoverhaul.conduit.data.OverhauledConduitData
+import gay.solonovamax.beaconsoverhaul.block.conduit.data.OverhauledConduitData
 import gay.solonovamax.beaconsoverhaul.registry.ScreenHandlerRegistry
 import gay.solonovamax.beaconsoverhaul.util.PropertyDelegate
 import kotlinx.serialization.ExperimentalSerializationApi

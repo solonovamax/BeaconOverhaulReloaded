@@ -7,7 +7,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,14 +35,13 @@ class LightmapTextureManagerMixin {
             require = 1,
             allow = 1
     )
-    private float fullBrightNightVision(final float skyLight) {
-        final @Nullable ClientPlayerEntity player = this.client.player;
+    private float fullBrightNightVision(float skyLight) {
+        ClientPlayerEntity player = this.client.player;
 
-        if (player == null) {
+        if (player == null)
             return skyLight;
-        }
 
-        final @Nullable StatusEffectInstance nightVision = player.getStatusEffect(StatusEffects.NIGHT_VISION);
+        StatusEffectInstance nightVision = player.getStatusEffect(StatusEffects.NIGHT_VISION);
         // magic number
         return ((nightVision != null) && (nightVision.getAmplifier() > 0)) ? 15.0F : skyLight;
     }

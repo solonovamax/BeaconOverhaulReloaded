@@ -1,15 +1,14 @@
 package gay.solonovamax.beaconsoverhaul.integration.lavender
 
+
 import io.wispforest.lavender.client.StructureOverlayRenderer
 import io.wispforest.lavender.structure.BlockStatePredicate
 import io.wispforest.lavender.structure.LavenderStructures
-import io.wispforest.lavender.structure.StructureTemplate
 import io.wispforest.owo.ui.base.BaseComponent
 import io.wispforest.owo.ui.core.Component
 import io.wispforest.owo.ui.core.CursorStyle
 import io.wispforest.owo.ui.core.Easing
 import io.wispforest.owo.ui.core.OwoUIDrawContext
-import io.wispforest.owo.ui.parsing.UIModelParsingException
 import io.wispforest.owo.ui.parsing.UIParsing
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.Screen
@@ -26,7 +25,10 @@ import org.w3c.dom.Element
 import kotlin.math.max
 import kotlin.math.min
 
-class BeaconOverhaulStructureComponent(private val structure: StructureTemplate, private val displayAngle: Int) : BaseComponent() {
+class BeaconStructureComponent(
+    var structureId: Identifier?,
+    private val displayAngle: Int,
+) : BaseComponent() {
     private var rotation = -45f
     private var lastInteractionTime = 0L
 
@@ -40,7 +42,7 @@ class BeaconOverhaulStructureComponent(private val structure: StructureTemplate,
         }
     var visibleLayer = -1
         set(value) {
-            StructureOverlayRenderer.restrictVisibleLayer(structure.id, visibleLayer)
+            structureId?.let { id -> StructureOverlayRenderer.restrictVisibleLayer(id, visibleLayer) }
 
             field = value
         }
@@ -61,6 +63,8 @@ class BeaconOverhaulStructureComponent(private val structure: StructureTemplate,
     }
 
     override fun draw(context: OwoUIDrawContext, mouseX: Int, mouseY: Int, partialTicks: Float, delta: Float) {
+        val structure = LavenderStructures.get(structureId ?: return) ?: return
+
         val client = MinecraftClient.getInstance()
         val entityBuffers = client.bufferBuilders.entityVertexConsumers
 
@@ -114,6 +118,8 @@ class BeaconOverhaulStructureComponent(private val structure: StructureTemplate,
     }
 
     override fun onMouseDown(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        val structure = LavenderStructures.get(structureId ?: return true) ?: return true
+
         val result = super.onMouseDown(mouseX, mouseY, button)
         if (!placeable || button != GLFW.GLFW_MOUSE_BUTTON_LEFT || !Screen.hasShiftDown())
             return result
@@ -147,21 +153,13 @@ class BeaconOverhaulStructureComponent(private val structure: StructureTemplate,
     }
 
     companion object {
-        fun parse(element: Element): BeaconOverhaulStructureComponent {
-            UIParsing.expectAttributes(element, "structure-id")
-
-            val structureId = Identifier.tryParse(element.getAttribute("structure-id"))
-                ?: throw UIModelParsingException("Invalid structure id '${element.getAttribute("structure-id")}'")
-
-            val structure = LavenderStructures.get(structureId) ?: throw UIModelParsingException("Unknown structure '$structureId'")
-
-            val displayAngle = if (element.hasAttribute("display-angle")) {
+        fun parse(element: Element): BeaconStructureComponent {
+            val displayAngle = if (element.hasAttribute("display-angle"))
                 UIParsing.parseSignedInt(element.getAttributeNode("display-angle"))
-            } else {
+            else
                 35
-            }
 
-            return BeaconOverhaulStructureComponent(structure, displayAngle)
+            return BeaconStructureComponent(null, displayAngle)
         }
     }
 }

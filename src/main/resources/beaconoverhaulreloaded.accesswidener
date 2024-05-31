@@ -15,3 +15,9 @@ accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/St
 accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;[Lnet/minecraft/resource/featuretoggle/FeatureFlag;)Lnet/minecraft/screen/ScreenHandlerType;
 
 accessible field net/minecraft/block/entity/BeaconBlockEntity$BeamSegment height I
+
+mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS_BY_LEVEL [[Lnet/minecraft/entity/effect/StatusEffect;
+accessible field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
+mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
+
+accessible method net/minecraft/block/entity/BeaconBlockEntity getPotionEffectById (I)Lnet/minecraft/entity/effect/StatusEffect;

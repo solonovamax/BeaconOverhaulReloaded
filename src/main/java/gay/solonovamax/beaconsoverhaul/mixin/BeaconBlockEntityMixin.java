@@ -98,7 +98,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     private boolean didRedirection = false;
 
-    BeaconBlockEntityMixin(final BlockEntityType<?> type, final BlockPos pos, final BlockState state) {
+    BeaconBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
@@ -109,8 +109,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
                     value = "INVOKE"
             )
     )
-    private static int updateLevel(final World world, final int x, final int y, final int z) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(new BlockPos(x, y, z));
+    private static int updateLevel(World world, int x, int y, int z) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(new BlockPos(x, y, z));
         assert beacon != null;
 
         return beacon.getLevel();
@@ -118,8 +118,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     // This captures the for loop inside tick that computes the beacon segments
     @ModifyExpressionValue(method = "tick", at = @At(value = "CONSTANT", args = "intValue=0", ordinal = 0))
-    private static int constructBeamSegments(final int original, final World level, final BlockPos pos, final BlockState state,
-                                             final BeaconBlockEntity beacon) {
+    private static int constructBeamSegments(int original, World level, BlockPos pos, BlockState state, BeaconBlockEntity beacon) {
         OverhauledBeaconBlockEntityKt.constructBeamSegments((OverhauledBeacon) beacon);
 
         return Integer.MAX_VALUE;
@@ -136,8 +135,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
                     ordinal = 0
             )
     )
-    private static void updateTier(final World world, final BlockPos pos, final BlockState beaconState, final BeaconBlockEntity beacon,
-                                   final CallbackInfo ci) {
+    private static void updateTier(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
         OverhauledBeaconBlockEntityKt.updateTier((OverhauledBeacon) beacon, world, pos);
     }
 
@@ -148,7 +146,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
                     target = "Lnet/minecraft/world/World;getNonSpectatingEntities(Ljava/lang/Class;Lnet/minecraft/util/math/Box;)Ljava/util/List;"
             )
     )
-    private static <T> List<T> disableAdvancementTrigger(final World instance, final Class<T> aClass, final Box box) {
+    private static <T> List<T> disableAdvancementTrigger(World instance, Class<T> aClass, Box box) {
         return List.of();
     }
 
@@ -159,8 +157,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             require = 1,
             allow = 1
     )
-    private static double modifyRange(final double radius, final World world, final BlockPos pos) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
+    private static double modifyRange(double radius, World world, BlockPos pos) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
         return beacon.getRange();
@@ -173,9 +171,9 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             require = 1,
             allow = 1
     )
-    private static int modifyPrimaryAmplifier(final int primaryAmplifier, final World world, final BlockPos pos, final int levels,
-                                              @Nullable final StatusEffect primaryEffect) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
+    private static int modifyPrimaryAmplifier(int primaryAmplifier, World world, BlockPos pos, int levels,
+                                              @Nullable StatusEffect primaryEffect) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
         if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
@@ -191,10 +189,9 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             require = 1,
             allow = 1
     )
-    private static int modifyPotentPrimaryAmplifier(final int primaryAmplifier, final World world, final BlockPos pos, final int levels,
-                                                    @Nullable final StatusEffect primaryEffect,
-                                                    @Nullable final StatusEffect secondaryEffect) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
+    private static int modifyPotentPrimaryAmplifier(int primaryAmplifier, World world, BlockPos pos, int levels,
+                                                    @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
 
         assert beacon != null;
         if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
@@ -206,9 +203,9 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     // Cannot use ModifyArg here as we need to capture the target method parameters
     @ModifyConstant(method = "applyPlayerEffects", constant = @Constant(/*intValue = 0,*/ ordinal = 1), require = 1, allow = 1)
-    private static int modifySecondaryAmplifier(final int secondaryAmplifier, final World world, final BlockPos pos, final int levels,
-                                                @Nullable final StatusEffect primaryEffect, @Nullable final StatusEffect secondaryEffect) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
+    private static int modifySecondaryAmplifier(int secondaryAmplifier, World world, BlockPos pos, int levels,
+                                                @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
         if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(secondaryEffect))
@@ -224,8 +221,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             require = 1,
             allow = 1
     )
-    private static int modifyDuration(final int duration, final World world, final BlockPos pos, final int levels) {
-        final OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
+    private static int modifyDuration(int duration, World world, BlockPos pos, int levels) {
+        OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
         return beacon.getDuration();
@@ -239,14 +236,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             ),
             expect = 2
     )
-    private static StatusEffectInstance disableEffectParticles(final StatusEffect type, final int duration, final int amplifier,
-                                                               final boolean ambient,
-                                                               final boolean visible) {
+    private static StatusEffectInstance disableEffectParticles(StatusEffect type, int duration, int amplifier, boolean ambient,
+                                                               boolean visible) {
         return new StatusEffectInstance(type, duration, amplifier, ambient, BeaconOverhaulConfigManager.getConfig().getEffectParticles());
     }
 
     @Inject(method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", at = @At("TAIL"))
-    private void init(final CallbackInfo info) {
+    private void init(CallbackInfo info) {
         this.propertyDelegate = new OverhauledBeaconPropertyDelegate(this);
     }
 
@@ -258,43 +254,43 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             ),
             cancellable = true
     )
-    private void createMenu(final int syncId, final PlayerInventory playerInventory, final PlayerEntity playerEntity,
-                            final CallbackInfoReturnable<ScreenHandler> cir) {
+    private void createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity,
+                            CallbackInfoReturnable<ScreenHandler> cir) {
         cir.setReturnValue(OverhauledBeaconBlockEntityKt.createMenu(this, syncId, playerEntity));
     }
 
     @Inject(method = "readNbt", at = @At("TAIL"))
-    private void readOverhauledNbt(final NbtCompound nbt, final CallbackInfo ci) {
+    private void readOverhauledNbt(NbtCompound nbt, CallbackInfo ci) {
         this.level = nbt.getInt("Levels");
         this.beaconPoints = nbt.getDouble("BeaconPoints");
         this.didRedirection = nbt.getBoolean("DidRedirection");
 
-        final String primaryIdentifier = nbt.getString("Primary");
+        String primaryIdentifier = nbt.getString("Primary");
         if (!primaryIdentifier.isBlank())
             this.primary = Registries.STATUS_EFFECT.get(new Identifier(primaryIdentifier));
 
-        final String secondaryIdentifier = nbt.getString("Secondary");
+        String secondaryIdentifier = nbt.getString("Secondary");
         if (!secondaryIdentifier.isBlank())
             this.secondary = Registries.STATUS_EFFECT.get(new Identifier(secondaryIdentifier));
     }
 
     @Inject(method = "writeNbt", at = @At("TAIL"))
-    private void writeOverhauledNbt(final NbtCompound nbt, final CallbackInfo ci) {
+    private void writeOverhauledNbt(NbtCompound nbt, CallbackInfo ci) {
         nbt.putDouble("BeaconPoints", this.beaconPoints);
         nbt.putBoolean("DidRedirection", this.didRedirection);
 
-        final Identifier primaryId = Registries.STATUS_EFFECT.getId(this.primary);
+        Identifier primaryId = Registries.STATUS_EFFECT.getId(this.primary);
         if (this.primary != null && primaryId != null)
             nbt.putString("Primary", primaryId.toString());
 
-        final Identifier secondaryId = Registries.STATUS_EFFECT.getId(this.secondary);
+        Identifier secondaryId = Registries.STATUS_EFFECT.getId(this.secondary);
         if (this.secondary != null && secondaryId != null)
             nbt.putString("Secondary", secondaryId.toString());
     }
 
     @Unique
     @Override
-    public void writeScreenOpeningData(final ServerPlayerEntity player, final PacketByteBuf buf) {
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         OverhauledBeaconBlockEntityKt.writeScreenOpeningData(this, player, buf);
     }
 
@@ -304,7 +300,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     }
 
     @Override
-    public void setMinY(final int minY) {
+    public void setMinY(int minY) {
         this.minY = minY;
     }
 
@@ -317,7 +313,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public void setLastUpdate(@NotNull final Instant lastUpdate) {
+    public void setLastUpdate(@NotNull Instant lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
@@ -330,7 +326,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public void setBaseBlocks(@NotNull final MutableMultiset<Block> baseBlocks) {
+    public void setBaseBlocks(@NotNull MutableMultiset<Block> baseBlocks) {
         this.baseBlocks = baseBlocks;
     }
 
@@ -342,7 +338,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public void setLevel(final int level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
@@ -354,7 +350,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public void setBeaconPoints(final double beaconPoints) {
+    public void setBeaconPoints(double beaconPoints) {
         this.beaconPoints = beaconPoints;
     }
 
@@ -388,7 +384,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     @SuppressWarnings("SuspiciousGetterSetter")
-    public void setPrimaryEffect(@Nullable final StatusEffect primaryEffect) {
+    public void setPrimaryEffect(@Nullable StatusEffect primaryEffect) {
         this.primary = primaryEffect;
     }
 
@@ -403,7 +399,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     @SuppressWarnings("SuspiciousGetterSetter")
-    public void setSecondaryEffect(@Nullable final StatusEffect secondaryEffect) {
+    public void setSecondaryEffect(@Nullable StatusEffect secondaryEffect) {
         this.secondary = secondaryEffect;
     }
 
@@ -439,7 +435,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     @SuppressWarnings("unchecked")
-    public void setBeamSegmentsToCheck(@NotNull final List<? extends BeaconBlockEntity.BeamSegment> beamSegmentsToCheck) {
+    public void setBeamSegmentsToCheck(@NotNull List<? extends BeaconBlockEntity.BeamSegment> beamSegmentsToCheck) {
         this.beamSegmentsToCheck = (List<BeaconBlockEntity.BeamSegment>) beamSegmentsToCheck;
     }
 
@@ -449,7 +445,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     }
 
     @Override
-    public void setDidRedirection(final boolean didRedirection) {
+    public void setDidRedirection(boolean didRedirection) {
         this.didRedirection = didRedirection;
     }
 
@@ -480,19 +476,19 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
 
     @Unique
     @Override
-    public void addUpdateListener(@NotNull final ServerPlayerEntity player) {
+    public void addUpdateListener(@NotNull ServerPlayerEntity player) {
         this.listeningPlayers.add(player);
     }
 
     @Unique
     @Override
-    public void removeUpdateListener(@NotNull final PlayerEntity player) {
+    public void removeUpdateListener(@NotNull PlayerEntity player) {
         this.listeningPlayers.remove(player);
     }
 
     @Unique
     @Override
-    public boolean canApplyEffect(@NotNull final StatusEffect effect) {
+    public boolean canApplyEffect(@NotNull StatusEffect effect) {
         return OverhauledBeaconBlockEntityKt.canApplyEffect(this, effect);
     }
 }

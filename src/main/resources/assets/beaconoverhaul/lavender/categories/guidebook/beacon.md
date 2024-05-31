@@ -1,7 +1,10 @@
 ```json
 {
-    "title": "Beacon",
-    "icon":  "minecraft:beacon"
+    "title":            "Beacon",
+    "icon":             "minecraft:beacon",
+    "associated_items": [
+        "minecraft:beacon"
+    ]
 }
 ```
 

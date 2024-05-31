@@ -1,6 +1,5 @@
 package gay.solonovamax.beaconsoverhaul.block.beacon
 
-import gay.solonovamax.beaconsoverhaul.mixin.BeaconBlockEntityAccessor
 import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.screen.PropertyDelegate
@@ -42,7 +41,7 @@ class OverhauledBeaconPropertyDelegate(
     }
 
     private fun OverhauledBeacon.updateEffect(effectId: Int, currentEffect: StatusEffect?, applyNewEffect: (StatusEffect?) -> Unit) {
-        val newEffect = BeaconBlockEntityAccessor.getPotionEffectById(effectId)
+        val newEffect = BeaconBlockEntity.getPotionEffectById(effectId)
         when {
             newEffect == null -> applyNewEffect(null)
             canApplyEffect(newEffect) && newEffect != currentEffect -> {

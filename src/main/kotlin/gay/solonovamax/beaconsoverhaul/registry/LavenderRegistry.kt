@@ -1,7 +1,8 @@
 package gay.solonovamax.beaconsoverhaul.registry
 
-import gay.solonovamax.beaconsoverhaul.integration.lavender.BeaconOverhaulStructureFeature
+import gay.solonovamax.beaconsoverhaul.integration.lavender.BeaconStructureFeature
 import gay.solonovamax.beaconsoverhaul.integration.lavender.EntityModelFeature
+import gay.solonovamax.beaconsoverhaul.integration.lavender.StructureFeature
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import io.wispforest.lavender.client.LavenderBookScreen
 
@@ -10,7 +11,8 @@ object LavenderRegistry {
         LavenderBookScreen.registerFeatureFactory(identifierOf("guidebook")) { componentSource ->
             listOf(
                 EntityModelFeature(componentSource),
-                BeaconOverhaulStructureFeature(componentSource),
+                StructureFeature(componentSource),
+                BeaconStructureFeature(componentSource),
             )
         }
     }

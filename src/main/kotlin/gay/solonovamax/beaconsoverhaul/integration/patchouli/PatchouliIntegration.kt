@@ -76,10 +76,10 @@ object PatchouliIntegration {
                     ).run(::add)
                     TextPage(
                         title = "Beacon Tiers",
-                        text = """
-                            |Beacons can have serval tiers. The higher the tier, the more effects you gain access to.
-                            |Constructing a larger beacon has the additional benefit of making your effects more powerful, through longer durations, and higher effect levels.
-                        """.trimMargin("|").replace("\n", "\$(br)"),
+                        text = "Beacons can have serval tiers. The higher the tier, the more effects you gain access to.\nConstructing a larger beacon has the additional benefit of making your effects more powerful, through longer durations, and higher effect levels.".replace(
+                            "\n",
+                            "\$(br)"
+                        ),
                     ).run(::add)
                     for (tier in 1..6) {
                         MultiblockPage(

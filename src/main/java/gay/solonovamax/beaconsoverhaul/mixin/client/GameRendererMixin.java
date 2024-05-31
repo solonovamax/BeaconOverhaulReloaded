@@ -22,8 +22,8 @@ class GameRendererMixin {
             require = 1,
             allow = 1
     )
-    private static void noNightVisionFlickerWhenAmbient(final LivingEntity entity, final float tickDelta,
-                                                        final CallbackInfoReturnable<Float> cir, final StatusEffectInstance effect) {
+    private static void noNightVisionFlickerWhenAmbient(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> cir,
+                                                        StatusEffectInstance effect) {
         if (effect.isAmbient()) {
             cir.setReturnValue(1.0F);
         }

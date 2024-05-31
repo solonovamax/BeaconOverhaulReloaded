@@ -8,7 +8,7 @@ axion-release = "1.17.2"
 
 minecraft = "1.20.1"
 
-loom = "1.6.7"
+loom = "1.6.11"
 
 fabric-loader = "0.15.11"
 fabric-api = "0.92.1+1.20.1"
@@ -21,17 +21,11 @@ slf4k = "0.5.1"
 
 guava-kotlin = "0.1.2"
 
-arrow = "1.2.0"
-
 cloth-config = "11.1.118"
 
 modmenu = "7.2.2"
 
 mixin = "0.13.4+mixin.0.8.5"
-
-adventure = "4.14.0"
-adventure-fabric = "5.9.0"
-adventure-kotlin-dsl = "0.1.0"
 
 shadow = "7.1.2"
 
@@ -94,23 +88,12 @@ slf4k = { group = "ca.solo-studios", name = "slf4k", version.ref = "slf4k" }
 
 guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version.ref = "guava-kotlin" }
 
-arrow-core = { group = "io.arrow-kt", name = "arrow-core", version.ref = "arrow" }
-arrow-optics = { group = "io.arrow-kt", name = "arrow-optics", version.ref = "arrow" }
-arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", version.ref = "arrow" }
-arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines", version.ref = "arrow" }
-
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
 
 
 # Sponge Mixin
 sponge-mixin = { group = "net.fabricmc", name = "sponge-mixin", version.ref = "mixin" }
-
-
-adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
-adventure-fabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventure-fabric" }
-adventure-kotlin-extra = { group = "net.kyori", name = "adventure-extra-kotlin", version.ref = "adventure" }
-adventure-kotlin-dsl = { group = "ca.solo-studios", name = "adventure-kotlin-dsl", version.ref = "adventure-kotlin-dsl" }
 
 
 # Cloud
@@ -164,17 +147,6 @@ rei-default-plugin-fabric = { group = "me.shedaniel", name = "RoughlyEnoughItems
 jei-fabric = { group = "mezz.jei", name = "jei-1.20.1-fabric", version.ref = "jei" }
 
 [bundles]
-arrow = [
-    "arrow-core",
-    "arrow-optics",
-    "arrow-fx-coroutines"
-]
-adventure = [
-    "adventure-api",
-    "adventure-fabric",
-    "adventure-kotlin-dsl",
-]
-
 cloud = [
     "cloud-core",
     "cloud-annotations",

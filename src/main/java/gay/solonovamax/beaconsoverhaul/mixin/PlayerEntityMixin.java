@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin extends LivingEntity {
-    PlayerEntityMixin(final EntityType<? extends LivingEntity> type, final World level) {
+    PlayerEntityMixin(EntityType<? extends LivingEntity> type, World level) {
         super(type, level);
     }
 
     @ModifyVariable(method = "canConsume", require = 1, allow = 1, argsOnly = true, at = @At("HEAD"))
-    private boolean orHasNutritionEffect(final boolean invulnerable) {
+    private boolean orHasNutritionEffect(boolean invulnerable) {
         return invulnerable || this.hasStatusEffect(StatusEffectRegistry.NUTRITION);
     }
 }

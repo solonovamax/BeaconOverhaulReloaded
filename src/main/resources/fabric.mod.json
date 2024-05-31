@@ -3,26 +3,32 @@
     "id":            "beaconoverhaul",
     "name":          "Beacon Overhaul Reloaded",
     "version":       "${version}",
-    "description": "${description}",
+    "description":   "${description}",
     "license":       "Apache-2.0",
     "icon":          "pack.png",
     "accessWidener": "beaconoverhaulreloaded.accesswidener",
     "depends":       {
         "advanced_runtime_resource_pack": ">=${versions.arrp}",
-        "cloth-config":           ">=${versions.clothconfig}",
-        "fabric-api":             ">=${versions.fabric.api}",
-        "fabric-language-kotlin": ">=${versions.fabric.languageKotlin}",
-        "fabricloader":           ">=${versions.fabric.loader}",
-        "java":                   ">=17",
-        "minecraft":              "~${versions.minecraft}",
+        "cloth-config":            ">=${versions.clothconfig}",
+        "fabric-api":              ">=${versions.fabric.api}",
+        "fabric-language-kotlin":  ">=${versions.fabric.languageKotlin}",
+        "fabricloader":            ">=${versions.fabric.loader}",
+        "java":                    ">=17",
+        "minecraft":               "~${versions.minecraft}",
         "reach-entity-attributes": ">=${versions.reachEntityAttributes}",
-        "silk-core":              ">=${versions.silk}",
-        "silk-game":              ">=${versions.silk}",
-        "silk-igui":              ">=${versions.silk}",
-        "silk-nbt":               ">=${versions.silk}",
-        "silk-network":           ">=${versions.silk}",
-        "silk-persistence":       ">=${versions.silk}",
-        "patchouli":              ">=${versions.patchouli}"
+        "silk-core":               ">=${versions.silk}",
+        "silk-game":               ">=${versions.silk}",
+        "silk-igui":               ">=${versions.silk}",
+        "silk-nbt":                ">=${versions.silk}",
+        "silk-network":            ">=${versions.silk}",
+        "silk-persistence":        ">=${versions.silk}",
+        "owo":                     ">=${versions.owo}",
+        "lavender":                ">=${versions.lavender}"
+    },
+    "suggests":      {
+        "emi":                "^1.0.0",
+        "roughlyenoughitems": ">=12.0.625",
+        "jei":                ">=15.0.0.12"
     },
     "entrypoints":   {
         "main":           [
@@ -76,6 +82,6 @@
     "contact":       {
         "homepage": "https://www.curseforge.com/minecraft/mc-mods/beaconoverhaul",
         "sources": "https://github.com/ChloeDawn/BeaconOverhaul/",
-        "issues": "https://github.com/ChloeDawn/BeaconOverhaul/issues"
+        "issues":  "https://github.com/ChloeDawn/BeaconOverhaul/issues"
     }
 }

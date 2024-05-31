@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.screen
 
-import gay.solonovamax.beaconsoverhaul.conduit.data.OverhauledConduitData
+import gay.solonovamax.beaconsoverhaul.block.conduit.data.OverhauledConduitData
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 import org.slf4j.kotlin.getLogger

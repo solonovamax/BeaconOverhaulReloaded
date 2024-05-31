@@ -90,7 +90,7 @@ nyx {
             checks = false
             verify = false
 
-            mixinRefmapName(name)
+            mixinRefmapName("beaconoverhaul")
         }
     }
 }
@@ -129,10 +129,10 @@ dependencies {
 
     annotationProcessor(libs.sponge.mixin)
 
-    // modImplementation(libs.bundles.cloud) {
+    // modImplementationInclude(libs.bundles.cloud) {
     //     exclude(group = "net.fabricmc.fabric-api")
-    //     include(this)
     // }
+
     modImplementationInclude(libs.bundles.silk) {
         exclude(group = "net.fabricmc.fabric-api")
     }
@@ -141,9 +141,10 @@ dependencies {
     implementationInclude(libs.guava.kotlin)
 
     implementationInclude(libs.paralithic)
+
     implementationInclude(libs.colormath)
 
-    modImplementationInclude(libs.cloth.config) {
+    modImplementation(libs.cloth.config) {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
@@ -155,7 +156,7 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementationInclude(libs.patchouli) {
+    modImplementation(libs.patchouli) {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
@@ -195,7 +196,8 @@ tasks {
                     "minecraft" to libs.versions.minecraft.get(),
                     "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
                     "silk" to libs.versions.silk.get(),
-                    "patchouli" to libs.versions.patchouli.get(),
+                    "owo" to libs.versions.owo.get(),
+                    "lavender" to libs.versions.lavender.get(),
                 ),
             )
         }

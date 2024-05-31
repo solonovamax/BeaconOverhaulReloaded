@@ -31,8 +31,8 @@ abstract class InGameHudMixin {
             require = 1,
             allow = 1
     )
-    private int noNutritionHungerShake(final int randY) {
-        final PlayerEntity player = this.getCameraPlayer();
+    private int noNutritionHungerShake(int randY) {
+        PlayerEntity player = this.getCameraPlayer();
 
         if ((player != null) && !player.getHungerManager().isNotFull()) {
             if (player.hasStatusEffect(StatusEffectRegistry.NUTRITION)) {

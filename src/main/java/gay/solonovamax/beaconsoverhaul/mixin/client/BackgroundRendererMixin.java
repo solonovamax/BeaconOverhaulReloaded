@@ -42,13 +42,12 @@ class BackgroundRendererMixin {
             ),
             require = 1, allow = 1, cancellable = true
     )
-    private static void skipNightVisionColorShift(final Camera camera, final float tickDelta, final ClientWorld world,
-                                                  final int viewDistance, final float skyDarkness,
-                                                  final CallbackInfo ci) {
-        final Entity focusedEntity = camera.getFocusedEntity();
+    private static void skipNightVisionColorShift(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness,
+                                                  CallbackInfo ci) {
+        Entity focusedEntity = camera.getFocusedEntity();
 
-        if (focusedEntity instanceof final LivingEntity livingEntity) {
-            final StatusEffectInstance nightVision = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION);
+        if (focusedEntity instanceof LivingEntity livingEntity) {
+            StatusEffectInstance nightVision = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION);
 
             if ((nightVision != null) && (nightVision.getAmplifier() > 0)) {
                 // noinspection StaticVariableUsedBeforeInitialization
@@ -65,15 +64,14 @@ class BackgroundRendererMixin {
                     target = "Lnet/minecraft/client/render/CameraSubmersionType;WATER:Lnet/minecraft/client/render/CameraSubmersionType;"
             )
     )
-    private static CameraSubmersionType removeWaterOverlay(final CameraSubmersionType original, final Camera camera,
-                                                           final BackgroundRenderer.FogType fogType,
-                                                           final float viewDistance, final boolean thickFog, final float tickDelta) {
-        final PlayerEntity player = MinecraftClient.getInstance().player;
+    private static CameraSubmersionType removeWaterOverlay(CameraSubmersionType original, Camera camera, BackgroundRenderer.FogType fogType,
+                                                           float viewDistance, boolean thickFog, float tickDelta) {
+        PlayerEntity player = MinecraftClient.getInstance().player;
 
         if (player == null)
             return original;
 
-        final StatusEffectInstance effect = player.getStatusEffect(StatusEffects.CONDUIT_POWER);
+        StatusEffectInstance effect = player.getStatusEffect(StatusEffects.CONDUIT_POWER);
 
         if (effect != null && effect.getAmplifier() >= 1)
             return null; // return null to fail check, because camera submersion type should never be null (I hope)

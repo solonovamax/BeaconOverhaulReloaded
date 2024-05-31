@@ -24,9 +24,9 @@ public class ServerPlayNetworkHandlerMixin {
     public ServerPlayerEntity player;
 
     @Inject(method = "onUpdateBeacon", at = @At("TAIL"))
-    private void onUpdateBeacon(final UpdateBeaconC2SPacket packet, final CallbackInfo ci) {
-        final ScreenHandler screenHandler = this.player.currentScreenHandler;
-        if (screenHandler instanceof final OverhauledBeaconScreenHandler beaconScreenHandler) {
+    private void onUpdateBeacon(UpdateBeaconC2SPacket packet, CallbackInfo ci) {
+        ScreenHandler screenHandler = this.player.currentScreenHandler;
+        if (screenHandler instanceof OverhauledBeaconScreenHandler beaconScreenHandler) {
             if (!this.player.currentScreenHandler.canUse(this.player)) {
                 ServerPlayNetworkHandlerMixin.logger.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
                 return;

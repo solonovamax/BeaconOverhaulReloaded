@@ -7,8 +7,8 @@
 }
 ```
 
-Once the %{block.minecraft.beacon}% has been constructed,
-it can be activated by opening its GUI, selecting the desired effects, and paying the item cost.
+Once the %{block.minecraft.beacon}% has been constructed, it can be activated by opening its GUI,
+selecting the desired effects, and paying the item cost.
 
 The desired effects can be selected using the effect buttons.
 

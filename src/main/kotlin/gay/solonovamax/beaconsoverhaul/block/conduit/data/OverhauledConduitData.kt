@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul.conduit.data
+package gay.solonovamax.beaconsoverhaul.block.conduit.data
 
 import kotlinx.serialization.Serializable
 
