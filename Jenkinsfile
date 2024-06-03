@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk "Temurin Java 17"
+        jdk "Temurin Java 21"
     }
 
     triggers {
@@ -41,6 +41,7 @@ pipeline {
                 }
             }
         }
+        // TODO: publish to modrinth automatically on release
         // stage('Deploy Release') {
         //     when {
         //         tag 'v*'
@@ -51,22 +52,5 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Publish Snapshot') {
-        //     when {
-        //         not {
-        //             tag 'v*'
-        //         }
-        //     }
-        //     steps {
-        //         withGradle {
-        //             sh './gradlew publish'
-        //         }
-        //     }
-        // }
     }
-    // post {
-    //     always {
-    //         archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
-    //     }
-    // }
 }
