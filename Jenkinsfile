@@ -5,6 +5,10 @@ pipeline {
         jdk "Temurin Java 17"
     }
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Clean') {
             steps {
