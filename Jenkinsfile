@@ -10,9 +10,20 @@ pipeline {
     }
 
     stages {
-        stage('Clean') {
+        stage('Setup Gradle') {
             steps {
                 sh 'chmod +x gradlew'
+            }
+        }
+        stage('Remapping Classpath') {
+            steps {
+                withGradle {
+                    sh './gradlew generateRemapClasspath'
+                }
+            }
+        }
+        stage('Clean') {
+            steps {
                 withGradle {
                     sh './gradlew clean'
                 }
@@ -20,11 +31,14 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo 'Remapping classpath'
                 withGradle {
-                    sh './gradlew generateRemapClasspath'
+                    sh './gradlew build'
                 }
-                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true, onlyIfSuccessful: true
+                }
             }
         }
         // stage('Deploy Release') {
@@ -50,9 +64,9 @@ pipeline {
         //     }
         // }
     }
-    post {
-        always {
-            archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
-        }
-    }
+    // post {
+    //     always {
+    //         archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+    //     }
+    // }
 }
