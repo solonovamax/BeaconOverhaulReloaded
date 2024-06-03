@@ -5,10 +5,6 @@ pipeline {
         jdk "Temurin Java 17"
     }
 
-    environment {
-
-    }
-
     stages {
         stage('Clean') {
             steps {
