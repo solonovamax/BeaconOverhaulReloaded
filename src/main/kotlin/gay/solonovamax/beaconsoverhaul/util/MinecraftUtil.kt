@@ -2,6 +2,7 @@
 
 package gay.solonovamax.beaconsoverhaul.util
 
+import com.mojang.datafixers.util.Either
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
@@ -17,6 +18,7 @@ import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
+import java.util.function.Function
 
 fun identifierOf(identifier: String): Identifier {
     return if (identifier.contains(':'))
@@ -51,4 +53,8 @@ fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(s
 
 inline fun <reified T : Entity> World.nonSpectatingEntities(box: Box): List<T> {
     return getNonSpectatingEntities(T::class.java, box)
+}
+
+fun <T, L : T, R : T> Either<L, R>.flatten(): T {
+    return map(Function.identity(), Function.identity())
 }
