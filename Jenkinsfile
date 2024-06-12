@@ -15,6 +15,7 @@ pipeline {
                 sh 'chmod +x gradlew'
             }
         }
+
         stage('Remapping Classpath') {
             steps {
                 withGradle {
@@ -22,13 +23,7 @@ pipeline {
                 }
             }
         }
-        stage('Clean') {
-            steps {
-                withGradle {
-                    sh './gradlew clean'
-                }
-            }
-        }
+
         stage('Build') {
             steps {
                 withGradle {
@@ -41,10 +36,11 @@ pipeline {
                 }
             }
         }
+
         // TODO: publish to modrinth automatically on release
         // stage('Deploy Release') {
         //     when {
-        //         tag 'v*'
+        //         buildingTag()
         //     }
         //     steps {
         //         withGradle {
@@ -52,5 +48,11 @@ pipeline {
         //         }
         //     }
         // }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
     }
 }
