@@ -5,7 +5,8 @@ import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconBlock
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconEffectAmplifierExpression
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconModifierExpression
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconTierEffects
-import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.config.ConduitConfig
+import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry
 import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.minecraft.block.Blocks
@@ -171,7 +172,7 @@ object BeaconConstants {
     //
     // xps:block_soul_copper
 
-    val DEFAULT_CONFIG = BeaconOverhauledConfig(
+    val DEFAULT_BEACON_CONFIG = BeaconOverhauledConfig(
         additionModifiers = mapOf(
             identifierOf("minecraft:copper_block") to "(blocks)^0.45 * 2",
             identifierOf("minecraft:iron_block") to "(blocks)^0.6 * 2",
@@ -219,5 +220,13 @@ object BeaconConstants {
         redirectionHorizontalMoveLimit = 64,
         allowTintedGlassTransparency = true,
         beamUpdateFrequency = 4,
+        beamRadius = 0.2,
+        beamGlowRadius = 0.25,
+        beamGlowOpacity = 0.125,
+        beamBlendPadding = 0.125
+    )
+
+    val DEFAULT_CONDUIT_CONFIG = ConduitConfig(
+        test = true
     )
 }

@@ -3,10 +3,10 @@ package gay.solonovamax.beaconsoverhaul.config
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import gay.solonovamax.beaconsoverhaul.util.configDir
 import gay.solonovamax.beaconsoverhaul.util.transparentBackground
+import io.github.xn32.json5k.Json5
+import io.github.xn32.json5k.decodeFromStream
+import io.github.xn32.json5k.encodeToStream
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.json.encodeToStream
 import me.shedaniel.clothconfig2.api.ConfigBuilder
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.gui.screen.Screen
@@ -22,8 +22,13 @@ object BeaconOverhaulConfigManager {
     private val logger by getLogger()
 
     @JvmStatic
-    val config: BeaconOverhauledConfig by lazy {
-        loadConfig()
+    val beaconConfig: BeaconOverhauledConfig by lazy {
+        tryLoadConfig("beacon", BeaconConstants.DEFAULT_BEACON_CONFIG)
+    }
+
+    @JvmStatic
+    val conduitConfig: ConduitConfig by lazy {
+        tryLoadConfig("conduit", BeaconConstants.DEFAULT_CONDUIT_CONFIG)
     }
 
     fun createConfigScreen(parent: Screen): Screen {
@@ -41,63 +46,42 @@ object BeaconOverhaulConfigManager {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val json = Json {
+    private val json = Json5 {
         encodeDefaults = true
         prettyPrint = true
-        coerceInputValues = true
-        decodeEnumsCaseInsensitive = true
+        // coerceInputValues = true
+        // decodeEnumsCaseInsensitive = true
     }
 
     private val configDir = FabricLoader.getInstance().configDir(BeaconConstants.NAMESPACE)
 
-    @OptIn(ExperimentalSerializationApi::class)
-    fun loadConfig(): BeaconOverhauledConfig {
-        logger.info { "Config dir is $configDir" }
+    private inline fun <reified T> tryLoadConfig(name: String, defaultConfig: T): T {
         if (configDir.notExists())
             configDir.createDirectories()
 
-        val configFile = configDir.resolve("config.json")
+        val configFile = configFile(name)
+        if (configFile.notExists())
+            writeConfig(name, defaultConfig)
 
-        val serializedConfig = when {
-            configFile.notExists() -> {
-                logger.info { "Writing default config" }
-                writeDefaultConfig()
-            }
+        return try {
+            json.decodeFromStream<T>(configFile.inputStream())
+        } catch (e: Exception) {
+            logger.info(e) { "Invalid config, writing default." }
+            writeConfig(name, defaultConfig)
 
-            else -> try {
-                json.decodeFromStream<BeaconOverhauledConfig>(configFile.inputStream())
-            } catch (e: Exception) {
-                logger.info { "Invalid config, writing default." }
-                writeDefaultConfig()
-            }
+            defaultConfig
         }
-
-        // return BeaconOverhauledConfig.from(serializedConfig)
-        return serializedConfig
     }
 
+    private fun configFile(name: String) = configDir.resolve("$name.json5")
+
     @OptIn(ExperimentalSerializationApi::class)
-    private fun writeConfig(config: BeaconOverhauledConfig) {
+    private inline fun <reified T> writeConfig(name: String, config: T) {
         if (configDir.notExists())
             configDir.createDirectories()
 
-        val configFile = configDir.resolve("config.json")
+        val configFile = configFile(name)
 
         json.encodeToStream(config, configFile.outputStream())
-
-        // val writer = configFile.outputStream().bufferedWriter()
-        // writer.write(
-        //     """
-        //     cum
-        //     balls
-        //     """.trimIndent()
-        // )
-        // writer.flush()
-    }
-
-    private fun writeDefaultConfig(): BeaconOverhauledConfig {
-        return BeaconConstants.DEFAULT_CONFIG.also { config ->
-            writeConfig(config)
-        }
     }
 }

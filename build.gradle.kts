@@ -1,7 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+import ca.solostudios.nyx.util.fabric
+import ca.solostudios.nyx.util.soloStudios
+import net.fabricmc.loom.task.RunGameTask
 import org.apache.commons.text.StringEscapeUtils
-
 
 plugins {
     `maven-publish`
@@ -15,10 +17,6 @@ plugins {
     alias(libs.plugins.axion.release)
 
     alias(libs.plugins.nyx)
-}
-
-fabricApi {
-    configureDataGeneration()
 }
 
 nyx {
@@ -39,7 +37,7 @@ nyx {
         }
     }
 
-    project {
+    info {
         name = "Beacon Overhaul Reloaded"
         group = "gay.solonovamax"
         module = "beacon-overhaul-reloaded"
@@ -80,15 +78,19 @@ nyx {
     }
 
     minecraft {
-        accessWidener("beaconoverhaulreloaded")
+        configureDataGeneration()
+
+        accessWidener("beaconoverhaul")
+
+
+        additionalJvmArgs.addAll(
+            "-XX:+UseG1GC",
+            "-XX:+AllowEnhancedClassRedefinition",
+        )
 
         mixin {
             hotswapMixins = true
-            debug = false
             verbose = true
-            dumpTargetOnFailure = true
-            checks = false
-            verify = false
 
             mixinRefmapName("beaconoverhaul")
         }
@@ -96,17 +98,8 @@ nyx {
 }
 
 repositories {
-    maven("https://maven.solo-studios.ca/releases/") {
-        name = "Solo Studios"
-    }
-    maven("https://maven.fabricmc.net/") {
-        name = "Fabric"
-        content {
-            includeGroupAndSubgroups("net.fabricmc")
-            includeModule("me.zeroeightsix", "fiber")
-            includeModule("io.github.llamalad7", "mixinextras-fabric")
-        }
-    }
+    soloStudios()
+    fabric()
     mavenCentral()
 }
 
@@ -136,6 +129,10 @@ dependencies {
     modImplementationInclude(libs.bundles.silk) {
         exclude(group = "net.fabricmc.fabric-api")
     }
+
+    implementation(libs.kotlinx.serialization.json)
+    implementationInclude(libs.kotlinx.serialization.hocon)
+    implementationInclude(libs.kotlinx.serialization.json5k)
 
     implementationInclude(libs.slf4k)
     implementationInclude(libs.guava.kotlin)
@@ -203,14 +200,11 @@ tasks {
         }
     }
 
-    jar {
-        dependsOn(runDatagen)
+    withType<RunGameTask>().configureEach {
+        if (this != runDatagen)
+            dependsOn(runDatagen)
     }
-    runClient {
-        dependsOn(runDatagen)
-    }
-    runServer {
+    withType<Jar>().configureEach {
         dependsOn(runDatagen)
     }
 }
-

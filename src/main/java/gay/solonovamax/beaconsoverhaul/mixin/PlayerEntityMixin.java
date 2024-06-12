@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin;
 
-import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry;
+import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

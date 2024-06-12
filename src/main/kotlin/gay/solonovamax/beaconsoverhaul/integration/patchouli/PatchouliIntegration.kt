@@ -129,7 +129,7 @@ object PatchouliIntegration {
                 icon = Items.EMERALD_BLOCK,
                 category = BEACON_CATEGORY,
                 pages = buildList {
-                    for ((material, expression) in BeaconOverhaulConfigManager.config.additionModifierBlocks) {
+                    for ((material, expression) in BeaconOverhaulConfigManager.beaconConfig.additionModifierBlocks) {
                         SpotlightPage(
                             item = material.asItem(),
                             text = """
@@ -139,7 +139,7 @@ object PatchouliIntegration {
                         ).run(::add)
                     }
 
-                    for ((material, expression) in BeaconOverhaulConfigManager.config.multiplicationModifierBlocks) {
+                    for ((material, expression) in BeaconOverhaulConfigManager.beaconConfig.multiplicationModifierBlocks) {
                         SpotlightPage(
                             item = material.asItem(),
                             text = """
@@ -173,7 +173,7 @@ object PatchouliIntegration {
                         title = "Range Formula",
                         text = """
                             |The range of the beacon (in blocks) is computed according to:
-                            |${BeaconOverhaulConfigManager.config.range.expressionString}
+                            |${BeaconOverhaulConfigManager.beaconConfig.range.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has.
                         """.trimMargin("|").replace("\n", "\$(br)")
@@ -182,7 +182,7 @@ object PatchouliIntegration {
                         title = "Duration Formula",
                         text = """
                             |The duration of the beacon effects (in seconds) is computed according to:
-                            |${BeaconOverhaulConfigManager.config.duration.expressionString}
+                            |${BeaconOverhaulConfigManager.beaconConfig.duration.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has.
                         """.trimMargin("|").replace("\n", "\$(br)")
@@ -191,10 +191,10 @@ object PatchouliIntegration {
                         title = "Effect Level Formula",
                         text = """
                             |The level of the primary effect from beacons is computed according to:
-                            |${BeaconOverhaulConfigManager.config.primaryAmplifier.expressionString}
+                            |${BeaconOverhaulConfigManager.beaconConfig.primaryAmplifier.expressionString}
                             |
                             |The level of the secondary effect from beacons is computed according to:
-                            |${BeaconOverhaulConfigManager.config.secondaryAmplifier.expressionString}
+                            |${BeaconOverhaulConfigManager.beaconConfig.secondaryAmplifier.expressionString}
                             |
                             |Where 'pts' is the number of points the beacon has, and 'isPotent' 1 if no secondary effect is selected, and 0 if a secondary effect is selected, at tier 4 or higher.
                         """.trimMargin("|").replace("\n", "\$(br)")

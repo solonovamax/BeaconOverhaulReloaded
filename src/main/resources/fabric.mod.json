@@ -6,7 +6,7 @@
     "description":   "${description}",
     "license":       "Apache-2.0",
     "icon":          "pack.png",
-    "accessWidener": "beaconoverhaulreloaded.accesswidener",
+    "accessWidener": "beaconoverhaul.accesswidener",
     "depends":       {
         "advanced_runtime_resource_pack": ">=${versions.arrp}",
         "cloth-config":            ">=${versions.clothconfig}",

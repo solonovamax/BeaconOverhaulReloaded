@@ -387,7 +387,7 @@ class OverhauledBeaconScreen(
         protected open fun getEffectName(statusEffect: StatusEffect): MutableText {
             val text = Text.translatable(statusEffect.translationKey)
             val amplifier = if (primary) screen.data.primaryAmplifier else screen.data.secondaryAmplifier
-            if (statusEffect !in BeaconOverhaulConfigManager.config.levelOneStatusEffects && amplifier > 1) {
+            if (statusEffect !in BeaconOverhaulConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1) {
                 text.append(" ")
                     .append(amplifier.asRomanNumeral())
             }
@@ -446,7 +446,7 @@ class OverhauledBeaconScreen(
             val text = Text.translatable(statusEffect.translationKey)
             val amplifier = screen.data.primaryAmplifierPotent
 
-            if (statusEffect !in BeaconOverhaulConfigManager.config.levelOneStatusEffects && amplifier > 1)
+            if (statusEffect !in BeaconOverhaulConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1)
                 text.append(" ")
                     .append(amplifier.asRomanNumeral())
 

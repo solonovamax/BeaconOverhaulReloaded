@@ -1,10 +1,12 @@
 ```json
 {
+    "$schema":          "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-category.json",
     "title":            "Beacon",
     "icon":             "minecraft:beacon",
     "associated_items": [
         "minecraft:beacon"
-    ]
+    ],
+    "ordinal":          1
 }
 ```
 

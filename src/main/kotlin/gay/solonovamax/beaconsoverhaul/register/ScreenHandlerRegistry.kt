@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul.registry
+package gay.solonovamax.beaconsoverhaul.register
 
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreen
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreenHandler

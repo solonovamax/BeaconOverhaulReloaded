@@ -53,6 +53,6 @@ fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(s
 
 fun String.toItemStack(): ItemStack = ItemStackUtil.loadStackFromString(this)
 
-inline fun <reified T : Entity> World.getNonSpectatingEntities(box: Box): List<T> {
+inline fun <reified T : Entity> World.nonSpectatingEntities(box: Box): List<T> {
     return getNonSpectatingEntities(T::class.java, box)
 }

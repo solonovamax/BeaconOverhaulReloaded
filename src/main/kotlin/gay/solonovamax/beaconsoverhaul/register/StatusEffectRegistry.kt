@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul.registry
+package gay.solonovamax.beaconsoverhaul.register
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes
 import gay.solonovamax.beaconsoverhaul.effects.ConduitTestingEffect

@@ -1,8 +1,9 @@
 package gay.solonovamax.beaconsoverhaul
 
-import gay.solonovamax.beaconsoverhaul.registry.LavenderRegistry
-import gay.solonovamax.beaconsoverhaul.registry.OwoUIRegistry
-import gay.solonovamax.beaconsoverhaul.registry.ScreenHandlerRegistry
+import gay.solonovamax.beaconsoverhaul.register.LavenderRegistration
+import gay.solonovamax.beaconsoverhaul.register.OwoUIRegistration
+import gay.solonovamax.beaconsoverhaul.register.RenderLayerRegistration
+import gay.solonovamax.beaconsoverhaul.register.ScreenHandlerRegistry
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreen
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledConduitScreen
 import net.fabricmc.api.ClientModInitializer
@@ -14,9 +15,11 @@ object BeaconOverhaulReloadedClient : ClientModInitializer {
 
     override fun onInitializeClient() {
         ScreenHandlerRegistry.registerClient()
+        RenderLayerRegistration.register()
 
-        LavenderRegistry.register()
-        OwoUIRegistry.register()
+        LavenderRegistration.register()
+        OwoUIRegistration.register()
+
 
         BeaconOverhaulReloaded.updateBeaconPacket.receiveOnClient { beaconData, context ->
             val currentScreen = context.client.currentScreen

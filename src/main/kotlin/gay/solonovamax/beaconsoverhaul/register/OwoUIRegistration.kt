@@ -1,4 +1,4 @@
-package gay.solonovamax.beaconsoverhaul.registry
+package gay.solonovamax.beaconsoverhaul.register
 
 import gay.solonovamax.beaconsoverhaul.BeaconConstants.NAMESPACE
 import gay.solonovamax.beaconsoverhaul.integration.lavender.BeaconStructureComponent
@@ -6,7 +6,7 @@ import gay.solonovamax.beaconsoverhaul.integration.lavender.EntityModelComponent
 import gay.solonovamax.beaconsoverhaul.integration.lavender.StructureComponent
 import io.wispforest.owo.ui.parsing.UIParsing
 
-object OwoUIRegistry {
+object OwoUIRegistration {
     fun register() {
         // Game Objects
         UIParsing.registerFactory("$NAMESPACE.entity-model") { element -> EntityModelComponent.parse(element) }

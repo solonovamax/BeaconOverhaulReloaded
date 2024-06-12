@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.datagen.tag
 
-import gay.solonovamax.beaconsoverhaul.registry.TagRegistry
+import gay.solonovamax.beaconsoverhaul.register.TagRegistry
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider
 import net.minecraft.block.Blocks

@@ -1,9 +1,13 @@
 ```json
 {
-    "title":    "Crafting",
-    "icon":     "minecraft:nether_star",
-    "category": "beaconoverhaul:beacon",
-    "ordinal":  0
+    "$schema":          "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-entry.json",
+    "title":            "Crafting",
+    "icon":             "minecraft:nether_star",
+    "category":         "beaconoverhaul:beacon",
+    "ordinal":          0,
+    "associated_items": [
+        "minecraft:beacon"
+    ]
 }
 ```
 

@@ -81,7 +81,7 @@ class BeaconStructureFeature(
             val layerSlider = structureComponent.childById<SlimSliderComponent>("layer-slider")!!
             val showLayersCheckbox = structureComponent.childById<SmallCheckboxComponent>("show-layers-checkbox")!!
 
-            tierSlider.min(1.0).max(BeaconOverhaulConfigManager.config.maxBeaconLayers.toDouble()).tooltipSupplier { layer ->
+            tierSlider.min(1.0).max(BeaconOverhaulConfigManager.beaconConfig.maxBeaconLayers.toDouble()).tooltipSupplier { layer ->
                 Text.translatable("guidebook.beaconoverhauled.beacon_structure_component.tier_tooltip", layer.toInt())
             }.onChanged().subscribe(SlimSliderComponent.OnChanged { layer ->
                 structurePreview.structureId = beaconStructureIdentifier(layer.toInt())

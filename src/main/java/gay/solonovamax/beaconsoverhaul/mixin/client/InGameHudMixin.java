@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
-import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry;
+import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.InGameHud;

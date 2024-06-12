@@ -1,9 +1,9 @@
 package gay.solonovamax.beaconsoverhaul.block.beacon
 
 import ca.solostudios.guava.kotlin.collect.MutableMultiset
+import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment
 import kotlinx.datetime.Instant
 import net.minecraft.block.Block
-import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
@@ -25,10 +25,12 @@ interface OverhauledBeacon {
 
     var primaryEffect: StatusEffect?
     var secondaryEffect: StatusEffect?
-    val world: World?
+    val world: World
     val pos: BlockPos
-    val beamSegments: List<BeaconBlockEntity.BeamSegment>
-    var beamSegmentsToCheck: List<BeaconBlockEntity.BeamSegment>
+    val beamSegments: List<BeaconBeamSegment>
+    var beamSegmentsToCheck: List<BeaconBeamSegment>
+
+    var brokenBeam: Boolean
 
     var minY: Int
 

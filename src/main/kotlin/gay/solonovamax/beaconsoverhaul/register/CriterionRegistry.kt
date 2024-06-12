@@ -1,10 +1,12 @@
-package gay.solonovamax.beaconsoverhaul.registry
+package gay.solonovamax.beaconsoverhaul.register
 
 import gay.solonovamax.beaconsoverhaul.advancement.RedirectBeaconCriterion
 import net.minecraft.advancement.criterion.Criteria
 
 object CriterionRegistry {
+    val REDIRECT_BEACON_CRITERION = RedirectBeaconCriterion
+
     fun register() {
-        Criteria.register(RedirectBeaconCriterion)
+        Criteria.register(REDIRECT_BEACON_CRITERION)
     }
 }

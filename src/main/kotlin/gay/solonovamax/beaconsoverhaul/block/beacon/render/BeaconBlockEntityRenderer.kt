@@ -1,8 +1,11 @@
 package gay.solonovamax.beaconsoverhaul.block.beacon.render
 
-import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.ExtendedBeamSegment
+import com.github.ajalt.colormath.model.RGB
+import com.github.ajalt.colormath.model.SRGB
+import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon
+import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment
+import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
 import gay.solonovamax.beaconsoverhaul.util.not
-import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
@@ -15,70 +18,55 @@ import net.minecraft.util.math.Vec3d
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 
+private val RED = SRGB(1.0f, 0.0f, 0.0f, 0.5f)
 
 fun render(
-    beacon: BeaconBlockEntity,
+    beacon: OverhauledBeacon,
     partialTicks: Float,
     matrixStackIn: MatrixStack,
     bufferIn: VertexConsumerProvider,
     combinedLightIn: Int,
     combinedOverlayIn: Int,
-): Boolean {
-    val worldTime: Long = beacon.world!!.time
-    val beamSegments: List<BeaconBlockEntity.BeamSegment> = beacon.beamSegments
-
-    for (segment in beamSegments) {
-        if (segment !is ExtendedBeamSegment)
-            return false // Defer back to the vanilla one
-
-        renderBeamSegment(matrixStackIn, bufferIn, segment, partialTicks, worldTime)
-    }
-
-    return true
-}
-
-private fun renderBeamSegment(
-    matrixStack: MatrixStack,
-    bufferIn: VertexConsumerProvider,
-    segment: ExtendedBeamSegment,
-    partialTicks: Float,
-    totalWorldTime: Long,
 ) {
-    renderBeamSegment(
-        matrixStack,
-        bufferIn,
-        segment,
-        partialTicks,
-        totalWorldTime,
-        0.2f,
-        0.25f,
-        0.125f,
-    )
+    for (segment in beacon.beamSegments) {
+        renderBeamSegment(
+            matrixStackIn,
+            bufferIn,
+            segment,
+            partialTicks,
+            beacon.world.time,
+            BeaconOverhaulConfigManager.beaconConfig.beamRadius.toFloat(),
+            BeaconOverhaulConfigManager.beaconConfig.beamGlowRadius.toFloat(),
+            BeaconOverhaulConfigManager.beaconConfig.beamGlowOpacity.toFloat(),
+            BeaconOverhaulConfigManager.beaconConfig.beamBlendPadding.toFloat(),
+            beacon.brokenBeam,
+        )
+    }
 }
 
 fun renderBeamSegment(
     matrixStack: MatrixStack,
     bufferIn: VertexConsumerProvider,
-    segment: ExtendedBeamSegment,
+    segment: BeaconBeamSegment,
     partialTicks: Float,
     totalWorldTime: Long,
     beamRadius: Float,
     glowRadius: Float,
     glowOpacity: Float,
+    blendPadding: Float,
+    broken: Boolean,
 ) {
-    val blendPadding = 0.125f
     val blendLength = 1.0f - blendPadding * 2
 
-    val colors = segment.color
-    val alpha = segment.alpha
-    val oldColors = segment.previousColor
-    val oldAlpha = segment.previousAlpha
-    val same = colors.contentEquals(oldColors) && alpha == oldAlpha && !segment.isTurn && !segment.previousSegmentIsTurn
+    val showBrokenColor = broken && (totalWorldTime / 10) % 2 == 0L
+    val color = if (showBrokenColor) RED else segment.color.toSRGB()
+    val previousColor = if (showBrokenColor) RED else segment.previousColor.toSRGB()
+    val same = color == previousColor && color.alpha == previousColor.alpha && !segment.isTurn && !segment.previousSegmentIsTurn
     val padding = if (same) 0.0f else blendPadding
-    val height = segment.getHeight().toFloat() + if (segment.isTurn) 0.5f else padding
+    val height = segment.height.toFloat() + if (segment.isTurn) 0.5f else padding
     val offset = Vec3d.of(segment.offset).offset(!segment.direction, 0.5)
 
-    if (alpha == oldAlpha && alpha == 0.0f)
+    if (color.alpha <= 0.05f && previousColor.alpha <= 0.05f)
         return // don't render shit (alpha is zero)
 
     matrixStack.push()
@@ -105,10 +93,8 @@ fun renderBeamSegment(
         v2,
         matrixStack,
         bufferIn,
-        alpha,
-        colors,
-        oldAlpha,
-        oldColors,
+        color,
+        previousColor,
         same,
         blendLength,
         blendPadding,
@@ -121,10 +107,8 @@ fun renderBeamSegment(
         v2,
         matrixStack,
         bufferIn,
-        alpha * glowOpacity,
-        colors,
-        oldAlpha * glowOpacity,
-        oldColors,
+        color.copy(alpha = color.alpha * glowOpacity),
+        previousColor.copy(alpha = previousColor.alpha * glowOpacity),
         same,
         blendLength,
         blendPadding,
@@ -133,15 +117,13 @@ fun renderBeamSegment(
 }
 
 private fun renderInnerBeam(
-    segment: ExtendedBeamSegment,
+    segment: BeaconBeamSegment,
     height: Float,
     v2: Float,
     matrixStack: MatrixStack,
     bufferIn: VertexConsumerProvider,
-    alpha: Float,
-    colors: FloatArray,
-    oldAlpha: Float,
-    oldColors: FloatArray,
+    color: RGB,
+    oldColor: RGB,
     same: Boolean,
     blendLength: Float,
     blendPadding: Float,
@@ -151,11 +133,9 @@ private fun renderInnerBeam(
         segment.previousSegmentIsTurn -> {
             renderPart(
                 matrixStackIn = matrixStack,
-                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, alpha < 1f)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, color.alpha < 1f)),
+                color = color,
+                oldColor = color,
                 height = height - blendPadding,
                 offset = 0.7f,
                 x1 = 0.0f,
@@ -174,10 +154,8 @@ private fun renderInnerBeam(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = 0.0f,
+                color = color,
+                oldColor = color.copy(alpha = 0.0f),
                 height = 0.7f,
                 offset = 0.2f,
                 x1 = 0.0f,
@@ -198,11 +176,9 @@ private fun renderInnerBeam(
         same -> {
             renderPart(
                 matrixStackIn = matrixStack,
-                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, alpha < 1f)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, color.alpha < 1f)),
+                color = color,
+                oldColor = color,
                 height = height,
                 offset = 0.0f,
                 x1 = 0.0f,
@@ -224,11 +200,9 @@ private fun renderInnerBeam(
         else -> {
             renderPart(
                 matrixStackIn = matrixStack,
-                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, alpha < 1f)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, color.alpha < 1f)),
+                color = color,
+                oldColor = color,
                 height = height - blendPadding,
                 offset = blendLength,
                 x1 = 0.0f,
@@ -249,13 +223,11 @@ private fun renderInnerBeam(
                 bufferIn = bufferIn.getBuffer(
                     RenderLayer.getBeaconBeam(
                         BeaconBlockEntityRenderer.BEAM_TEXTURE,
-                        alpha < 1f || oldAlpha < 1f
+                        color.alpha < 1f || oldColor.alpha < 1f
                     )
                 ),
-                colors = colors,
-                alpha = alpha,
-                oldColors = oldColors,
-                oldAlpha = oldAlpha,
+                color = color,
+                oldColor = oldColor,
                 height = blendLength,
                 offset = 0f,
                 x1 = 0.0f,
@@ -278,15 +250,13 @@ private fun renderInnerBeam(
 }
 
 private fun renderOuterGlow(
-    segment: ExtendedBeamSegment,
+    segment: BeaconBeamSegment,
     height: Float,
     v2: Float,
     matrixStack: MatrixStack,
     bufferIn: VertexConsumerProvider,
-    alpha: Float,
-    colors: FloatArray,
-    oldAlpha: Float,
-    oldColors: FloatArray,
+    color: RGB,
+    oldColor: RGB,
     same: Boolean,
     blendLength: Float,
     blendPadding: Float,
@@ -297,10 +267,8 @@ private fun renderOuterGlow(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                color = color,
+                oldColor = oldColor,
                 height = height - blendPadding,
                 offset = 0.7f,
                 x1 = -glowRadius,
@@ -319,10 +287,8 @@ private fun renderOuterGlow(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = 0.0f,
+                color = color,
+                oldColor = oldColor.copy(alpha = 0.0f),
                 height = 0.7f,
                 offset = 0.2f,
                 x1 = -glowRadius,
@@ -344,10 +310,8 @@ private fun renderOuterGlow(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                color = color,
+                oldColor = color,
                 height = height,
                 offset = 0.0f,
                 x1 = -glowRadius,
@@ -369,10 +333,8 @@ private fun renderOuterGlow(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = colors,
-                oldAlpha = alpha,
+                color = color,
+                oldColor = color,
                 height = height - blendPadding,
                 offset = blendLength,
                 x1 = -glowRadius,
@@ -391,10 +353,8 @@ private fun renderOuterGlow(
             renderPart(
                 matrixStackIn = matrixStack,
                 bufferIn = bufferIn.getBuffer(RenderLayer.getBeaconBeam(BeaconBlockEntityRenderer.BEAM_TEXTURE, true)),
-                colors = colors,
-                alpha = alpha,
-                oldColors = oldColors,
-                oldAlpha = oldAlpha,
+                color = color,
+                oldColor = oldColor,
                 height = blendLength,
                 offset = 0.0f,
                 x1 = -glowRadius,
@@ -419,10 +379,8 @@ private fun renderOuterGlow(
 private fun renderPart(
     matrixStackIn: MatrixStack,
     bufferIn: VertexConsumer,
-    colors: FloatArray,
-    alpha: Float,
-    oldColors: FloatArray,
-    oldAlpha: Float,
+    color: RGB,
+    oldColor: RGB,
     height: Float,
     offset: Float,
     x1: Float,
@@ -441,20 +399,18 @@ private fun renderPart(
     val pose = matrixStackIn.peek()
     val matrix4f: Matrix4f = pose.positionMatrix
     val matrix3f: Matrix3f = pose.normalMatrix
-    addQuad(matrix4f, matrix3f, bufferIn, colors, alpha, oldColors, oldAlpha, offset, height, x1, z1, x2, z2, u1, u2, v1, v2)
-    addQuad(matrix4f, matrix3f, bufferIn, colors, alpha, oldColors, oldAlpha, offset, height, x4, z4, x3, z3, u1, u2, v1, v2)
-    addQuad(matrix4f, matrix3f, bufferIn, colors, alpha, oldColors, oldAlpha, offset, height, x2, z2, x4, z4, u1, u2, v1, v2)
-    addQuad(matrix4f, matrix3f, bufferIn, colors, alpha, oldColors, oldAlpha, offset, height, x3, z3, x1, z1, u1, u2, v1, v2)
+    addQuad(matrix4f, matrix3f, bufferIn, color, oldColor, offset, height, x1, z1, x2, z2, u1, u2, v1, v2)
+    addQuad(matrix4f, matrix3f, bufferIn, color, oldColor, offset, height, x4, z4, x3, z3, u1, u2, v1, v2)
+    addQuad(matrix4f, matrix3f, bufferIn, color, oldColor, offset, height, x2, z2, x4, z4, u1, u2, v1, v2)
+    addQuad(matrix4f, matrix3f, bufferIn, color, oldColor, offset, height, x3, z3, x1, z1, u1, u2, v1, v2)
 }
 
 private fun addQuad(
     matrixPos: Matrix4f,
     matrixNormal: Matrix3f,
     bufferIn: VertexConsumer,
-    colors: FloatArray,
-    alpha: Float,
-    oldColors: FloatArray,
-    oldAlpha: Float,
+    color: RGB,
+    oldColor: RGB,
     yMin: Float,
     yMax: Float,
     x1: Float,
@@ -466,18 +422,17 @@ private fun addQuad(
     v1: Float,
     v2: Float,
 ) {
-    addVertex(matrixPos, matrixNormal, bufferIn, colors, alpha, yMax, x1, z1, u2, v1)
-    addVertex(matrixPos, matrixNormal, bufferIn, oldColors, oldAlpha, yMin, x1, z1, u2, v2)
-    addVertex(matrixPos, matrixNormal, bufferIn, oldColors, oldAlpha, yMin, x2, z2, u1, v2)
-    addVertex(matrixPos, matrixNormal, bufferIn, colors, alpha, yMax, x2, z2, u1, v1)
+    addVertex(matrixPos, matrixNormal, bufferIn, color, yMax, x1, z1, u2, v1)
+    addVertex(matrixPos, matrixNormal, bufferIn, oldColor, yMin, x1, z1, u2, v2)
+    addVertex(matrixPos, matrixNormal, bufferIn, oldColor, yMin, x2, z2, u1, v2)
+    addVertex(matrixPos, matrixNormal, bufferIn, color, yMax, x2, z2, u1, v1)
 }
 
 private fun addVertex(
     matrixPos: Matrix4f,
     matrixNormal: Matrix3f,
     bufferIn: VertexConsumer,
-    colors: FloatArray,
-    alpha: Float,
+    color: RGB,
     y: Float,
     x: Float,
     z: Float,
@@ -485,7 +440,7 @@ private fun addVertex(
     texV: Float,
 ) {
     bufferIn.vertex(matrixPos, x, y, z)
-        .color(colors[0], colors[1], colors[2], alpha)
+        .color(color.r, color.g, color.b, color.alpha)
         .texture(texU, texV)
         .overlay(OverlayTexture.DEFAULT_UV)
         .light(15728880)

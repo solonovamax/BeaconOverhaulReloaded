@@ -1,7 +1,9 @@
 ```json
 {
-    "title": "Corrupted Beacon",
-    "icon":  "minecraft:crying_obsidian"
+    "$schema": "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-category.json",
+    "title":   "Corrupted Beacon",
+    "icon":    "beaconoverhaul:corrupted_beacon",
+    "ordinal": 2
 }
 ```
 

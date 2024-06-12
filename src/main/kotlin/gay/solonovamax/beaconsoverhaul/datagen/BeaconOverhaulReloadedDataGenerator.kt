@@ -2,6 +2,7 @@ package gay.solonovamax.beaconsoverhaul.datagen
 
 import gay.solonovamax.beaconsoverhaul.datagen.advancement.AdvancementProvider
 import gay.solonovamax.beaconsoverhaul.datagen.loot.AdvancementLootTableProvider
+import gay.solonovamax.beaconsoverhaul.datagen.model.ModelProvider
 import gay.solonovamax.beaconsoverhaul.datagen.tag.BlockTagProvider
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator
@@ -13,5 +14,6 @@ object BeaconOverhaulReloadedDataGenerator : DataGeneratorEntrypoint {
         pack.addProvider(::AdvancementProvider)
         pack.addProvider(::AdvancementLootTableProvider)
         pack.addProvider(::BlockTagProvider)
+        pack.addProvider(::ModelProvider)
     }
 }

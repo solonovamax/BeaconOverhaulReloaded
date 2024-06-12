@@ -36,7 +36,7 @@ class OverhauledBeaconPropertyDelegate(
             }
         }
 
-        if (updatedEffects && !beacon.world!!.isClient && beacon.beamSegments.isNotEmpty())
+        if (updatedEffects && !beacon.world.isClient && beacon.beamSegments.isNotEmpty())
             BeaconBlockEntity.playSound(beacon.world, beacon.pos, SoundEvents.BLOCK_BEACON_POWER_SELECT)
     }
 

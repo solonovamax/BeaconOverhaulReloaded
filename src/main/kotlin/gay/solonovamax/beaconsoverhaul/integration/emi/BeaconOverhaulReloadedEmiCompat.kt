@@ -3,7 +3,7 @@ package gay.solonovamax.beaconsoverhaul.integration.emi
 import dev.emi.emi.api.EmiPlugin
 import dev.emi.emi.api.EmiRegistry
 import dev.emi.emi.api.widget.Bounds
-import gay.solonovamax.beaconsoverhaul.registry.BlockRegistry
+import gay.solonovamax.beaconsoverhaul.register.BlockRegistry
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreen
 
 object BeaconOverhaulReloadedEmiCompat : EmiPlugin {

@@ -3,11 +3,13 @@ package gay.solonovamax.beaconsoverhaul
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
 import gay.solonovamax.beaconsoverhaul.block.conduit.data.OverhauledConduitData
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
-import gay.solonovamax.beaconsoverhaul.registry.BlockRegistry
-import gay.solonovamax.beaconsoverhaul.registry.CriterionRegistry
-import gay.solonovamax.beaconsoverhaul.registry.ScreenHandlerRegistry
-import gay.solonovamax.beaconsoverhaul.registry.StatusEffectRegistry
-import gay.solonovamax.beaconsoverhaul.registry.TagRegistry
+import gay.solonovamax.beaconsoverhaul.register.BlockRegistry
+import gay.solonovamax.beaconsoverhaul.register.CriterionRegistry
+import gay.solonovamax.beaconsoverhaul.register.ItemGroupRegistry
+import gay.solonovamax.beaconsoverhaul.register.ItemRegistry
+import gay.solonovamax.beaconsoverhaul.register.ScreenHandlerRegistry
+import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry
+import gay.solonovamax.beaconsoverhaul.register.TagRegistry
 import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.devtech.arrp.api.RRPCallback
@@ -40,6 +42,8 @@ object BeaconOverhaulReloaded : ModInitializer {
 
         // Make sure we register shit first lol
         BlockRegistry.register()
+        ItemRegistry.register()
+        ItemGroupRegistry.register()
         StatusEffectRegistry.register()
         ScreenHandlerRegistry.register()
         CriterionRegistry.register()
@@ -51,14 +55,15 @@ object BeaconOverhaulReloaded : ModInitializer {
             // add the status effects a bit later in the lifecycle
             addStatusEffectsToBeacon()
         }
+        println("conduit config = ${BeaconOverhaulConfigManager.conduitConfig}")
     }
 
     private fun addStatusEffectsToBeacon() {
         val effectsByLevel = arrayOf(
-            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierOne.toTypedArray(),
-            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierTwo.toTypedArray(),
-            BeaconOverhaulConfigManager.config.beaconEffectsByTier.tierThree.toTypedArray(),
-            BeaconOverhaulConfigManager.config.beaconEffectsByTier.secondaryEffects.toTypedArray(),
+            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierOne.toTypedArray(),
+            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierTwo.toTypedArray(),
+            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierThree.toTypedArray(),
+            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects.toTypedArray(),
         )
 
         BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel
@@ -67,7 +72,7 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private fun createRuntimeResourcepack() {
         val beaconBaseBlocksTag = JTag().apply {
-            for (block in BeaconOverhaulConfigManager.config.beaconBaseBlocks)
+            for (block in BeaconOverhaulConfigManager.beaconConfig.beaconBaseBlocks)
                 add(block.id)
 
             RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)

@@ -1,4 +1,7 @@
 {
-    "texture":            "beaconoverhaul:textures/gui/guidebook.png",
-    "display_completion": true
+    "$schema":                            "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-book.json",
+    "texture":                            "beaconoverhaul:textures/gui/guidebook.png",
+    "intro_entry":                        "beaconoverhaul:intro",
+    "display_completion":                 true,
+    "display_unread_entry_notifications": true
 }

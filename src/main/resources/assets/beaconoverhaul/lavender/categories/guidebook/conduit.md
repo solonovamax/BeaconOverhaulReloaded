@@ -1,7 +1,9 @@
 ```json
 {
-    "title": "Conduit",
-    "icon":  "minecraft:conduit"
+    "$schema": "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-category.json",
+    "title":   "Conduit",
+    "icon":    "minecraft:conduit",
+    "ordinal": 3
 }
 ```
 

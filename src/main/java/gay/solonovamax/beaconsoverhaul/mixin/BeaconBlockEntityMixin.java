@@ -6,13 +6,13 @@ import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeaconPropertyDelegate;
+import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment;
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.OverhauledBeaconBlockEntityKt;
 import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager;
 import kotlinx.datetime.Instant;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -49,28 +50,39 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings({"PackageVisibleField", "CastToIncompatibleInterface"})
 @Mixin(BeaconBlockEntity.class)
-abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScreenHandlerFactory, OverhauledBeacon, InventoryProvider {
+@Debug(export = true)
+abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScreenHandlerFactory, OverhauledBeacon {
     @Unique
     @NotNull
     private final List<ServerPlayerEntity> listeningPlayers = Lists.newArrayList();
 
     @Shadow
-    int level;
+    public int level;
 
     @Shadow
     @Nullable
-    StatusEffect primary;
+    public StatusEffect primary;
 
     @Shadow
     @Nullable
-    StatusEffect secondary;
+    public StatusEffect secondary;
 
     @Shadow
     @NotNull
-    List<BeaconBlockEntity.BeamSegment> beamSegments;
+    public List<BeaconBlockEntity.BeamSegment> beamSegments;
+
+    @Shadow
+    public int minY;
+
+    @Shadow
+    public List<BeaconBlockEntity.BeamSegment> beamSegmentsToCheck;
+
+    @Unique
+    private boolean brokenBeam = false;
 
     @Unique
     @NotNull
@@ -85,12 +97,6 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Mutable
     @NotNull
     private PropertyDelegate propertyDelegate;
-
-    @Shadow
-    private int minY;
-
-    @Shadow
-    private List<BeaconBlockEntity.BeamSegment> beamSegmentsToCheck;
 
     @Unique
     private double beaconPoints = 0.0;
@@ -176,7 +182,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
-        if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
+        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
             return beacon.getPrimaryAmplifier() - 1;
         else
             return 0; // 0 = level 1
@@ -194,7 +200,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
 
         assert beacon != null;
-        if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(primaryEffect))
+        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
             return beacon.getPrimaryAmplifierPotent() - 1;
         else
             return 0;
@@ -208,7 +214,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
-        if (!BeaconOverhaulConfigManager.getConfig().getLevelOneStatusEffects().contains(secondaryEffect))
+        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(secondaryEffect))
             return beacon.getSecondaryAmplifier() - 1;
         else
             return 0;
@@ -238,7 +244,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     )
     private static StatusEffectInstance disableEffectParticles(StatusEffect type, int duration, int amplifier, boolean ambient,
                                                                boolean visible) {
-        return new StatusEffectInstance(type, duration, amplifier, ambient, BeaconOverhaulConfigManager.getConfig().getEffectParticles());
+        return new StatusEffectInstance(type, duration, amplifier, ambient, BeaconOverhaulConfigManager.getBeaconConfig()
+                .getEffectParticles());
     }
 
     @Inject(method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", at = @At("TAIL"))
@@ -364,13 +371,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public int getRange() {
-        return BeaconOverhaulConfigManager.getConfig().calculateRange(this.beaconPoints);
+        return BeaconOverhaulConfigManager.getBeaconConfig().calculateRange(this.beaconPoints);
     }
 
     @Unique
     @Override
     public int getDuration() {
-        return BeaconOverhaulConfigManager.getConfig().calculateDuration(this.beaconPoints);
+        return BeaconOverhaulConfigManager.getBeaconConfig().calculateDuration(this.beaconPoints);
     }
 
     @Unique
@@ -404,10 +411,10 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     }
 
     @Unique
-    @Nullable
+    @NotNull
     @Override
     public World getWorld() {
-        return this.world;
+        return Objects.requireNonNull(this.world);
     }
 
     @Unique
@@ -420,23 +427,34 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @NotNull
     @Override
-    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
-    public List<BeaconBlockEntity.BeamSegment> getBeamSegments() {
-        return this.beamSegments;
+    @SuppressWarnings({"AssignmentOrReturnOfFieldWithMutableType", "unchecked"})
+    public List<BeaconBeamSegment> getBeamSegments() {
+        return (List<BeaconBeamSegment>) (List<?>) this.beamSegments;
     }
 
     @Unique
     @NotNull
     @Override
-    public List<BeaconBlockEntity.BeamSegment> getBeamSegmentsToCheck() {
-        return this.beamSegmentsToCheck;
+    @SuppressWarnings({"AssignmentOrReturnOfFieldWithMutableType", "unchecked"})
+    public List<BeaconBeamSegment> getBeamSegmentsToCheck() {
+        return (List<BeaconBeamSegment>) (List<?>) this.beamSegmentsToCheck;
     }
 
     @Unique
     @Override
-    @SuppressWarnings("unchecked")
-    public void setBeamSegmentsToCheck(@NotNull List<? extends BeaconBlockEntity.BeamSegment> beamSegmentsToCheck) {
-        this.beamSegmentsToCheck = (List<BeaconBlockEntity.BeamSegment>) beamSegmentsToCheck;
+    @SuppressWarnings({"AssignmentOrReturnOfFieldWithMutableType", "unchecked"})
+    public void setBeamSegmentsToCheck(@NotNull List<BeaconBeamSegment> beamSegmentsToCheck) {
+        this.beamSegmentsToCheck = (List<BeaconBlockEntity.BeamSegment>) (List<?>) beamSegmentsToCheck;
+    }
+
+    @Override
+    public boolean getBrokenBeam() {
+        return this.brokenBeam;
+    }
+
+    @Override
+    public void setBrokenBeam(boolean brokenBeam) {
+        this.brokenBeam = brokenBeam;
     }
 
     @Override
@@ -452,19 +470,19 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public int getPrimaryAmplifier() {
-        return BeaconOverhaulConfigManager.getConfig().calculatePrimaryAmplifier(this.beaconPoints, false);
+        return BeaconOverhaulConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, false);
     }
 
     @Unique
     @Override
     public int getPrimaryAmplifierPotent() {
-        return BeaconOverhaulConfigManager.getConfig().calculatePrimaryAmplifier(this.beaconPoints, true);
+        return BeaconOverhaulConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, true);
     }
 
     @Unique
     @Override
     public int getSecondaryAmplifier() {
-        return BeaconOverhaulConfigManager.getConfig().calculateSecondaryAmplifier(this.beaconPoints);
+        return BeaconOverhaulConfigManager.getBeaconConfig().calculateSecondaryAmplifier(this.beaconPoints);
     }
 
     @Unique
@@ -489,6 +507,6 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public boolean canApplyEffect(@NotNull StatusEffect effect) {
-        return OverhauledBeaconBlockEntityKt.canApplyEffect(this, effect);
+        return OverhauledBeaconBlockEntityKt.testCanApplyEffect(this, effect);
     }
 }

@@ -29,7 +29,7 @@ public class LavenderStructuresMixin {
             remap = false
     )
     private static void loadStructure(CallbackInfo ci) {
-        int maxTier = BeaconOverhaulConfigManager.getConfig().getMaxBeaconLayers();
+        int maxTier = BeaconOverhaulConfigManager.getBeaconConfig().getMaxBeaconLayers();
 
         for (int tier = 0; tier < maxTier; tier++) {
             StructureTemplate template = LavenderStructuresKt.createBeaconStructureTemplate(tier + 1);

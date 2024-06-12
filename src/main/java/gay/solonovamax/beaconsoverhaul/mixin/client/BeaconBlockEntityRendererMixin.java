@@ -1,5 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
+import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.block.beacon.render.BeaconBlockEntityRendererKt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,11 +21,10 @@ public class BeaconBlockEntityRendererMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void render(BeaconBlockEntity beaconBlockEntity, float partialTicks, MatrixStack matrixStack, VertexConsumerProvider bufferIn,
+    private void render(BeaconBlockEntity beacon, float partialTicks, MatrixStack matrixStack, VertexConsumerProvider bufferIn,
                         int combinedLightIn, int combinedOverlayIn, CallbackInfo ci) {
-        boolean succeeded = BeaconBlockEntityRendererKt.render(beaconBlockEntity, partialTicks, matrixStack, bufferIn, combinedLightIn, combinedOverlayIn);
+        BeaconBlockEntityRendererKt.render((OverhauledBeacon) beacon, partialTicks, matrixStack, bufferIn, combinedLightIn, combinedOverlayIn);
 
-        if (succeeded)
-            ci.cancel();
+        ci.cancel();
     }
 }

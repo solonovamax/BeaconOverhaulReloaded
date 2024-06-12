@@ -1,5 +1,6 @@
 ```json
 {
+    "$schema":  "https://raw.githubusercontent.com/solonovamax/lavender/1.20.3/lavender-entry.json",
     "title":    "Beacon Base",
     "icon":     "minecraft:emerald_block",
     "category": "beaconoverhaul:beacon",
@@ -16,10 +17,11 @@ The beacon must not have any non-transparent blocks above it, in order to activa
 
 ;;;;;
 
-Beacons can have several tiers.
+Beacons have multiple tiers:
+
 The higher the tier, the more effects you gain access to.
 Constructing a larger beacon has the additional benefit of making your effects more powerful,
-through longer durations, and higher effect levels.
+through longer durations, higher effect levels, and a larger range.
 
 ;;;;;
 
