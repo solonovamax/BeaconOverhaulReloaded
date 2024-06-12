@@ -42,8 +42,6 @@ reach-entity-attributes = "2.4.0"
 
 arrp = "0.8.1"
 
-patchouli = "1.20.1-83-FABRIC"
-
 colormath = "3.3.3"
 
 owo = "0.11.2+1.20"
@@ -133,9 +131,6 @@ entityAttributes-reach = { group = "com.jamieswhiteshirt", name = "reach-entity-
 
 
 arrp = { group = "net.devtech", name = "arrp", version.ref = "arrp" }
-
-
-patchouli = { group = "vazkii.patchouli", name = "Patchouli", version.ref = "patchouli" }
 
 
 colormath = { group = "com.github.ajalt.colormath", name = "colormath-jvm", version.ref = "colormath" }

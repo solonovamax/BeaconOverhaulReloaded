@@ -147,10 +147,6 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation(libs.patchouli) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
-
     modImplementation(libs.lavender)
     modImplementation(libs.owo.lib)
     include(libs.owo.sentinel)
@@ -182,10 +178,8 @@ tasks {
                         "loader" to libs.versions.fabric.loader.get(),
                         "languageKotlin" to libs.versions.fabric.language.kotlin.get(),
                     ),
-                    "arrp" to libs.versions.arrp.get(),
                     "clothconfig" to libs.versions.cloth.config.get(),
                     "minecraft" to libs.versions.minecraft.get(),
-                    "reachEntityAttributes" to libs.versions.reach.entity.attributes.get(),
                     "silk" to libs.versions.silk.get(),
                     "owo" to libs.versions.owo.get(),
                     "lavender" to libs.versions.lavender.get(),

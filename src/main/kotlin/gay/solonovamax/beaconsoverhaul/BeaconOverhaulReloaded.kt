@@ -78,8 +78,6 @@ object BeaconOverhaulReloaded : ModInitializer {
             RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
         }
 
-        // PatchouliIntegration.writePatchouliBook(RESOURCE_PACK)
-
         RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
             resourcePacks.add(RESOURCE_PACK)
         }
@@ -87,14 +85,4 @@ object BeaconOverhaulReloaded : ModInitializer {
         RESOURCE_PACK.dump()
     }
 
-    // private fun loadPatchouliBook(resourcePack: RuntimeResourcePack) {
-    //     val fabricXplatMod = FabricXplatModContainer(modContainer)
-    //     val bookResourceSupplier = resourcePack.open(ResourceType.SERVER_DATA, PatchouliIntegration.PATCHOULI_BOOK_JSON)
-    //     if (bookResourceSupplier != null) {
-    //         logger.info { "Loading patchouli book" }
-    //         BookRegistry.INSTANCE.loadBook(fabricXplatMod, PatchouliIntegration.GUIDE_IDENTIFIER, bookResourceSupplier.get(), false)
-    //     } else {
-    //         logger.info { "Patchouli book could not be loaded" }
-    //     }
-    // }
 }
