@@ -82,12 +82,6 @@ nyx {
 
         accessWidener("beaconoverhaul")
 
-
-        additionalJvmArgs.addAll(
-            "-XX:+UseG1GC",
-            "-XX:+AllowEnhancedClassRedefinition",
-        )
-
         mixin {
             hotswapMixins = true
             verbose = true
