@@ -37,17 +37,20 @@ pipeline {
             }
         }
 
-        // TODO: publish to modrinth automatically on release
-        // stage('Deploy Release') {
-        //     when {
-        //         buildingTag()
-        //     }
-        //     steps {
-        //         withGradle {
-        //             sh './gradlew publish'
-        //         }
-        //     }
-        // }
+        stage('Deploy Release') {
+            when {
+                expression { env.TAG_NAME != null && env.TAG_NAME.matches('v\\d+\\.\\d+\\.\\d+') }
+            }
+            steps {
+                withCredentials([
+                        string(credentialsId: 'modrinth-publish-token', variable: 'ORG_GRADLE_PROJECT_modrinth.token'),
+                ]) {
+                    withGradle {
+                        sh './gradlew modrinth'
+                    }
+                }
+            }
+        }
     }
 
     post {

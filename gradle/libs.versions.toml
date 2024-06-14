@@ -11,6 +11,8 @@ minecraft = "1.20.1"
 
 loom = "1.6.11"
 
+minotaur = "2.8.7"
+
 fabric-loader = "0.15.11"
 fabric-api = "0.92.1+1.20.1"
 fabric-language-kotlin = "1.11.0+kotlin.2.0.0"
@@ -63,6 +65,8 @@ axion-release = { id = "pl.allegro.tech.build.axion-release", version.ref = "axi
 
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }
 quilt-loom = { id = "org.quiltmc.loom", version.ref = "loom" }
+
+minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 

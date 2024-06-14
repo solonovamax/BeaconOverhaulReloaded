@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import ca.solostudios.nyx.plugin.minecraft.NyxMinotaurExtension.VersionType
 import ca.solostudios.nyx.util.fabric
 import ca.solostudios.nyx.util.soloStudios
 import net.fabricmc.loom.task.RunGameTask
@@ -17,6 +18,8 @@ plugins {
     alias(libs.plugins.axion.release)
 
     alias(libs.plugins.nyx)
+
+    alias(libs.plugins.minotaur)
 }
 
 nyx {
@@ -87,6 +90,27 @@ nyx {
             verbose = true
 
             mixinRefmapName("beaconoverhaul")
+        }
+        minotaur {
+            versionType = if (isSnapshot) VersionType.ALPHA else VersionType.BETA
+            projectId = "beacon-overhaul-reloaded"
+            detectLoaders = true
+            dependencies {
+                required("fabric-api")
+                required("fabric-language-kotlin")
+                required("cloth-config")
+                required("lavender")
+                required("owo-lib")
+
+                embedded("silk")
+                embedded("arrp")
+
+                optional("modmenu")
+
+                optional("emi")
+                optional("rei")
+                optional("jei")
+            }
         }
     }
 }
@@ -196,3 +220,6 @@ tasks {
         dependsOn(runDatagen)
     }
 }
+
+val Project.isSnapshot: Boolean
+    get() = version.toString().endsWith("-SNAPSHOT")
