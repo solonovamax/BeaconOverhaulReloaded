@@ -1,7 +1,8 @@
 [versions]
 kotlin = "2.0.0"
 kotlinx-serialization = "1.6.3"
-ksp = "2.0.0-1.0.21"
+kotlinx-coroutines = "1.8.1"
+ksp = "2.0.0-1.0.22"
 
 nyx = "0.2.0-SNAPSHOT"
 
@@ -9,18 +10,18 @@ axion-release = "1.17.2"
 
 minecraft = "1.20.1"
 
-loom = "1.6.11"
+loom = "1.7.1"
 
 minotaur = "2.8.7"
 
 fabric-loader = "0.15.11"
-fabric-api = "0.92.1+1.20.1"
+fabric-api = "0.92.2+1.20.1"
 fabric-language-kotlin = "1.11.0+kotlin.2.0.0"
 fabric-yarn = "1.20.1+build.10"
 
 quilt-mappings = "1.20.1+build.23"
 
-slf4k = "0.5.1"
+slf4k = "0.5.3"
 
 guava-kotlin = "0.1.2"
 
@@ -28,7 +29,9 @@ cloth-config = "11.1.118"
 
 modmenu = "7.2.2"
 
-mixin = "0.13.4+mixin.0.8.5"
+yacl = "3.5.0+1.20.1-fabric"
+
+mixin = "0.14.0+mixin.0.8.6"
 
 shadow = "7.1.2"
 
@@ -38,20 +41,23 @@ silk = "1.10.1"
 
 json5k = "0.3.0"
 
-paralithic = "0.7.1"
+paralithic = "0.8.0-fma-merged-dev"
 
 reach-entity-attributes = "2.4.0"
 
 arrp = "0.8.1"
 
-colormath = "3.3.3"
+colormath = "3.5.0"
 
 owo = "0.11.2+1.20"
 lavender = "0.1.9+1.20"
 
+azurelib = "2.0.32-alpha"
+geckolib = "4.4.7"
+
 emi = "1.1.6+1.20.1"
 rei = "12.1.725"
-jei = "15.3.0.4"
+jei = "15.3.0.8"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -75,9 +81,12 @@ shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 # Kotlin stdlib
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-hocon = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json5k = { group = "io.github.xn32", name = "json5k", version.ref = "json5k" }
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-slf4j = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version.ref = "kotlinx-coroutines" }
 
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
@@ -99,6 +108,7 @@ guava-kotlin = { group = "ca.solo-studios", name = "guava-kotlin", version.ref =
 
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
+yacl = { group = "dev.isxander", name = "yet-another-config-lib", version.ref = "yacl" }
 
 
 # Sponge Mixin
@@ -128,7 +138,7 @@ silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "sil
 silk-persistence = { group = "net.silkmc", name = "silk-persistence", version.ref = "silk" }
 
 
-paralithic = { group = "com.dfsek", name = "paralithic", version.ref = "paralithic" }
+paralithic = { group = "gay.solonovamax", name = "paralithic", version.ref = "paralithic" }
 
 
 entityAttributes-reach = { group = "com.jamieswhiteshirt", name = "reach-entity-attributes", version.ref = "reach-entity-attributes" }
@@ -145,6 +155,13 @@ owo-sentinel = { group = "io.wispforest", name = "owo-sentinel", version.ref = "
 lavender = { group = "io.wispforest", name = "lavender", version.ref = "lavender" }
 
 
+azurelib-fabric = { group = "mod.azure.azurelib", name = "azurelib-fabric-1.20.1", version.ref = "azurelib" }
+azurelib-common = { group = "mod.azure.azurelib", name = "azurelib-common-1.20.1", version.ref = "azurelib" }
+
+geckolib-fabric = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.20.1", version.ref = "geckolib" }
+#geckolib-common = { group = "software.bernie.geckolib", name = "geckolib-common-1.20.1", version.ref = "geckolib" }
+
+
 emi = { group = "dev.emi", name = "emi-fabric", version.ref = "emi" }
 
 rei-api-fabric = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "rei" }
@@ -153,6 +170,11 @@ rei-default-plugin-fabric = { group = "me.shedaniel", name = "RoughlyEnoughItems
 jei-fabric = { group = "mezz.jei", name = "jei-1.20.1-fabric", version.ref = "jei" }
 
 [bundles]
+kotlinx-coroutines = [
+    "kotlinx-coroutines-core",
+    "kotlinx-coroutines-slf4j"
+]
+
 cloud = [
     "cloud-core",
     "cloud-annotations",

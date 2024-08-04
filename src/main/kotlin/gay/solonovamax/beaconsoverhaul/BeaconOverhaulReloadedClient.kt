@@ -1,5 +1,6 @@
 package gay.solonovamax.beaconsoverhaul
 
+import gay.solonovamax.beaconsoverhaul.integration.azurelib.RotationToCameraFunction
 import gay.solonovamax.beaconsoverhaul.register.LavenderRegistration
 import gay.solonovamax.beaconsoverhaul.register.OwoUIRegistration
 import gay.solonovamax.beaconsoverhaul.register.RenderLayerRegistration
@@ -9,17 +10,17 @@ import gay.solonovamax.beaconsoverhaul.screen.OverhauledConduitScreen
 import net.fabricmc.api.ClientModInitializer
 import org.slf4j.kotlin.debug
 import org.slf4j.kotlin.getLogger
+import software.bernie.geckolib.core.molang.MolangParser
 
 object BeaconOverhaulReloadedClient : ClientModInitializer {
     private val logger by getLogger()
 
     override fun onInitializeClient() {
         ScreenHandlerRegistry.registerClient()
-        RenderLayerRegistration.register()
+        RenderLayerRegistration.registerClient()
 
-        LavenderRegistration.register()
-        OwoUIRegistration.register()
-
+        LavenderRegistration.registerClient()
+        OwoUIRegistration.registerClient()
 
         BeaconOverhaulReloaded.updateBeaconPacket.receiveOnClient { beaconData, context ->
             val currentScreen = context.client.currentScreen
@@ -36,5 +37,7 @@ object BeaconOverhaulReloadedClient : ClientModInitializer {
                 currentScreen.screenHandler.data = conduitData
             }
         }
+
+        MolangParser.INSTANCE.functions["query.rotation_to_camera"] = RotationToCameraFunction::class.java
     }
 }

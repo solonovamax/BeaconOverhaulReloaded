@@ -1,0 +1,8 @@
+{
+    "prefix":       "guidebook.beaconoverhauled",
+    "translations": {
+        "structure_component.layer_checkbox":      "Toggle showing layers below current layer",
+        "beacon_structure_component.tier_label":   "Beacon Tier",
+        "beacon_structure_component.tier_tooltip": "Tier: %d"
+    }
+}

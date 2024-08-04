@@ -1,0 +1,7 @@
+{
+    "prefix":       "structure.beaconoverhaul",
+    "translations": {
+        "beacon":  "Tier %s Beacon",
+        "conduit": "Tier %s Conduit"
+    }
+}

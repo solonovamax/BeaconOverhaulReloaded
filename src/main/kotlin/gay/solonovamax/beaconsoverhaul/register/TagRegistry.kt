@@ -7,8 +7,8 @@ import net.minecraft.registry.tag.TagKey
 /**
  * Okay, technically tags aren't added to a registry, but whatever.
  */
-object TagRegistry {
+object TagRegistry : CommonRegistration {
     val BEACON_TRANSPARENT = TagKey.of(RegistryKeys.BLOCK, identifierOf("beacon_transparent"))
 
-    fun register() {}
+    override fun register() {}
 }

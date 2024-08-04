@@ -2,7 +2,7 @@ package gay.solonovamax.beaconsoverhaul
 
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
 import gay.solonovamax.beaconsoverhaul.block.conduit.data.OverhauledConduitData
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.register.BlockRegistry
 import gay.solonovamax.beaconsoverhaul.register.CriterionRegistry
 import gay.solonovamax.beaconsoverhaul.register.ItemGroupRegistry
@@ -55,15 +55,14 @@ object BeaconOverhaulReloaded : ModInitializer {
             // add the status effects a bit later in the lifecycle
             addStatusEffectsToBeacon()
         }
-        println("conduit config = ${BeaconOverhaulConfigManager.conduitConfig}")
     }
 
     private fun addStatusEffectsToBeacon() {
         val effectsByLevel = arrayOf(
-            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierOne.toTypedArray(),
-            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierTwo.toTypedArray(),
-            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierThree.toTypedArray(),
-            BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects.toTypedArray(),
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierOne.toTypedArray(),
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo.toTypedArray(),
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierThree.toTypedArray(),
+            ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects.toTypedArray(),
         )
 
         BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel
@@ -72,7 +71,7 @@ object BeaconOverhaulReloaded : ModInitializer {
 
     private fun createRuntimeResourcepack() {
         val beaconBaseBlocksTag = JTag().apply {
-            for (block in BeaconOverhaulConfigManager.beaconConfig.beaconBaseBlocks)
+            for (block in ConfigManager.beaconConfig.beaconBaseBlocks)
                 add(block.id)
 
             RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)

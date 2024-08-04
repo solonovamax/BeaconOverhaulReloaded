@@ -1,9 +1,7 @@
 package gay.solonovamax.beaconsoverhaul.util
 
-import net.minecraft.advancement.Advancement
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
-import java.util.function.Consumer
 
 fun ServerPlayerEntity.grantAdvancement(id: Identifier) {
     val tracker = advancementTracker
@@ -31,8 +29,4 @@ fun ServerPlayerEntity.hasAdvancement(id: Identifier): Boolean {
     val progress = tracker.getProgress(advancement)
 
     return progress.isDone
-}
-
-fun Advancement.Builder.build(exporter: Consumer<Advancement>, id: Identifier): Advancement {
-    return build(id).apply { exporter.accept(this) }
 }

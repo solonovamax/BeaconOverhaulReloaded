@@ -6,8 +6,8 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import gay.solonovamax.beaconsoverhaul.util.contains
-import gay.solonovamax.beaconsoverhaul.util.flatten
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
+import io.wispforest.lavender.structure.BlockStatePredicate.MatchCategory
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonArray
@@ -18,20 +18,24 @@ import kotlinx.serialization.json.putJsonObject
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
-import net.minecraft.command.argument.BlockArgumentParser
 import net.minecraft.registry.Registries
 import net.minecraft.registry.entry.RegistryEntryList
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.state.property.Property
 import net.minecraft.util.Identifier
 import net.minecraft.util.JsonHelper
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3i
+import net.minecraft.world.World
+import net.silkmc.silk.core.math.vector.minus
+import net.silkmc.silk.core.math.vector.plus
 import io.wispforest.lavender.structure.BlockStatePredicate as LavenderBlockStatePredicate
-import io.wispforest.lavender.structure.StructureTemplate as LavenderStructureTemplate
 
 
 @JvmField
 val EMPTY_STRUCTURE_TEMPLATE = LavenderStructureTemplate(identifierOf("empty"), arrayOf(), 0, 0, 0, Vec3i.ZERO)
+
+fun beaconStructureIdentifier(tier: Int) = identifierOf("beacon/tier_$tier")
 
 fun createBeaconStructureTemplate(tier: Int): LavenderStructureTemplate {
     val size = tier * 2 + 1
@@ -72,15 +76,13 @@ fun createBeaconStructureTemplate(tier: Int): LavenderStructureTemplate {
         }
     }.toString()
 
-    return LavenderStructureTemplate.parse(beaconStructureIdentifier(tier), JsonParser.parseString(jsonString).asJsonObject)
+    return parseStructureTemplate(beaconStructureIdentifier(tier), JsonParser.parseString(jsonString).asJsonObject)
 }
 
-
-fun beaconStructureIdentifier(tier: Int) = identifierOf("structure_gen/beacon/$tier")
-
+@Suppress("UNCHECKED_CAST")
 fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderStructureTemplate {
     val keyObject = JsonHelper.getObject(json, "keys")
-    val keys = Char2ObjectOpenHashMap<LavenderBlockStatePredicate>()
+    val keys = Char2ObjectOpenHashMap<BlockStatePredicate>()
     var anchor: Vec3i? = null
 
     for ((k, predicate) in keyObject.entrySet()) {
@@ -102,21 +104,37 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
                 predicate.isJsonArray -> {
                     predicate as JsonArray
                     val predicates = predicate.map { nested ->
-                        BlockArgumentParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, nested.asString, false).mapLeft {
-                            LavenderBlockPredicate(it.blockState, it.properties)
-                        }.mapRight {
-                            LavenderTagStatePredicate(it.tag as RegistryEntryList.Named<Block>, it.vagueProperties)
-                        }.flatten()
+                        when (val result = StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, nested.asString)) {
+                            is StructureBlockParser.BlockResult -> {
+                                LavenderBlockPredicate(result.blockState, result.properties)
+                            }
+
+                            is StructureBlockParser.TagResult -> {
+                                LavenderTagStatePredicate(result.tag, result.vagueProperties)
+                            }
+
+                            is StructureBlockParser.AnyBlockResult -> {
+                                LavenderFuzzyBlockPredicate(result.previewState, result.vagueProperties)
+                            }
+                        }
                     }
                     keys[key] = LavenderNestedBlockStatePredicate(predicates)
                 }
 
                 predicate.isJsonPrimitive -> {
-                    keys[key] = BlockArgumentParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, predicate.asString, false).mapLeft {
-                        LavenderBlockPredicate(it.blockState, it.properties)
-                    }.mapRight {
-                        LavenderTagStatePredicate(it.tag as RegistryEntryList.Named<Block>, it.vagueProperties)
-                    }.flatten()
+                    keys[key] = when (val result = StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, predicate.asString)) {
+                        is StructureBlockParser.BlockResult -> {
+                            LavenderBlockPredicate(result.blockState, result.properties)
+                        }
+
+                        is StructureBlockParser.TagResult -> {
+                            LavenderTagStatePredicate(result.tag, result.vagueProperties)
+                        }
+
+                        is StructureBlockParser.AnyBlockResult -> {
+                            LavenderFuzzyBlockPredicate(result.previewState, result.vagueProperties)
+                        }
+                    }
                 }
             }
         } catch (e: CommandSyntaxException) {
@@ -152,11 +170,11 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
         }
     }
 
-    val result = arrayOfNulls<Array<Array<LavenderBlockStatePredicate>>>(xSize) as Array<Array<Array<LavenderBlockStatePredicate>>>
+    val result = arrayOfNulls<Array<Array<BlockStatePredicate>>>(xSize) as Array<Array<Array<BlockStatePredicate>>>
     for (x in 0 until xSize) {
-        result[x] = arrayOfNulls<Array<LavenderBlockStatePredicate>>(ySize) as Array<Array<LavenderBlockStatePredicate>>
+        result[x] = arrayOfNulls<Array<BlockStatePredicate>>(ySize) as Array<Array<BlockStatePredicate>>
         for (y in 0 until ySize) {
-            result[x][y] = arrayOfNulls<LavenderBlockStatePredicate>(zSize) as Array<LavenderBlockStatePredicate>
+            result[x][y] = arrayOfNulls<BlockStatePredicate>(zSize) as Array<BlockStatePredicate>
         }
     }
 
@@ -178,9 +196,9 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
                         keys[key]
                     }
 
-                    key == ' ' -> LavenderBlockStatePredicate.NULL_PREDICATE
+                    key == ' ' -> NULL_PREDICATE
 
-                    key == '_' -> LavenderBlockStatePredicate.AIR_PREDICATE
+                    key == '_' -> AIR_PREDICATE
 
                     else -> throw JsonParseException("Unknown key '$key'")
                 }
@@ -191,6 +209,57 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
     }
 
     return LavenderStructureTemplate(resourceId, result, xSize, ySize, zSize, anchor)
+}
+
+fun LavenderStructureTemplate.tryPlaceNextMatching(state: BlockState, pos: BlockPos, world: World): Boolean {
+    val realPos = BlockPos.Mutable()
+    for ((predicate, localPos) in this) {
+        realPos.set(pos + localPos - anchor)
+
+        if (predicate.test(state) != LavenderBlockStatePredicate.Result.STATE_MATCH)
+            continue
+
+        val currentState = world.getBlockState(realPos)
+
+        if (predicate.test(currentState) == LavenderBlockStatePredicate.Result.STATE_MATCH)
+            continue
+
+        world.setBlockState(realPos, state)
+        return true
+    }
+    return false
+}
+
+val NULL_PREDICATE: BlockStatePredicate = object : BlockStatePredicate {
+    override val previewStates: List<BlockState> = listOf()
+
+    override fun preview(): BlockState {
+        return Blocks.AIR.defaultState
+    }
+
+    override fun test(blockState: BlockState?): LavenderBlockStatePredicate.Result {
+        return LavenderBlockStatePredicate.Result.STATE_MATCH
+    }
+
+    override fun isOf(type: MatchCategory): Boolean {
+        return type == MatchCategory.ANY || type == MatchCategory.NULL
+    }
+}
+
+val AIR_PREDICATE: BlockStatePredicate = object : BlockStatePredicate {
+    override val previewStates: List<BlockState> = listOf(Blocks.AIR.defaultState)
+
+    override fun preview(): BlockState {
+        return Blocks.AIR.defaultState
+    }
+
+    override fun test(blockState: BlockState): LavenderBlockStatePredicate.Result {
+        return if (blockState.isAir) LavenderBlockStatePredicate.Result.STATE_MATCH else LavenderBlockStatePredicate.Result.NO_MATCH
+    }
+
+    override fun isOf(type: MatchCategory): Boolean {
+        return type == MatchCategory.ANY || type == MatchCategory.NON_NULL || type == MatchCategory.AIR
+    }
 }
 
 interface BlockStatePredicate : LavenderBlockStatePredicate {
@@ -235,11 +304,6 @@ data class LavenderBlockPredicate(
     val state: BlockState,
     val properties: Map<Property<*>, Comparable<*>> = mapOf(),
 ) : BlockStatePredicate {
-    constructor(
-        block: Block,
-        properties: Map<Property<*>, Comparable<*>> = mapOf(),
-    ) : this(block.defaultState, properties)
-
     override val previewStates: List<BlockState> = listOf(state)
 
     override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
@@ -255,42 +319,22 @@ data class LavenderBlockPredicate(
     }
 }
 
-data class LavenderBlocksPredicate(
-    val blocks: List<Block>,
+data class LavenderFuzzyBlockPredicate(
+    val state: BlockState,
     val vagueProperties: Map<String, String> = mapOf(),
 ) : BlockStatePredicate {
-    override val previewStates: List<BlockState> = buildList {
-        for (block in blocks) {
-            var state = block.defaultState
-
-            for ((vagueProperty, value) in vagueProperties.entries) {
-                @Suppress("UNCHECKED_CAST")
-                val prop = block.stateManager.getProperty(vagueProperty) as Property<Comparable<Any>>? ?: continue
-
-                val parsedValue = prop.parse(value)
-                if (parsedValue.isEmpty)
-                    continue
-
-                state = state.with(prop, parsedValue.get())
-            }
-
-            add(state)
-        }
-    }
+    override val previewStates: List<BlockState> = listOf(state)
 
     override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
-        if (state.block !in blocks)
-            return LavenderBlockStatePredicate.Result.NO_MATCH
+        for ((vagueProperty, value) in vagueProperties.entries) {
+            val prop = state.block.stateManager.getProperty(vagueProperty) ?: return LavenderBlockStatePredicate.Result.NO_MATCH
 
-        for (propAndValue in vagueProperties.entries) {
-            val prop = state.block.stateManager.getProperty(propAndValue.key) ?: return LavenderBlockStatePredicate.Result.BLOCK_MATCH
-
-            val expected = prop.parse(propAndValue.value)
+            val expected = prop.parse(value)
             if (expected.isEmpty)
-                return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+                return LavenderBlockStatePredicate.Result.NO_MATCH
 
             if (state[prop] != expected.get())
-                return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+                return LavenderBlockStatePredicate.Result.NO_MATCH
         }
 
         return LavenderBlockStatePredicate.Result.STATE_MATCH

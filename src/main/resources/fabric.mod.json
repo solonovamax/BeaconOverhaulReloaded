@@ -8,20 +8,21 @@
     "icon":          "pack.png",
     "accessWidener": "beaconoverhaul.accesswidener",
     "depends":       {
-        "cloth-config":            ">=${versions.clothconfig}",
-        "fabric-api":              ">=${versions.fabric.api}",
-        "fabric-language-kotlin":  ">=${versions.fabric.languageKotlin}",
-        "fabricloader":            ">=${versions.fabric.loader}",
-        "java":                    ">=17",
-        "minecraft":               "~${versions.minecraft}",
-        "silk-core":               ">=${versions.silk}",
-        "silk-game":               ">=${versions.silk}",
-        "silk-igui":               ">=${versions.silk}",
-        "silk-nbt":                ">=${versions.silk}",
-        "silk-network":            ">=${versions.silk}",
-        "silk-persistence":        ">=${versions.silk}",
-        "owo":                     ">=${versions.owo}",
-        "lavender":                ">=${versions.lavender}"
+        "cloth-config":              ">=${versions.clothconfig}",
+        "fabric-api":                ">=${versions.fabric.api}",
+        "fabric-language-kotlin":    ">=${versions.fabric.languageKotlin}",
+        "fabricloader":              ">=${versions.fabric.loader}",
+        "java":                      ">=17",
+        "minecraft":                 "~${versions.minecraft}",
+        "silk-core":                 ">=${versions.silk}",
+        "silk-game":                 ">=${versions.silk}",
+        "silk-igui":                 ">=${versions.silk}",
+        "silk-nbt":                  ">=${versions.silk}",
+        "silk-network":              ">=${versions.silk}",
+        "silk-persistence":          ">=${versions.silk}",
+        "owo":                       ">=${versions.owo}",
+        "lavender":                  ">=${versions.lavender}",
+        "yet_another_config_lib_v3": "*"
     },
     "suggests":      {
         "emi":                "^1.0.0",
@@ -44,7 +45,13 @@
         "fabric-datagen": [
             {
                 "adapter": "kotlin",
-                "value":   "gay.solonovamax.beaconsoverhaul.datagen.BeaconOverhaulReloadedDataGenerator"
+                "value": "gay.solonovamax.beaconsoverhaul.datagen.BeaconOverhaulReloadedDataGenerator"
+            }
+        ],
+        "modmenu":        [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.integration.modmenu.BeaconOverhaulModMenuIntegration"
             }
         ],
         "emi":            [

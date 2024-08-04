@@ -1,6 +1,8 @@
 package gay.solonovamax.beaconsoverhaul.util
 
-import net.fabricmc.loader.api.FabricLoader
 import java.nio.file.Path
+import net.fabricmc.loader.api.FabricLoader as RealFabricLoader
 
-fun FabricLoader.configDir(name: String): Path = configDir.resolve(name)
+object FabricLoader : RealFabricLoader by RealFabricLoader.getInstance() {
+    fun configDir(name: String): Path = configDir.resolve(name)
+}

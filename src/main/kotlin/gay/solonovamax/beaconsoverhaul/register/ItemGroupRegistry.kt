@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks
 import net.minecraft.registry.Registries
 import net.minecraft.text.Text
 
-object ItemGroupRegistry {
+object ItemGroupRegistry : CommonRegistration {
     val ITEM_GROUP = FabricItemGroup.builder()
         .icon { Blocks.BEACON.asItem().defaultStack }
         .displayName(Text.translatable("itemGroup.$NAMESPACE"))
@@ -16,10 +16,13 @@ object ItemGroupRegistry {
             entries.add(Blocks.BEACON)
             // entries.add(BlockRegistry.CORRUPTED_BEACON)
             entries.add(Blocks.CONDUIT)
+
+            entries.add(BlockRegistry.PRISMARINE_BRICK_WALL)
+            entries.add(BlockRegistry.DARK_PRISMARINE_WALL)
         }
         .build()
 
-    fun register() {
+    override fun register() {
         Registries.ITEM_GROUP.register(identifierOf("itemgroup"), ITEM_GROUP)
     }
 }

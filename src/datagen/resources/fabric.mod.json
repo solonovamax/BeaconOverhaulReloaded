@@ -1,0 +1,16 @@
+{
+    "schemaVersion": 1,
+    "id":            "beaconoverhaul-datagen",
+    "version":       "${version}",
+    "entrypoints":   {
+        "fabric-datagen": [
+            {
+                "adapter": "kotlin",
+                "value":   "gay.solonovamax.beaconsoverhaul.datagen.BeaconOverhaulReloadedDataGenerator"
+            }
+        ]
+    },
+    "mixins":        [
+        "mixins/beaconoverhaul/mixins.datagen.json"
+    ]
+}

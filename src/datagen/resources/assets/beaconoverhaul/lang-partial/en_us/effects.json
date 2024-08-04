@@ -1,0 +1,9 @@
+{
+    "prefix":       "effect.beaconoverhaul",
+    "translations": {
+        "long_reach":             "Long Reach",
+        "nutrition":              "Nutrition",
+        "long_reach.description": "Increases the reach distance of the player",
+        "nutrition.description":  "Slowly replenishes the hunger bar of the player"
+    }
+}

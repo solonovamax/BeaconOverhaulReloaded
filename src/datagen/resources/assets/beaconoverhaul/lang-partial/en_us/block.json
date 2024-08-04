@@ -1,0 +1,12 @@
+{
+    "prefix":       "block.beaconoverhaul",
+    "translations": {
+        "beacon.points":              "Points:",
+        "beacon.range":               "Range:",
+        "beacon.duration":            "Duration:",
+        "corrupted_beacon":           "Corrupted Beacon",
+        "prismarine_brick_wall":      "Prismarine Brick Wall",
+        "dark_prismarine_wall":       "Dark Prismarine Wall",
+        "fake_wither_skeleton_skull": "Fake Wither Skeleton Skull Block (internal use only)"
+    }
+}

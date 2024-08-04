@@ -8,7 +8,7 @@ import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeaconPropertyDelegate;
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment;
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.OverhauledBeaconBlockEntityKt;
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager;
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager;
 import kotlinx.datetime.Instant;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.Block;
@@ -182,7 +182,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
-        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
+        if (!ConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
             return beacon.getPrimaryAmplifier() - 1;
         else
             return 0; // 0 = level 1
@@ -200,7 +200,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
 
         assert beacon != null;
-        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
+        if (!ConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(primaryEffect))
             return beacon.getPrimaryAmplifierPotent() - 1;
         else
             return 0;
@@ -214,7 +214,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         OverhauledBeacon beacon = (OverhauledBeacon) world.getBlockEntity(pos);
         assert beacon != null;
 
-        if (!BeaconOverhaulConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(secondaryEffect))
+        if (!ConfigManager.getBeaconConfig().getLevelOneStatusEffects().contains(secondaryEffect))
             return beacon.getSecondaryAmplifier() - 1;
         else
             return 0;
@@ -244,7 +244,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     )
     private static StatusEffectInstance disableEffectParticles(StatusEffect type, int duration, int amplifier, boolean ambient,
                                                                boolean visible) {
-        return new StatusEffectInstance(type, duration, amplifier, ambient, BeaconOverhaulConfigManager.getBeaconConfig()
+        return new StatusEffectInstance(type, duration, amplifier, ambient, ConfigManager.getBeaconConfig()
                 .getEffectParticles());
     }
 
@@ -371,13 +371,13 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public int getRange() {
-        return BeaconOverhaulConfigManager.getBeaconConfig().calculateRange(this.beaconPoints);
+        return ConfigManager.getBeaconConfig().calculateRange(this.beaconPoints);
     }
 
     @Unique
     @Override
     public int getDuration() {
-        return BeaconOverhaulConfigManager.getBeaconConfig().calculateDuration(this.beaconPoints);
+        return ConfigManager.getBeaconConfig().calculateDuration(this.beaconPoints);
     }
 
     @Unique
@@ -470,19 +470,19 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public int getPrimaryAmplifier() {
-        return BeaconOverhaulConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, false);
+        return ConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, false);
     }
 
     @Unique
     @Override
     public int getPrimaryAmplifierPotent() {
-        return BeaconOverhaulConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, true);
+        return ConfigManager.getBeaconConfig().calculatePrimaryAmplifier(this.beaconPoints, true);
     }
 
     @Unique
     @Override
     public int getSecondaryAmplifier() {
-        return BeaconOverhaulConfigManager.getBeaconConfig().calculateSecondaryAmplifier(this.beaconPoints);
+        return ConfigManager.getBeaconConfig().calculateSecondaryAmplifier(this.beaconPoints);
     }
 
     @Unique

@@ -7,7 +7,7 @@ import net.minecraft.text.Text
 
 abstract class OverhauledScreen<D, T : OverhauledScreenHandler<D>>(
     handler: T,
-    inventory: PlayerInventory?,
+    inventory: PlayerInventory,
     title: Text,
 ) : HandledScreen<T>(handler, inventory, title) {
     val data: D
@@ -38,7 +38,6 @@ abstract class OverhauledScreen<D, T : OverhauledScreenHandler<D>>(
     }
 
     final override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackground(context)
         super.render(context, mouseX, mouseY, delta)
         with(context) {
             drawMouseoverTooltip(mouseX, mouseY)

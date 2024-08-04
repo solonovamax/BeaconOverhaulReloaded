@@ -1,0 +1,7 @@
+{
+    "prefix":       "advancements.nether.beaconoverhaul",
+    "translations": {
+        "redirect_beacon.title":       "See The Lights",
+        "redirect_beacon.description": "Redirect a Beacon beam's direction using Amethyst Clusters"
+    }
+}

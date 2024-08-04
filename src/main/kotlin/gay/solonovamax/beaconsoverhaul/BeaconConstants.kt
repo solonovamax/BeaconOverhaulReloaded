@@ -1,14 +1,11 @@
 package gay.solonovamax.beaconsoverhaul
 
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconBlockExpression
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconEffectAmplifierExpression
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconModifierExpression
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhauledConfig.BeaconTierEffects
+import gay.solonovamax.beaconsoverhaul.config.BeaconConfig
+import gay.solonovamax.beaconsoverhaul.config.BeaconConfig.BeaconTierEffects
 import gay.solonovamax.beaconsoverhaul.config.ConduitConfig
+import gay.solonovamax.beaconsoverhaul.config.ConduitConfig.ConduitExpression
 import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry
 import gay.solonovamax.beaconsoverhaul.util.id
-import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.minecraft.block.Blocks
 import net.minecraft.entity.effect.StatusEffects
 import kotlin.time.Duration.Companion.seconds
@@ -172,22 +169,22 @@ object BeaconConstants {
     //
     // xps:block_soul_copper
 
-    val DEFAULT_BEACON_CONFIG = BeaconOverhauledConfig(
+    val DEFAULT_BEACON_CONFIG = BeaconConfig(
         additionModifiers = mapOf(
-            identifierOf("minecraft:copper_block") to "(blocks)^0.45 * 2",
-            identifierOf("minecraft:iron_block") to "(blocks)^0.6 * 2",
-            identifierOf("minecraft:gold_block") to "(blocks)^0.95 * 0.5",
-            identifierOf("minecraft:amethyst_block") to "min(blocks, 8) * 8",
-            identifierOf("minecraft:emerald_block") to "(blocks)^0.95",
-            identifierOf("minecraft:diamond_block") to "(blocks)^0.75 * 5",
-        ).map { it.key to BeaconBlockExpression(it.value) }.toMap(),
+            Blocks.COPPER_BLOCK.id to "(blocks)^0.45 * 2",
+            Blocks.IRON_BLOCK.id to "(blocks)^0.6 * 2",
+            Blocks.GOLD_BLOCK.id to "(blocks)^0.95 * 0.5",
+            Blocks.AMETHYST_BLOCK.id to "min(blocks, 8) * 8",
+            Blocks.EMERALD_BLOCK.id to "(blocks)^0.95",
+            Blocks.DIAMOND_BLOCK.id to "(blocks)^0.75 * 5",
+        ),
         multiplicationModifiers = mapOf(
-            Blocks.NETHERITE_BLOCK to "1 + (blocks * 0.05)",
-        ).map { it.key.id to BeaconBlockExpression(it.value) }.toMap(),
-        range = BeaconModifierExpression("min(10 + pts * 2, 4096)"),
-        duration = BeaconModifierExpression("10 + pts / 15"),
-        primaryAmplifier = BeaconEffectAmplifierExpression("if(pts > 256, if(pts > 512, 3, 2), 1) + isPotent"),
-        secondaryAmplifier = BeaconEffectAmplifierExpression("1"),
+            Blocks.NETHERITE_BLOCK.id to "1 + (blocks * 0.05)",
+        ),
+        range = "min(10 + pts * 2, 4096)",
+        duration = "10 + pts / 15",
+        primaryAmplifier = "if(pts > 256, if(pts > 512, 3, 2), 1) + isPotent",
+        secondaryAmplifier = "1",
         maxBeaconLayers = 6,
         levelOneStatusEffects = listOf(
             StatusEffects.FIRE_RESISTANCE,
@@ -227,6 +224,7 @@ object BeaconConstants {
     )
 
     val DEFAULT_CONDUIT_CONFIG = ConduitConfig(
-        test = true
+        effectParticles = false,
+        range = ConduitExpression("1")
     )
 }

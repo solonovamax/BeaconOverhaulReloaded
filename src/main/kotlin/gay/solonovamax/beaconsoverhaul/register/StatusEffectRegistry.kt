@@ -1,7 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.register
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes
-import gay.solonovamax.beaconsoverhaul.effects.ConduitTestingEffect
 import gay.solonovamax.beaconsoverhaul.effects.NutritionStatusEffect
 import gay.solonovamax.beaconsoverhaul.effects.ReachStatusEffect
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
@@ -9,7 +8,7 @@ import gay.solonovamax.beaconsoverhaul.util.register
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.registry.Registries
 
-object StatusEffectRegistry {
+object StatusEffectRegistry : CommonRegistration {
     @JvmField
     val LONG_REACH = ReachStatusEffect().also { reachEffect ->
         reachEffect.addAttributeModifier(
@@ -25,12 +24,9 @@ object StatusEffectRegistry {
     @JvmField
     val NUTRITION = NutritionStatusEffect()
 
-    @JvmField
-    val CONDUIT_TESTING_EFFECT = ConduitTestingEffect()
-
-    fun register() {
+    override fun register() {
         Registries.STATUS_EFFECT.register(identifierOf("long_reach"), LONG_REACH)
         Registries.STATUS_EFFECT.register(identifierOf("nutrition"), NUTRITION)
-        Registries.STATUS_EFFECT.register(identifierOf("conduit_testing_effect"), CONDUIT_TESTING_EFFECT)
+        // Registries.STATUS_EFFECT.register(identifierOf("conduit_testing_effect"), CONDUIT_TESTING_EFFECT)
     }
 }

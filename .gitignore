@@ -55,6 +55,8 @@ replay_pid*
 hs_err_pid*
 replay_pid*
 
+.kotlin/
+
 ### VisualStudioCode template
 .vscode/*
 
@@ -69,7 +71,7 @@ replay_pid*
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
-.idea/**
+.idea/
 
 # CMake
 cmake-build-*/

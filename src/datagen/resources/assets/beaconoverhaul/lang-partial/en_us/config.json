@@ -1,0 +1,157 @@
+{
+    "prefix":       "yacl3.config.beaconoverhaul",
+    "translations": {
+        "category": {
+            "beacon":  {
+                "_":     "Beacon Config",
+                "group": {
+                    "expressions": {
+                        "_":      "Expressions",
+                        "option": {
+                            "range":               {
+                                "_":             "Range",
+                                "description.1": "The expression to calculate the range of the beacon",
+                                "description.2": [
+                                    "Variables:\n",
+                                    "- ", { "text": "pts", "color": "dark_gray" }, ": the points of the associated beacon."
+                                ]
+                            },
+                            "duration":            {
+                                "_":             "Duration",
+                                "description.1": "The expression used to calculate the duration of the beacon",
+                                "description.2": [
+                                    "Variables:\n",
+                                    "- ", { "text": "pts", "color": "dark_gray" }, ": the points of the associated beacon."
+                                ]
+                            },
+                            "primary_amplifier":   {
+                                "_":             "Primary Amplifier",
+                                "description.1": "The expression used to calculate the level for the primary effect",
+                                "description.2": [
+                                    "Variables:\n",
+
+                                    "- ",
+                                    { "text": "pts", "color": "dark_gray" },
+                                    ": the points of the associated beacon.\n",
+
+                                    "- ",
+                                    { "text": "isPotent", "color": "dark_gray" },
+                                    ": whether the effect is a potent effect. 1 when the selected secondary effect is for extra potency, 0 otherwise."
+                                ]
+                            },
+                            "secondary_amplifier": {
+                                "_":             "Secondary Amplifier",
+                                "description.1": "The expression used to calculate the amplifier for the secondary effect",
+                                "description.2": [
+                                    "Variables:\n",
+
+                                    "- ",
+                                    { "text": "pts", "color": "dark_gray" },
+                                    ": the points of the associated beacon.\n",
+
+                                    "- ",
+                                    { "text": "isPotent", "color": "dark_gray" },
+                                    ": whether the effect is a potent effect. 1 when the selected secondary effect is for extra potency, 0 otherwise."
+                                ]
+                            }
+                        }
+
+                    },
+                    "misc":        {
+                        "_":      "Miscellaneous",
+                        "option": {
+                            "allow_tinted_glass_transparency":   {
+                                "_":             "Allow Tinted Glass Transparency",
+                                "description.1": "If beacon beams going through tinted glass should be made partially transparent"
+                            },
+                            "max_beacon_layers":                 {
+                                "_":             "Max Beacon Layers",
+                                "description.1": "The maximum number of layers a beacon can have before adding new layers has no effect"
+                            },
+                            "effect_particles":                  {
+                                "_":             "Beacon Effect Particles",
+                                "description.1": "If the effects given by a beacon emit particles.",
+                                "description.2": "Vanilla behaviour is true"
+                            },
+                            "redirection_horizontal_move_limit": {
+                                "_":             "Redirection Horizontal Limit",
+                                "description.1": "The maximum number of blocks a beacon beam can traven horizontally"
+                            }
+                        }
+                    },
+                    "beam":        {
+                        "_":      "Beacon Beam",
+                        "option": {
+                            "beam_update_frequency": {
+                                "_":             "Beacon Beam Update Frequency",
+                                "description.1": "The update frequency of the beacon beam, in ticks",
+                                "description.2": "This is every how many ticks the beam updates. So if set to 2, then the beam updates every 2 ticks"
+                            },
+                            "beam_radius":           {
+                                "_":             "Beacon Beam Radius",
+                                "description.1": "The radius of the beacon beam, in  blocks"
+                            },
+                            "beam_glow_radius":      {
+                                "_":             "Beacon Beam Glow Radius",
+                                "description.1": "The radius of the beam glow, in blocks",
+                                "description.2": "This is the barely visible glow that is around the main beacon beam"
+                            },
+                            "beam_glow_opacity":     {
+                                "_":             "Beacon Beam Glow Transparency",
+                                "description.1": "The transparency of the glow around the main beacon beam",
+                                "description.2": "0 is fully transparent, 1 is not transparent at all"
+                            },
+                            "beam_blend_padding":    {
+                                "_":             "Beacon Beam Blend Padding",
+                                "description.1": "The distance the beacon beam is padded over when changing colours, in blocks"
+                            }
+                        }
+                    }
+                },
+                "root":  {
+                    "option": {
+                        "beacon_base_blocks":        {
+                            "_":             "Beacon Base Blocks",
+                            "description.1": "The blocks that can be used in the construction of a beacon's base",
+                            "description.2": [
+                                "Blocks not in this list can still be used if they are present in the ",
+                                { "text": "beacon_base_blocks", "color": "gray" },
+                                " tag, so this list is used to add any blocks not present already, such as ",
+                                { "translate": "block.minecraft.lapis_block" },
+                                " or ",
+                                { "translate": "block.minecraft.amethyst_block" }
+                            ]
+                        },
+                        "level_one_status_effects":  {
+                            "_":             "Level One Status Effects",
+                            "description.1": "A list of effects that have no benefit past level 1.",
+                            "description.2": [
+                                "For example, ",
+                                { "translate": "effect.minecraft.fire_resistance" },
+                                " or ",
+                                { "translate": "effect.minecraft.invisibility" }
+                            ]
+                        },
+                        "tier_one_beacon_effects":   {
+                            "_":             "Tier 1 Status Effects",
+                            "description.1": "The status effects that you can access using a tier 1 beacon"
+                        },
+                        "tier_two_beacon_effects":   {
+                            "_":             "Tier 2 Status Effects",
+                            "description.1": "The status effects that you can access using a tier 2 beacon"
+                        },
+                        "tier_three_beacon_effects": {
+                            "_":             "Tier 3 Status Effects",
+                            "description.1": "The status effects that you can access using a tier 3 beacon"
+                        },
+                        "secondary_beacon_effects":  {
+                            "_":             "Secondary Status Effects",
+                            "description.1": "The status effects that you can access using a tier 4 beacon"
+                        }
+                    }
+                }
+            },
+            "conduit": "Conduit Config"
+        }
+    }
+}

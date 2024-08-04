@@ -6,8 +6,8 @@ import gay.solonovamax.beaconsoverhaul.integration.lavender.StructureFeature
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import io.wispforest.lavender.client.LavenderBookScreen
 
-object LavenderRegistration {
-    fun register() {
+object LavenderRegistration : ClientRegistration {
+    override fun registerClient() {
         LavenderBookScreen.registerFeatureFactory(identifierOf("guidebook")) { componentSource ->
             listOf(
                 EntityModelFeature(componentSource),

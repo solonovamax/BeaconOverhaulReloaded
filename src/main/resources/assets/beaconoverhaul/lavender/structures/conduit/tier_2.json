@@ -1,0 +1,48 @@
+{
+    "keys":   {
+        "p":      [
+            "minecraft:prismarine",
+            "minecraft:prismarine_bricks",
+            "minecraft:dark_prismarine"
+        ],
+        ",":      "minecraft:water",
+        "anchor": "minecraft:conduit"
+    },
+    "layers": [
+        [
+            "  p  ",
+            "  p  ",
+            "ppppp",
+            "  p  ",
+            "  p  "
+        ],
+        [
+            "  p  ",
+            " ,,, ",
+            "p,,,p",
+            " ,,, ",
+            "  p  "
+        ],
+        [
+            "ppppp",
+            "p,,,p",
+            "p,#,p",
+            "p,,,p",
+            "ppppp"
+        ],
+        [
+            "  p  ",
+            " ,,, ",
+            "p,,,p",
+            " ,,, ",
+            "  p  "
+        ],
+        [
+            "  p  ",
+            "  p  ",
+            "ppppp",
+            "  p  ",
+            "  p  "
+        ]
+    ]
+}

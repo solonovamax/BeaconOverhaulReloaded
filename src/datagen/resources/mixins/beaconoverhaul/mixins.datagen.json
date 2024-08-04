@@ -1,0 +1,8 @@
+{
+    "minVersion":         "0.8",
+    "compatibilityLevel": "JAVA_17",
+    "required":           true,
+    "package":            "gay.solonovamax.beaconsoverhaul.mixin.datagen",
+    "refmap":             "mixins/beaconoverhaul/refmap.json",
+    "mixins":             [ ]
+}

@@ -7,7 +7,7 @@ import org.slf4j.kotlin.getLogger
 
 class OverhauledConduitScreen(
     handler: OverhauledConduitScreenHandler,
-    inventory: PlayerInventory?,
+    inventory: PlayerInventory,
     title: Text,
 ) : OverhauledScreen<OverhauledConduitData, OverhauledConduitScreenHandler>(handler, inventory, title) {
     private val logger by getLogger()

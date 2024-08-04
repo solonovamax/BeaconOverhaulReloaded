@@ -10,7 +10,7 @@ import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
 import gay.solonovamax.beaconsoverhaul.advancement.RedirectBeaconCriterion
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.register.TagRegistry
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreenHandler
 import gay.solonovamax.beaconsoverhaul.util.contains
@@ -119,7 +119,7 @@ private fun buildBlockMultiset(
 
     val baseBlocks = mutableMultisetOf<Block>()
 
-    for (layerOffset in 1..BeaconOverhaulConfigManager.beaconConfig.maxBeaconLayers) {
+    for (layerOffset in 1..ConfigManager.beaconConfig.maxBeaconLayers) {
         val yOffset = y - layerOffset
 
         if (yOffset < world.bottomY)
@@ -147,8 +147,8 @@ private fun buildBlockMultiset(
 private fun OverhauledBeacon.shouldUpdateBeacon(world: World, pos: BlockPos): Boolean {
     val now = Clock.System.now()
 
-    val updateDelay = BeaconOverhaulConfigManager.beaconConfig.beaconUpdateDelay
-    val initialUpdateDelay = BeaconOverhaulConfigManager.beaconConfig.initialBeaconUpdateDelay
+    val updateDelay = ConfigManager.beaconConfig.beaconUpdateDelay
+    val initialUpdateDelay = ConfigManager.beaconConfig.initialBeaconUpdateDelay
 
     when {
         now - this.lastUpdate > updateDelay -> {
@@ -181,14 +181,14 @@ private fun OverhauledBeacon.shouldUpdateBeacon(world: World, pos: BlockPos): Bo
 private fun computePoints(baseBlocks: Multiset<Block>): Double {
     var result = 0.0
     // addition modifiers (ie. most blocks)
-    for ((block, expression) in BeaconOverhaulConfigManager.beaconConfig.additionModifierBlocks) {
+    for ((block, expression) in ConfigManager.beaconConfig.additionModifierBlocks) {
         if (block in baseBlocks) {
             val expressionResult = expression.evaluate(baseBlocks[block].toDouble())
             result += expressionResult
         }
     }
     // multiplication modifiers (ie. netherite)
-    for ((block, expression) in BeaconOverhaulConfigManager.beaconConfig.multiplicationModifierBlocks) {
+    for ((block, expression) in ConfigManager.beaconConfig.multiplicationModifierBlocks) {
         if (block in baseBlocks) {
             val expressionResult = expression.evaluate(baseBlocks[block].toDouble())
             result *= expressionResult
@@ -207,16 +207,16 @@ fun OverhauledBeacon.writeScreenOpeningData(player: ServerPlayerEntity, buf: Pac
 fun OverhauledBeacon.testCanApplyEffect(effect: StatusEffect): Boolean {
     return when {
         level == 0 -> false
-        effect in BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
-        effect in BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
-        effect in BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
-        effect !in BeaconOverhaulConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
+        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
+        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
+        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
+        effect !in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
         else -> false
     }
 }
 
 fun OverhauledBeacon.constructBeamSegments() {
-    if (world.time % BeaconOverhaulConfigManager.beaconConfig.beamUpdateFrequency != 0L)
+    if (world.time % ConfigManager.beaconConfig.beamUpdateFrequency != 0L)
         return
 
     if (level == 0)
@@ -224,7 +224,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
     var currentPos = pos
 
-    var remainingHorizontalMoves = BeaconOverhaulConfigManager.beaconConfig.redirectionHorizontalMoveLimit
+    var remainingHorizontalMoves = ConfigManager.beaconConfig.redirectionHorizontalMoveLimit
     val targetHeight = world.getTopY(Heightmap.Type.WORLD_SURFACE, pos.x, pos.z)
 
     var broke = false
@@ -257,7 +257,7 @@ fun OverhauledBeacon.constructBeamSegments() {
         remainingHorizontalMoves = if (currentSegment.direction.axis.isHorizontal)
             remainingHorizontalMoves - 1
         else
-            BeaconOverhaulConfigManager.beaconConfig.redirectionHorizontalMoveLimit
+            ConfigManager.beaconConfig.redirectionHorizontalMoveLimit
 
         val state = world.getBlockState(currentPos)
         val block = state.block
@@ -265,7 +265,7 @@ fun OverhauledBeacon.constructBeamSegments() {
         val nextColor = block.beaconTint ?: currentColor
 
         when {
-            BeaconOverhaulConfigManager.beaconConfig.allowTintedGlassTransparency && block === Blocks.TINTED_GLASS -> {
+            ConfigManager.beaconConfig.allowTintedGlassTransparency && block === Blocks.TINTED_GLASS -> {
                 check = true
 
                 val mixedColor = currentColor.interpolate(nextColor.copy(alpha = 0.0f), 0.25, premultiplyAlpha = false)

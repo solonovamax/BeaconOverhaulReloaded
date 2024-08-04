@@ -24,8 +24,8 @@ plugins {
 
 nyx {
     compile {
-        // withJavadocJar()
-        withSourcesJar()
+        // javadocJar = true
+        sourcesJar = true
 
         allWarnings = true
         // warningsAsErrors = true
@@ -81,13 +81,25 @@ nyx {
     }
 
     minecraft {
-        configureDataGeneration()
+        configureDataGeneration {
+            createSourceSet = true
+            // strictValidation = true
+            modId = "beaconoverhaul-datagen"
+        }
 
         accessWidener("beaconoverhaul")
 
+        additionalJvmProperties.putAll(
+            mapOf(
+                "fabric-tag-conventions-v2.missingTagTranslationWarning" to "VERBOSE",
+                "fabric-tag-conventions-v1.legacyTagWarning" to "DEV_VERBOSE"
+            )
+        )
+
         mixin {
-            hotswapMixins = true
+            hotswap = true
             verbose = true
+            export = true
 
             mixinRefmapName("beaconoverhaul")
         }
@@ -101,6 +113,7 @@ nyx {
                 required("cloth-config")
                 required("lavender")
                 required("owo-lib")
+                required("geckolib")
 
                 embedded("silk")
                 embedded("arrp")
@@ -116,6 +129,7 @@ nyx {
 }
 
 repositories {
+    mavenLocal()
     soloStudios()
     fabric()
     mavenCentral()
@@ -152,6 +166,8 @@ dependencies {
     implementationInclude(libs.kotlinx.serialization.hocon)
     implementationInclude(libs.kotlinx.serialization.json5k)
 
+    implementation(libs.bundles.kotlinx.coroutines)
+
     implementationInclude(libs.slf4k)
     implementationInclude(libs.guava.kotlin)
 
@@ -162,6 +178,7 @@ dependencies {
     modImplementation(libs.cloth.config) {
         exclude(group = "net.fabricmc.fabric-api")
     }
+    modImplementation(libs.yacl)
 
     modImplementationInclude(libs.entityAttributes.reach) {
         exclude(group = "net.fabricmc.fabric-api")
@@ -174,6 +191,11 @@ dependencies {
     modImplementation(libs.lavender)
     modImplementation(libs.owo.lib)
     include(libs.owo.sentinel)
+
+    // modImplementation(libs.azurelib.fabric)
+
+    implementation("com.eliotlash.mclib:mclib:20")
+    modImplementation(libs.geckolib.fabric)
 
     modImplementation(libs.modmenu)
 
@@ -189,11 +211,11 @@ dependencies {
 }
 
 tasks {
-    val runDatagen by named("runDatagen")
+    val runDatagen by named<RunGameTask>("runDatagen")
 
-    processResources {
-        filesMatching("/fabric.mod.json") {
-            expand(
+    java.sourceSets.configureEach {
+        val processResources by named<ProcessResources>(processResourcesTaskName) {
+            val expansion = mapOf(
                 "description" to StringEscapeUtils.escapeJson(project.description),
                 "version" to project.version,
                 "versions" to mapOf(
@@ -209,12 +231,15 @@ tasks {
                     "lavender" to libs.versions.lavender.get(),
                 ),
             )
+            inputs.property("expansions", expansion)
+            filesMatching("/fabric.mod.json") {
+                expand(expansion)
+            }
         }
     }
 
-    withType<RunGameTask>().configureEach {
-        if (this != runDatagen)
-            dependsOn(runDatagen)
+    withType<RunGameTask>().matching { it != runDatagen }.configureEach {
+        dependsOn(runDatagen)
     }
     withType<Jar>().configureEach {
         dependsOn(runDatagen)

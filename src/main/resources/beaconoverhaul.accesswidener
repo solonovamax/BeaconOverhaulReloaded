@@ -1,26 +1,22 @@
 accessWidener v1 named
-#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconButton
+# For mixin targets
 accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$BeaconButtonWidget
-
-#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconScreenButton
 accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$BaseButtonWidget
-
-#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconPowerButton
 accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$EffectButtonWidget
-
-#accessible class net/minecraft/client/gui/screens/inventory/BeaconScreen$BeaconUpgradePowerButton
 accessible class net/minecraft/client/gui/screen/ingame/BeaconScreen$LevelTwoEffectButtonWidget
 
 accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;)Lnet/minecraft/screen/ScreenHandlerType;
+
 accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;[Lnet/minecraft/resource/featuretoggle/FeatureFlag;)Lnet/minecraft/screen/ScreenHandlerType;
 
 accessible field net/minecraft/block/entity/BeaconBlockEntity$BeamSegment height I
 
-# Update status effects
+# For adding new status effects
 mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS_BY_LEVEL [[Lnet/minecraft/entity/effect/StatusEffect;
 accessible field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
 mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
 
+# For updating the status effect
 accessible method net/minecraft/block/entity/BeaconBlockEntity getPotionEffectById (I)Lnet/minecraft/entity/effect/StatusEffect;
 
 # For subclassing
@@ -31,3 +27,9 @@ accessible field net/minecraft/block/entity/BeaconBlockEntity minY I
 accessible field net/minecraft/block/entity/BeaconBlockEntity primary Lnet/minecraft/entity/effect/StatusEffect;
 accessible field net/minecraft/block/entity/BeaconBlockEntity secondary Lnet/minecraft/entity/effect/StatusEffect;
 accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/entity/effect/StatusEffect;Lnet/minecraft/entity/effect/StatusEffect;)V
+
+# Creating new block entity types
+accessible method net/minecraft/block/entity/BlockEntityType create (Ljava/lang/String;Lnet/minecraft/block/entity/BlockEntityType$Builder;)Lnet/minecraft/block/entity/BlockEntityType;
+
+# Only used during datagen
+accessible method net/minecraft/Bootstrap collectMissingTranslations (Ljava/lang/Iterable;Ljava/util/function/Function;Ljava/util/Set;)V

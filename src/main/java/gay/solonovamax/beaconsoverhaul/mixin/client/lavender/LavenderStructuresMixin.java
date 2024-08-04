@@ -1,6 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client.lavender;
 
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager;
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager;
 import gay.solonovamax.beaconsoverhaul.integration.lavender.LavenderStructuresKt;
 import io.wispforest.lavender.structure.LavenderStructures;
 import io.wispforest.lavender.structure.StructureTemplate;
@@ -29,7 +29,7 @@ public class LavenderStructuresMixin {
             remap = false
     )
     private static void loadStructure(CallbackInfo ci) {
-        int maxTier = BeaconOverhaulConfigManager.getBeaconConfig().getMaxBeaconLayers();
+        int maxTier = ConfigManager.getBeaconConfig().getMaxBeaconLayers();
 
         for (int tier = 0; tier < maxTier; tier++) {
             StructureTemplate template = LavenderStructuresKt.createBeaconStructureTemplate(tier + 1);

@@ -6,6 +6,9 @@
     "client":    [
         "BackgroundRendererMixin",
         "BeaconBlockEntityRendererMixin",
+        "BlockEntityRendererFactoriesMixin",
+        "BuiltinModelItemRendererMixin",
+        "ConduitBlockEntityRendererMixin",
         "GameRendererMixin",
         "InGameHudMixin",
         "InGameOverlayRendererMixin",
@@ -17,5 +20,5 @@
     "refmap":    "mixins/beaconoverhaul/refmap.json",
     "injectors": {
         "maxShiftBy": 5
-    }, "mixins": [ "EndRodBlockMixin" ]
+    }
 }

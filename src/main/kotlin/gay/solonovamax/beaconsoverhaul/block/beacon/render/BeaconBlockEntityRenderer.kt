@@ -4,8 +4,9 @@ import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.model.SRGB
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.util.not
+import gay.solonovamax.beaconsoverhaul.util.pushPop
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
@@ -35,10 +36,10 @@ fun render(
             segment,
             partialTicks,
             beacon.world.time,
-            BeaconOverhaulConfigManager.beaconConfig.beamRadius.toFloat(),
-            BeaconOverhaulConfigManager.beaconConfig.beamGlowRadius.toFloat(),
-            BeaconOverhaulConfigManager.beaconConfig.beamGlowOpacity.toFloat(),
-            BeaconOverhaulConfigManager.beaconConfig.beamBlendPadding.toFloat(),
+            ConfigManager.beaconConfig.beamRadius.toFloat(),
+            ConfigManager.beaconConfig.beamGlowRadius.toFloat(),
+            ConfigManager.beaconConfig.beamGlowOpacity.toFloat(),
+            ConfigManager.beaconConfig.beamBlendPadding.toFloat(),
             beacon.brokenBeam,
         )
     }
@@ -69,51 +70,52 @@ fun renderBeamSegment(
     if (color.alpha <= 0.05f && previousColor.alpha <= 0.05f)
         return // don't render shit (alpha is zero)
 
-    matrixStack.push()
-    matrixStack.translate(0.5, 0.5, 0.5)
-    matrixStack.translate(
-        offset.x,
-        offset.y,
-        offset.z
-    ) // offset by the correct distance
-    matrixStack.multiply(segment.direction.rotationQuaternion)
-
     val angle = Math.floorMod(totalWorldTime, 40L) + partialTicks
-
-    matrixStack.push()
-    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle * 2.25f - 45.0f))
-
     val renderTime = -(totalWorldTime + partialTicks)
     val partAngle = MathHelper.fractionalPart(renderTime * 0.2f - MathHelper.floor(angle * 0.1f).toFloat())
     val v2 = -1.0f + partAngle
 
-    renderInnerBeam(
-        segment,
-        height,
-        v2,
-        matrixStack,
-        bufferIn,
-        color,
-        previousColor,
-        same,
-        blendLength,
-        blendPadding,
-        beamRadius,
-    )
+    matrixStack.pushPop {
+        matrixStack.translate(0.5, 0.5, 0.5)
+        matrixStack.translate(
+            offset.x,
+            offset.y,
+            offset.z
+        ) // offset by the correct distance
+        matrixStack.multiply(segment.direction.rotationQuaternion)
 
-    renderOuterGlow(
-        segment,
-        height,
-        v2,
-        matrixStack,
-        bufferIn,
-        color.copy(alpha = color.alpha * glowOpacity),
-        previousColor.copy(alpha = previousColor.alpha * glowOpacity),
-        same,
-        blendLength,
-        blendPadding,
-        glowRadius,
-    )
+        matrixStack.pushPop {
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle * 2.25f - 45.0f))
+
+            renderInnerBeam(
+                segment,
+                height,
+                v2,
+                matrixStack,
+                bufferIn,
+                color,
+                previousColor,
+                same,
+                blendLength,
+                blendPadding,
+                beamRadius,
+            )
+        }
+
+        renderOuterGlow(
+            segment,
+            height,
+            v2,
+            matrixStack,
+            bufferIn,
+            color.copy(alpha = color.alpha * glowOpacity),
+            previousColor.copy(alpha = previousColor.alpha * glowOpacity),
+            same,
+            blendLength,
+            blendPadding,
+            glowRadius,
+        )
+    }
 }
 
 private fun renderInnerBeam(
@@ -245,8 +247,6 @@ private fun renderInnerBeam(
             )
         }
     }
-
-    matrixStack.pop()
 }
 
 private fun renderOuterGlow(
@@ -372,8 +372,6 @@ private fun renderOuterGlow(
             )
         }
     }
-
-    matrixStack.pop()
 }
 
 private fun renderPart(

@@ -1,5 +1,6 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
+import gay.solonovamax.beaconsoverhaul.util.TranslationUtilKt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.TranslationStorage;
@@ -21,12 +22,9 @@ public class TranslationStorageMixin {
 
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
     private void get(String key, String fallback, CallbackInfoReturnable<String> cir) {
-        if (key.startsWith("structure.beaconoverhaul.structure_gen")) {
-            int periodIndex = key.lastIndexOf('.');
-            String structureKey = key.substring(0, periodIndex)
-                    .replace("structure.beaconoverhaul.structure_gen", "structure.beaconoverhaul.structure");
-
-            cir.setReturnValue(this.translations.getOrDefault(structureKey, fallback).formatted(key.substring(periodIndex + 1)));
+        String translated = TranslationUtilKt.rewriteStructureTranslation(key, fallback, this.translations);
+        if (translated != null) {
+            cir.setReturnValue(translated);
         }
     }
 }

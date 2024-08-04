@@ -1,0 +1,99 @@
+{
+    "format_version":          "1.8.0",
+    "animations":              {
+        "animation.powered": {
+            "loop":             true,
+            "animation_length": 60,
+            "bones":            {
+                "corners":   {
+                    "rotation": {
+                        "vector": [
+                            "math.cos(c.step * 2 - 120) * 90",
+                            "math.cos(c.step * 2 + 120) * 90",
+                            "math.cos(c.step * 2) * 90"
+                        ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "conduit":   {
+                    "position": {
+                        "vector": [ 0, "math.cos(c.step * 14) * ((1 - math.pow(c.sinstep, 16)) * 3)", 0 ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "NEBcorner": {
+                    "position": {
+                        "vector": [ "-c.shell_corner_distance", "-c.shell_corner_distance", "-c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "NETcorner": {
+                    "position": {
+                        "vector": [ "-c.shell_corner_distance", "c.shell_corner_distance", "-c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "NWBcorner": {
+                    "position": {
+                        "vector": [ "c.shell_corner_distance", "-c.shell_corner_distance", "-c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "NWTcorner": {
+                    "position": {
+                        "vector": [ "c.shell_corner_distance", "c.shell_corner_distance", "-c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "SEBcorner": {
+                    "position": {
+                        "vector": [ "-c.shell_corner_distance", "-c.shell_corner_distance", "c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "SETcorner": {
+                    "position": {
+                        "vector": [ "-c.shell_corner_distance", "c.shell_corner_distance", "c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "SWBcorner": {
+                    "position": {
+                        "vector": [ "c.shell_corner_distance", "-c.shell_corner_distance", "c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "SWTcorner": {
+                    "position": {
+                        "vector": [ "c.shell_corner_distance", "c.shell_corner_distance", "c.shell_corner_distance" ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "base":      {
+                    "scale": {
+                        "vector": [ 0, 0, 0 ],
+                        "easing": "easeInCirc"
+                    }
+                }
+            }
+        },
+        "animation.idle":    {
+            "loop":  true,
+            "bones": {
+                "eye":     {
+                    "scale": {
+                        "vector": [ 0, 0, 0 ],
+                        "easing": "easeInCirc"
+                    }
+                },
+                "corners": {
+                    "scale": {
+                        "vector": [ 0, 0, 0 ],
+                        "easing": "easeInCirc"
+                    }
+                }
+            }
+        }
+    },
+    "azurelib_format_version": 2
+}

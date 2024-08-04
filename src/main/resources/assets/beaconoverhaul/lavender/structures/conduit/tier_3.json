@@ -1,0 +1,165 @@
+{
+    "keys":   {
+        "S":      "minecraft:sea_lantern",
+        "p":      [
+            "minecraft:prismarine",
+            "minecraft:prismarine_bricks",
+            "minecraft:dark_prismarine"
+        ],
+        "d":      [
+            "minecraft:dark_prismarine",
+            "minecraft:prismarine",
+            "minecraft:prismarine_bricks"
+        ],
+        ",":      [
+            "minecraft:water",
+            "*[waterlogged=true]/minecraft:water"
+        ],
+        "anchor": "minecraft:conduit"
+    },
+    "layers": [
+        [
+            "           ",
+            "           ",
+            "           ",
+            "     p     ",
+            "     p     ",
+            "   ppSpp   ",
+            "     p     ",
+            "     p     ",
+            "           ",
+            "           ",
+            "           "
+        ],
+        [
+            "           ",
+            "           ",
+            "     p     ",
+            "           ",
+            "           ",
+            "  p     p  ",
+            "           ",
+            "           ",
+            "     p     ",
+            "           ",
+            "           "
+        ],
+        [
+            "           ",
+            "     p     ",
+            "           ",
+            "           ",
+            "           ",
+            " p       p ",
+            "           ",
+            "           ",
+            "           ",
+            "     p     ",
+            "           "
+        ],
+        [
+            "     p     ",
+            "           ",
+            "           ",
+            "     d     ",
+            "     d     ",
+            "p  ddddd  p",
+            "     d     ",
+            "     d     ",
+            "           ",
+            "           ",
+            "     p     "
+        ],
+        [
+            "     p     ",
+            "           ",
+            "           ",
+            "     d     ",
+            "    ,,,    ",
+            "p  d,,,d  p",
+            "    ,,,    ",
+            "     d     ",
+            "           ",
+            "           ",
+            "     p     "
+        ],
+        [
+            "   ppSpp   ",
+            "  p     p  ",
+            " p       p ",
+            "p  ddddd  p",
+            "p  d,,,d  p",
+            "S  d,#,d  S",
+            "p  d,,,d  p",
+            "p  ddddd  p",
+            " p       p ",
+            "  p     p  ",
+            "   ppSpp   "
+        ],
+        [
+            "     p     ",
+            "           ",
+            "           ",
+            "     d     ",
+            "    ,,,    ",
+            "p  d,,,d  p",
+            "    ,,,    ",
+            "     d     ",
+            "           ",
+            "           ",
+            "     p     "
+        ],
+        [
+            "     p     ",
+            "           ",
+            "           ",
+            "     d     ",
+            "     d     ",
+            "p  ddddd  p",
+            "     d     ",
+            "     d     ",
+            "           ",
+            "           ",
+            "     p     "
+        ],
+        [
+            "           ",
+            "     p     ",
+            "           ",
+            "           ",
+            "           ",
+            " p       p ",
+            "           ",
+            "           ",
+            "           ",
+            "     p     ",
+            "           "
+        ],
+        [
+            "           ",
+            "           ",
+            "     p     ",
+            "           ",
+            "           ",
+            "  p     p  ",
+            "           ",
+            "           ",
+            "     p     ",
+            "           ",
+            "           "
+        ],
+        [
+            "           ",
+            "           ",
+            "           ",
+            "     p     ",
+            "     p     ",
+            "   ppSpp   ",
+            "     p     ",
+            "     p     ",
+            "           ",
+            "           ",
+            "           "
+        ]
+    ]
+}

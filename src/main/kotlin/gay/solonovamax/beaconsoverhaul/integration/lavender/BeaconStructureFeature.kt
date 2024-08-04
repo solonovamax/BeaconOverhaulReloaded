@@ -2,7 +2,7 @@ package gay.solonovamax.beaconsoverhaul.integration.lavender
 
 import com.google.common.primitives.Ints
 import gay.solonovamax.beaconsoverhaul.BeaconConstants.NAMESPACE
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.util.childById
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import gay.solonovamax.beaconsoverhaul.util.template
@@ -81,7 +81,7 @@ class BeaconStructureFeature(
             val layerSlider = structureComponent.childById<SlimSliderComponent>("layer-slider")!!
             val showLayersCheckbox = structureComponent.childById<SmallCheckboxComponent>("show-layers-checkbox")!!
 
-            tierSlider.min(1.0).max(BeaconOverhaulConfigManager.beaconConfig.maxBeaconLayers.toDouble()).tooltipSupplier { layer ->
+            tierSlider.min(1.0).max(ConfigManager.beaconConfig.maxBeaconLayers.toDouble()).tooltipSupplier { layer ->
                 Text.translatable("guidebook.beaconoverhauled.beacon_structure_component.tier_tooltip", layer.toInt())
             }.onChanged().subscribe(SlimSliderComponent.OnChanged { layer ->
                 structurePreview.structureId = beaconStructureIdentifier(layer.toInt())

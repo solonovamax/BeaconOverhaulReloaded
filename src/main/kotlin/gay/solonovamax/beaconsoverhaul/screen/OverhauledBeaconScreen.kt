@@ -2,7 +2,7 @@ package gay.solonovamax.beaconsoverhaul.screen
 
 import com.github.ajalt.colormath.model.SRGB
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
-import gay.solonovamax.beaconsoverhaul.config.BeaconOverhaulConfigManager
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.util.asRomanNumeral
 import gay.solonovamax.beaconsoverhaul.util.drawCenteredTextWithShadow
 import gay.solonovamax.beaconsoverhaul.util.drawItem
@@ -37,7 +37,7 @@ import kotlin.math.roundToInt
 @Environment(EnvType.CLIENT)
 class OverhauledBeaconScreen(
     handler: OverhauledBeaconScreenHandler,
-    inventory: PlayerInventory?,
+    inventory: PlayerInventory,
     title: Text,
 ) : OverhauledScreen<OverhauledBeaconData, OverhauledBeaconScreenHandler>(handler, inventory, title) {
     private val logger by getLogger()
@@ -47,7 +47,7 @@ class OverhauledBeaconScreen(
     var secondaryEffect: StatusEffect? = null
 
     init {
-        this.backgroundWidth = BEACON_UI_WIDTH
+        backgroundWidth = BEACON_UI_WIDTH
         backgroundHeight = BEACON_UI_HEIGHT
 
         handler.addListener(object : ScreenHandlerListener {
@@ -387,7 +387,7 @@ class OverhauledBeaconScreen(
         protected open fun getEffectName(statusEffect: StatusEffect): MutableText {
             val text = Text.translatable(statusEffect.translationKey)
             val amplifier = if (primary) screen.data.primaryAmplifier else screen.data.secondaryAmplifier
-            if (statusEffect !in BeaconOverhaulConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1) {
+            if (statusEffect !in ConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1) {
                 text.append(" ")
                     .append(amplifier.asRomanNumeral())
             }
@@ -446,7 +446,7 @@ class OverhauledBeaconScreen(
             val text = Text.translatable(statusEffect.translationKey)
             val amplifier = screen.data.primaryAmplifierPotent
 
-            if (statusEffect !in BeaconOverhaulConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1)
+            if (statusEffect !in ConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1)
                 text.append(" ")
                     .append(amplifier.asRomanNumeral())
 
@@ -479,9 +479,9 @@ class OverhauledBeaconScreen(
 
         private val PRIMARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.primary")
         private val SECONDARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.secondary")
-        private val POINTS_LABEL_TEXT = Text.translatable("block.minecraft.beacon.points")
-        private val RANGE_LABEL_TEXT = Text.translatable("block.minecraft.beacon.range")
-        private val DURATION_LABEL_TEXT = Text.translatable("block.minecraft.beacon.duration")
+        private val POINTS_LABEL_TEXT = Text.translatable("block.beaconoverhaul.beacon.points")
+        private val RANGE_LABEL_TEXT = Text.translatable("block.beaconoverhaul.beacon.range")
+        private val DURATION_LABEL_TEXT = Text.translatable("block.beaconoverhaul.beacon.duration")
 
         const val PADDING = 2
 
