@@ -210,7 +210,7 @@ fun OverhauledBeacon.testCanApplyEffect(effect: StatusEffect): Boolean {
         effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
         effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
         effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
-        effect !in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
+        effect in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
         else -> false
     }
 }
