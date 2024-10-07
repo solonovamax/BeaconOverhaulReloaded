@@ -3,15 +3,13 @@
 package gay.solonovamax.beaconsoverhaul.util
 
 import com.mojang.datafixers.util.Either
+import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import net.minecraft.block.Block
-import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
 import net.minecraft.predicate.entity.EntityPredicates
 import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.entry.RegistryEntryList
-import net.minecraft.registry.tag.TagKey
 import net.minecraft.resource.featuretoggle.FeatureSet
 import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.ScreenHandler
@@ -22,9 +20,11 @@ import net.minecraft.util.math.Box
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.World
 import net.silkmc.silk.core.kotlin.asKotlinRandom
+import java.util.Optional
 import java.util.function.Function
 import kotlin.random.Random
-import kotlin.streams.asSequence
+import kotlin.reflect.KFunction1
+import kotlin.reflect.KProperty1
 
 fun identifierOf(identifier: String): Identifier {
     return if (identifier.contains(':'))
@@ -33,19 +33,7 @@ fun identifierOf(identifier: String): Identifier {
         identifierOf(path = identifier)
 }
 
-fun identifierOf(namespace: String = BeaconConstants.NAMESPACE, path: String): Identifier = Identifier(namespace, path)
-
-operator fun TagKey<Block>.contains(state: BlockState): Boolean {
-    return state.isIn(this)
-}
-
-fun <V, T : V> Registry<V>.register(id: Identifier, entry: T): T = Registry.register(this, id, entry)
-
-fun <T> Registry<in T>.register(id: String, entry: T): T = Registry.register(this, id, entry)
-
-operator fun RegistryEntryList<Block>.contains(state: BlockState): Boolean {
-    return state.isIn(this)
-}
+fun identifierOf(namespace: String = BeaconConstants.NAMESPACE, path: String): Identifier = Identifier.of(namespace, path)
 
 fun <T : ScreenHandler?> ScreenHandlerType(
     requiredFeatures: FeatureSet,
@@ -88,27 +76,14 @@ fun <T, L : T, R : T> Either<L, R>.flatten(): T {
     return map(Function.identity(), Function.identity())
 }
 
-fun <T> Registry<T>.getEntryIdentifiersMatching(value: String): Sequence<Identifier> {
-    val separator = value.indexOf(Identifier.NAMESPACE_SEPARATOR)
-    val splitNamespace = separator.takeIf { it != -1 }?.let { value.substring(0, it).lowercase() }
-    val path = separator.takeIf { it != -1 }?.let { value.substring(separator + 1).lowercase() } ?: value.lowercase()
-    return this.streamEntries()
-        .asSequence()
-        .map { holder -> holder.registryKey().value }
-        .filter { identifier ->
-            if (splitNamespace == null) {
-                path in identifier.path || path in identifier.namespace
-            } else {
-                identifier.namespace == splitNamespace && path in identifier.path
-            }
-        }
-        .sortedWith { id1: Identifier, id2: Identifier ->
-            val id1StartsWith = id1.path.lowercase().startsWith(path)
-            val id2StartsWith = id2.path.lowercase().startsWith(path)
-            return@sortedWith when {
-                id1StartsWith && !id2StartsWith -> -1
-                !id1StartsWith && id2StartsWith -> 1
-                else -> id1.compareTo(id2)
-            }
-        }
-}
+fun <O, A> MapCodec<A>.forKFunction(function: KFunction1<O, A>) = forGetter(function)
+fun <O, A> MapCodec<A>.forKProperty(property: KProperty1<O, A>) = forGetter(property)
+
+fun <O, A> Codec<A>.forKProperty(property: KProperty1<O, A>) = fieldOf(property.name).forGetter(property)
+
+@JvmName("forKPropertyOptional")
+fun <O, A> Codec<A>.forKProperty(property: KProperty1<O, Optional<A>>) = optionalFieldOf(property.name).forGetter(property)
+
+@JvmName("forKPropertyDefaultValue")
+fun <O, A> Codec<A>.forKProperty(property: KProperty1<O, A>, defaultValue: A) =
+    optionalFieldOf(property.name, defaultValue).forGetter(property)

@@ -1,6 +1,7 @@
 package gay.solonovamax.beaconsoverhaul.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -8,24 +9,16 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
-    @Unique
-    private float previousStepHeight = 0.0f;
-
-    @Unique
-    private boolean stepIncreased = false;
-
     LivingEntityMixin(EntityType<?> type, World level) {
         super(type, level);
     }
@@ -36,18 +29,15 @@ abstract class LivingEntityMixin extends Entity {
     @Shadow
     protected abstract void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity source);
 
-    @Inject(method = "tickStatusEffects", at = @At("HEAD"), require = 1)
-    private void updateJumpBoostStepAssist(CallbackInfo ci) {
-        if (this.hasStatusEffect(StatusEffects.JUMP_BOOST) && !this.isSneaking()) {
-            if (!this.stepIncreased) {
-                this.previousStepHeight = this.getStepHeight();
-                this.setStepHeight(1.0F);
-                this.stepIncreased = true;
-            }
-        } else if (this.stepIncreased) {
-            this.setStepHeight(this.previousStepHeight);
-            this.stepIncreased = false;
-        }
+    @ModifyReturnValue(method = "getStepHeight", at = @At("RETURN"))
+    private float jumpBoostStepAssist(float original) {
+        if (hasStatusEffect(StatusEffects.JUMP_BOOST))
+            if (isSneaking())
+                return 1.0f;
+            else
+                return original + 1.0f;
+        else
+            return original;
     }
 
     /**
@@ -62,10 +52,10 @@ abstract class LivingEntityMixin extends Entity {
     )
     private void fixHealthBoostDamageTick(LivingEntity instance, StatusEffectInstance effect, boolean reapplyEffect, Entity source) {
         if (!this.getWorld().isClient) {
-            StatusEffect statusEffect = effect.getEffectType();
+            RegistryEntry<StatusEffect> statusEffect = effect.getEffectType();
             if (statusEffect != StatusEffects.HEALTH_BOOST)
-                statusEffect.onRemoved((LivingEntity) (Object) this, this.getAttributes(), effect.getAmplifier());
-            statusEffect.onApplied((LivingEntity) (Object) this, this.getAttributes(), effect.getAmplifier());
+                statusEffect.value().onRemoved(this.getAttributes());
+            statusEffect.value().onApplied(this.getAttributes(), effect.getAmplifier());
         }
 
         this.onStatusEffectUpgraded(effect, false, source);
@@ -75,7 +65,7 @@ abstract class LivingEntityMixin extends Entity {
             method = "travel",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z",
+                    target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z",
                     ordinal = 0
             ),
             require = 1,
@@ -86,5 +76,5 @@ abstract class LivingEntityMixin extends Entity {
     }
 
     @Shadow
-    public abstract boolean hasStatusEffect(StatusEffect effect);
+    public abstract boolean hasStatusEffect(RegistryEntry<StatusEffect> effect);
 }

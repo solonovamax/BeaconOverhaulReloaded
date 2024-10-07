@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.ItemStack
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.PropertyDelegate
 import net.minecraft.screen.ScreenHandlerContext
 import org.slf4j.kotlin.getLogger
@@ -40,11 +39,11 @@ class OverhauledConduitScreenHandler private constructor(
     constructor(
         syncId: Int,
         inv: PlayerInventory,
-        buf: PacketByteBuf,
+        buf: ByteArray,
     ) : this(
         syncId,
         inv.player,
-        Cbor.decodeFromByteArray(buf.readByteArray()),
+        Cbor.decodeFromByteArray(buf),
         PropertyDelegate(PROPERTY_COUNT),
         ScreenHandlerContext.EMPTY,
         {},

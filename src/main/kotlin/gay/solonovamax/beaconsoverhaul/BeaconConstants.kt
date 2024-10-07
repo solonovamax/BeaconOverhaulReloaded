@@ -6,6 +6,7 @@ import gay.solonovamax.beaconsoverhaul.config.ConduitConfig
 import gay.solonovamax.beaconsoverhaul.config.ConduitConfig.ConduitExpression
 import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry
 import gay.solonovamax.beaconsoverhaul.util.id
+import gay.solonovamax.beaconsoverhaul.util.registryEntryListOf
 import net.minecraft.block.Blocks
 import net.minecraft.entity.effect.StatusEffects
 import kotlin.time.Duration.Companion.seconds
@@ -201,10 +202,10 @@ object BeaconConstants {
             Blocks.NETHERITE_BLOCK,
         ),
         beaconEffectsByTier = BeaconTierEffects(
-            tierOne = listOf(StatusEffects.SPEED, StatusEffects.HASTE),
-            tierTwo = listOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
-            tierThree = listOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION, StatusEffects.HEALTH_BOOST),
-            secondaryEffects = listOf(
+            tierOne = registryEntryListOf(StatusEffects.SPEED, StatusEffects.HASTE),
+            tierTwo = registryEntryListOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
+            tierThree = registryEntryListOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION, StatusEffects.HEALTH_BOOST),
+            secondaryEffects = registryEntryListOf(
                 StatusEffects.REGENERATION,
                 StatusEffects.FIRE_RESISTANCE,
                 StatusEffects.SLOW_FALLING,

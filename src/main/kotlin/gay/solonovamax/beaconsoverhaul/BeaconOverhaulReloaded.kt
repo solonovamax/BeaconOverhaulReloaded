@@ -10,26 +10,17 @@ import gay.solonovamax.beaconsoverhaul.register.ItemRegistry
 import gay.solonovamax.beaconsoverhaul.register.ScreenHandlerRegistry
 import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry
 import gay.solonovamax.beaconsoverhaul.register.TagRegistry
-import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
-import net.devtech.arrp.api.RRPCallback
-import net.devtech.arrp.api.RuntimeResourcePack
-import net.devtech.arrp.json.tags.JTag
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.minecraft.block.entity.BeaconBlockEntity
-import net.minecraft.resource.ResourcePack
-import net.minecraft.world.GameRules
-import net.minecraft.world.GameRules.Category
 import net.silkmc.silk.network.packet.s2cPacket
 import org.slf4j.kotlin.getLogger
 import org.slf4j.kotlin.info
 
 
 object BeaconOverhaulReloaded : ModInitializer {
-    val LONG_REACH_INCREMENT = GameRules.register("longReachIncrement", Category.PLAYER, GameRules.IntRule.create(2))
-
-    val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
+    // val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
 
     private val logger by getLogger()
 
@@ -58,30 +49,31 @@ object BeaconOverhaulReloaded : ModInitializer {
     }
 
     private fun addStatusEffectsToBeacon() {
-        val effectsByLevel = arrayOf(
-            ConfigManager.beaconConfig.beaconEffectsByTier.tierOne.toTypedArray(),
-            ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo.toTypedArray(),
-            ConfigManager.beaconConfig.beaconEffectsByTier.tierThree.toTypedArray(),
-            ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects.toTypedArray(),
+        val effectsByLevel = listOf(
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierOne,
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo,
+            ConfigManager.beaconConfig.beaconEffectsByTier.tierThree,
+            ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects,
         )
 
-        BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel
-        BeaconBlockEntity.EFFECTS = effectsByLevel.flatMapTo(mutableSetOf()) { it.asIterable() }
+        BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel.map { it.toList() }
+        BeaconBlockEntity.EFFECTS = effectsByLevel.flatMapTo(mutableSetOf()) { it }
     }
 
     private fun createRuntimeResourcepack() {
-        val beaconBaseBlocksTag = JTag().apply {
-            for (block in ConfigManager.beaconConfig.beaconBaseBlocks)
-                add(block.id)
-
-            RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
-        }
-
-        RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
-            resourcePacks.add(RESOURCE_PACK)
-        }
-
-        RESOURCE_PACK.dump()
+        // TODO: 2024-10-07 Add runtime resource pack for beacon_base_blocks
+        // val beaconBaseBlocksTag = JTag().apply {
+        //     for (block in ConfigManager.beaconConfig.beaconBaseBlocks)
+        //         add(block.id)
+        //
+        //     RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
+        // }
+        //
+        // RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
+        //     resourcePacks.add(RESOURCE_PACK)
+        // }
+        //
+        // RESOURCE_PACK.dump()
     }
 
 }

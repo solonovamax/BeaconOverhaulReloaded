@@ -6,7 +6,9 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import gay.solonovamax.beaconsoverhaul.datagen.BeaconOverhaulReloadedDataGenerator
+import gay.solonovamax.beaconsoverhaul.datagen.util.asTranslationKey
 import gay.solonovamax.beaconsoverhaul.datagen.util.flattenTranslation
+import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
@@ -22,6 +24,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.registry.Registries
 import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.stat.StatType
 import net.minecraft.text.TranslatableTextContent
 import net.minecraft.util.Identifier
@@ -41,12 +44,15 @@ class LanguageProvider(
     private val output: FabricDataOutput,
 ) : DataProvider {
     @OptIn(ExperimentalPathApi::class)
-    private fun generateTranslations(langPath: Path, builder: TranslationBuilder) {
+    private fun generateTranslations(langPath: Path, builder: (translationKey: String, value: JsonElement) -> Unit) {
+        val translationBuilder = object : TranslationBuilder() {
+            override fun add(translationKey: String, value: JsonElement) {
+                builder(translationKey, value)
+            }
+        }
         langPath.walk().filter {
             it.isRegularFile()
-        }.forEach { path ->
-            builder.add(path)
-        }
+        }.forEach(translationBuilder::add)
     }
 
     @OptIn(DelicateSilkApi::class)
@@ -81,15 +87,15 @@ class LanguageProvider(
     }
 
     private fun getLangFilePath(code: String): Path {
-        return output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "lang").resolveJson(Identifier(output.modId, code))
+        return output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "lang").resolveJson(identifierOf(output.modId, code))
     }
 
     override fun getName(): String {
         return "Language"
     }
 
-    fun interface TranslationBuilder {
-        fun add(translationKey: String, value: JsonElement)
+    abstract class TranslationBuilder {
+        abstract fun add(translationKey: String, value: JsonElement)
 
         fun add(translationKey: String, value: String) {
             add(translationKey, JsonPrimitive(value))
@@ -103,6 +109,7 @@ class LanguageProvider(
             add(block.translationKey, value)
         }
 
+        @JvmName("addItemGroup")
         fun add(registryKey: RegistryKey<ItemGroup>, value: String) {
             val group = Registries.ITEM_GROUP.getOrThrow(registryKey)
             val content = group.displayName.content
@@ -117,16 +124,18 @@ class LanguageProvider(
             add(entityType.translationKey, value)
         }
 
-        fun add(enchantment: Enchantment, value: String) {
-            add(enchantment.translationKey, value)
+        @JvmName("addEnchantment")
+        fun add(enchantment: RegistryKey<Enchantment>, value: String) {
+            add(enchantment.asTranslationKey("enchantment"), value)
         }
 
-        fun add(entityAttribute: EntityAttribute, value: String) {
-            add(entityAttribute.translationKey, value)
+        @JvmName("addEntityAttribute")
+        fun add(entityAttribute: RegistryEntry<EntityAttribute>, value: String) {
+            add(entityAttribute.value().translationKey, value)
         }
 
         fun add(statType: StatType<*>, value: String) {
-            add(statType.translationKey, value)
+            add(Registries.STAT_TYPE.getId(statType).asTranslationKey("stat_type"), value)
         }
 
         fun add(statusEffect: StatusEffect, value: String) {

@@ -7,20 +7,22 @@ import dev.isxander.yacl3.gui.YACLScreen
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownController
 import gay.solonovamax.beaconsoverhaul.util.getEntryIdentifiersMatching
 import net.minecraft.registry.Registry
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.InvalidIdentifierException
+import kotlin.jvm.optionals.getOrNull
 
-open class RegistryBackedController<T : Any>(
-    option: Option<T>,
+open class RegistryEntryBackedController<T : Any>(
+    option: Option<RegistryEntry<T>>,
     val registry: Registry<T>,
-) : AbstractDropdownController<T>(option) {
+) : AbstractDropdownController<RegistryEntry<T>>(option) {
     override fun getString(): String {
-        return registry.getId(option.pendingValue()).toString()
+        return registry.getId(option.pendingValue().value()).toString()
     }
 
     override fun setFromString(value: String) {
-        option.requestSet(registry.getOrEmpty(Identifier.of(value)).orElse(option.pendingValue()))
+        option.requestSet(registry.getEntry(Identifier.of(value)).getOrNull() ?: option.pendingValue())
     }
 
     override fun formatValue(): Text = Text.literal(string)
@@ -39,7 +41,7 @@ open class RegistryBackedController<T : Any>(
     }
 
     override fun provideWidget(screen: YACLScreen, widgetDimension: Dimension<Int>): AbstractWidget {
-        return RegistryBackedDropdownControllerElement(this, screen, widgetDimension)
+        return RegistryEntryBackedDropdownControllerElement(this, screen, widgetDimension)
     }
 }
 

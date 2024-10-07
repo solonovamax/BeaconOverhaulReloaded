@@ -12,8 +12,9 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
-import net.minecraft.network.PacketByteBuf
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.registry.tag.ItemTags
+import net.minecraft.screen.BeaconScreenHandler
 import net.minecraft.screen.PropertyDelegate
 import net.minecraft.screen.ScreenHandlerContext
 import net.minecraft.screen.slot.Slot
@@ -46,11 +47,11 @@ class OverhauledBeaconScreenHandler private constructor(
     constructor(
         syncId: Int,
         inv: PlayerInventory,
-        buf: PacketByteBuf,
+        buf: ByteArray,
     ) : this(
         syncId,
         inv.player,
-        Cbor.decodeFromByteArray(buf.readByteArray()),
+        Cbor.decodeFromByteArray(buf),
         PropertyDelegate(PROPERTY_COUNT),
         ScreenHandlerContext.EMPTY,
         {},
@@ -72,11 +73,11 @@ class OverhauledBeaconScreenHandler private constructor(
     val level: Int
         get() = delegate[0]
 
-    val primaryEffect: StatusEffect?
-        get() = StatusEffect.byRawId(delegate[1])
+    val primaryEffect: RegistryEntry<StatusEffect>?
+        get() = BeaconScreenHandler.getStatusEffectForRawId(delegate[1])
 
-    val secondaryEffect: StatusEffect?
-        get() = StatusEffect.byRawId(delegate[2])
+    val secondaryEffect: RegistryEntry<StatusEffect>?
+        get() = BeaconScreenHandler.getStatusEffectForRawId(delegate[2])
 
     val hasPayment: Boolean
         get() = !paymentInventory.getStack(PAYMENT_SLOT_ID).isEmpty
@@ -139,10 +140,10 @@ class OverhauledBeaconScreenHandler private constructor(
         }
     }
 
-    fun setEffects(primary: Optional<StatusEffect>, secondary: Optional<StatusEffect>) {
+    fun setEffects(primary: Optional<RegistryEntry<StatusEffect>>, secondary: Optional<RegistryEntry<StatusEffect>>) {
         if (paymentSlot.hasStack()) {
-            delegate[1] = primary.map(StatusEffect::getRawId).orElse(-1)
-            delegate[2] = secondary.map(StatusEffect::getRawId).orElse(-1)
+            delegate[1] = primary.map(BeaconScreenHandler::getRawIdForStatusEffect).orElse(-1)
+            delegate[2] = secondary.map(BeaconScreenHandler::getRawIdForStatusEffect).orElse(-1)
             paymentSlot.takeStack(1)
             context.run(World::markDirty)
         }

@@ -4,13 +4,14 @@ import ca.solostudios.guava.kotlin.collect.Multiset
 import ca.solostudios.guava.kotlin.collect.MutableMultiset
 import ca.solostudios.guava.kotlin.collect.mutableMultisetOf
 import com.github.ajalt.colormath.model.RGB
+import com.github.ajalt.colormath.model.RGBInt
 import com.github.ajalt.colormath.model.SRGB
 import com.github.ajalt.colormath.transform.interpolate
 import gay.solonovamax.beaconsoverhaul.BeaconOverhaulReloaded
-import gay.solonovamax.beaconsoverhaul.advancement.RedirectBeaconCriterion
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon
 import gay.solonovamax.beaconsoverhaul.block.beacon.data.OverhauledBeaconData
 import gay.solonovamax.beaconsoverhaul.config.ConfigManager
+import gay.solonovamax.beaconsoverhaul.register.CriterionRegistry
 import gay.solonovamax.beaconsoverhaul.register.TagRegistry
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreenHandler
 import gay.solonovamax.beaconsoverhaul.util.contains
@@ -24,7 +25,7 @@ import net.minecraft.block.Blocks
 import net.minecraft.block.Stainable
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.network.PacketByteBuf
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.screen.ScreenHandlerContext
 import net.minecraft.server.network.ServerPlayerEntity
@@ -94,7 +95,7 @@ fun OverhauledBeacon.updateTier(world: World, pos: BlockPos) {
 
     if (level > this.level) {
         // if (/*!broke &&*/beamSegmentsToCheck.isNotEmpty()) {
-        for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos, pos).expand(10.0)))
+        for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos.toCenterPos(), pos.toCenterPos()).expand(10.0)))
             Criteria.CONSTRUCT_BEACON.trigger(player, level)
         // }
     }
@@ -198,19 +199,19 @@ private fun computePoints(baseBlocks: Multiset<Block>): Double {
     return result
 }
 
-fun OverhauledBeacon.writeScreenOpeningData(player: ServerPlayerEntity, buf: PacketByteBuf) {
-    val data = OverhauledBeaconData.from(this)
-    val bytes = Cbor.encodeToByteArray(data)
-    buf.writeByteArray(bytes)
+fun OverhauledBeacon.screenOpeningData(player: ServerPlayerEntity): ByteArray {
+    return Cbor.encodeToByteArray(OverhauledBeaconData.from(this))
 }
 
-fun OverhauledBeacon.testCanApplyEffect(effect: StatusEffect): Boolean {
-    return when {
-        level == 0 -> false
-        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
-        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
-        effect in ConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
-        effect !in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
+fun OverhauledBeacon.testCanApplyEffect(effect: RegistryEntry<StatusEffect>): Boolean {
+    if (level == 0)
+        return false
+
+    return when (effect) {
+        in ConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
+        in ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
+        in ConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
+        !in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
         else -> false
     }
 }
@@ -435,8 +436,8 @@ fun OverhauledBeacon.constructBeamSegments() {
 
     if (!this.didRedirection && didRedirection) {
         if (!broke && beamSegmentsToCheck.isNotEmpty()) {
-            for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos, pos).expand(10.0)))
-                RedirectBeaconCriterion.trigger(player)
+            for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos.toCenterPos(), pos.toCenterPos()).expand(10.0)))
+                CriterionRegistry.REDIRECT_BEACON_CRITERION.trigger(player)
         }
     }
 
@@ -450,9 +451,4 @@ private fun isRedirectingBlock(block: Block): Boolean {
 }
 
 val Block.beaconTint: RGB?
-    get() {
-        if (this is Stainable)
-            return SRGB.create(color.colorComponents)
-
-        return null
-    }
+    get() = if (this is Stainable) RGBInt(color.entityColor.toUInt()).toSRGB() else null

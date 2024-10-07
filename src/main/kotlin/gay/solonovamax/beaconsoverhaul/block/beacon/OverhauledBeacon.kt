@@ -6,6 +6,7 @@ import kotlinx.datetime.Instant
 import net.minecraft.block.Block
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -23,8 +24,8 @@ interface OverhauledBeacon {
     val range: Int
     val duration: Int
 
-    var primaryEffect: StatusEffect?
-    var secondaryEffect: StatusEffect?
+    var primaryEffect: RegistryEntry<StatusEffect>?
+    var secondaryEffect: RegistryEntry<StatusEffect>?
     val world: World
     val pos: BlockPos
     val beamSegments: List<BeaconBeamSegment>
@@ -44,5 +45,5 @@ interface OverhauledBeacon {
     fun addUpdateListener(player: ServerPlayerEntity)
     fun removeUpdateListener(player: PlayerEntity)
 
-    fun canApplyEffect(effect: StatusEffect): Boolean
+    fun canApplyEffect(effect: RegistryEntry<StatusEffect>): Boolean
 }

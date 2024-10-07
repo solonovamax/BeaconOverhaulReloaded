@@ -5,15 +5,17 @@ import dev.isxander.yacl3.gui.YACLScreen
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownControllerElement
 import gay.solonovamax.beaconsoverhaul.util.getEntryIdentifiersMatching
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import kotlin.jvm.optionals.getOrNull
 
-open class RegistryBackedDropdownControllerElement<T : Any>(
-    private val controller: RegistryBackedController<T>,
+open class RegistryEntryBackedDropdownControllerElement<T : Any>(
+    private val controller: RegistryEntryBackedController<T>,
     screen: YACLScreen,
     dim: Dimension<Int>,
-) : AbstractDropdownControllerElement<T, Identifier>(controller, screen, dim) {
-    private var currentEntry: T? = null
+) : AbstractDropdownControllerElement<RegistryEntry<T>, Identifier>(controller, screen, dim) {
+    private var currentEntry: RegistryEntry<T>? = null
 
     override fun drawValueText(graphics: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
         val oldDimension = dimension
@@ -25,7 +27,7 @@ open class RegistryBackedDropdownControllerElement<T : Any>(
         }
     }
 
-    open fun drawCurrentEntry(context: DrawContext, x: Int, y: Int, entry: T) {
+    open fun drawCurrentEntry(context: DrawContext, x: Int, y: Int, entry: RegistryEntry<T>) {
     }
 
     override fun renderDropdownEntry(graphics: DrawContext, entryDimension: Dimension<Int>, identifier: Identifier?) {
@@ -35,14 +37,14 @@ open class RegistryBackedDropdownControllerElement<T : Any>(
                 graphics,
                 entryDimension.xLimit() - 2,
                 entryDimension.y() + 1,
-                controller.registry.get(identifier)!!
+                controller.registry.getEntry(identifier).get()
             )
     }
 
 
     override fun computeMatchingValues(): List<Identifier> {
-        val id = Identifier.tryParse(inputField)?.takeIf { controller.registry.containsId(it) }
-        currentEntry = if (id != null) controller.registry.get(id) else null
+        val id = Identifier.tryParse(inputField)
+        currentEntry = if (id != null) controller.registry.getEntry(id).getOrNull() else null
         return controller.registry.getEntryIdentifiersMatching(inputField).toList()
     }
 

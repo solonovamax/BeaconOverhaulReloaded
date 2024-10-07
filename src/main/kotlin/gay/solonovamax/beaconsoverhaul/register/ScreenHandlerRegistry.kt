@@ -8,11 +8,12 @@ import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import gay.solonovamax.beaconsoverhaul.util.register
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType
 import net.minecraft.client.gui.screen.ingame.HandledScreens
+import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.registry.Registries
 
 object ScreenHandlerRegistry : ClientRegistration, CommonRegistration {
-    val OVERHAULED_BEACON_SCREEN_HANDLER = ExtendedScreenHandlerType(::OverhauledBeaconScreenHandler)
-    val OVERHAULED_CONDUIT_SCREEN_HANDLER = ExtendedScreenHandlerType(::OverhauledConduitScreenHandler)
+    val OVERHAULED_BEACON_SCREEN_HANDLER = ExtendedScreenHandlerType(::OverhauledBeaconScreenHandler, PacketCodecs.BYTE_ARRAY)
+    val OVERHAULED_CONDUIT_SCREEN_HANDLER = ExtendedScreenHandlerType(::OverhauledConduitScreenHandler, PacketCodecs.BYTE_ARRAY)
 
     override fun register() {
         Registries.SCREEN_HANDLER.register(identifierOf("beacon"), OVERHAULED_BEACON_SCREEN_HANDLER)

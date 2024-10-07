@@ -9,24 +9,28 @@ accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/St
 
 accessible method net/minecraft/screen/ScreenHandlerType register (Ljava/lang/String;Lnet/minecraft/screen/ScreenHandlerType$Factory;[Lnet/minecraft/resource/featuretoggle/FeatureFlag;)Lnet/minecraft/screen/ScreenHandlerType;
 
+accessible method net/minecraft/entity/effect/StatusEffect <init> (Lnet/minecraft/entity/effect/StatusEffectCategory;I)V
+
 accessible field net/minecraft/block/entity/BeaconBlockEntity$BeamSegment height I
 
 # For adding new status effects
-mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS_BY_LEVEL [[Lnet/minecraft/entity/effect/StatusEffect;
+mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS_BY_LEVEL Ljava/util/List;
 accessible field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
 mutable field net/minecraft/block/entity/BeaconBlockEntity EFFECTS Ljava/util/Set;
 
 # For updating the status effect
-accessible method net/minecraft/block/entity/BeaconBlockEntity getPotionEffectById (I)Lnet/minecraft/entity/effect/StatusEffect;
+accessible method net/minecraft/block/entity/BeaconBlockEntity getEffectOrNull (Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/registry/entry/RegistryEntry;
+accessible method net/minecraft/block/entity/BeaconBlockEntity readStatusEffect (Lnet/minecraft/nbt/NbtCompound;Ljava/lang/String;)Lnet/minecraft/registry/entry/RegistryEntry;
+accessible method net/minecraft/block/entity/BeaconBlockEntity writeStatusEffect (Lnet/minecraft/nbt/NbtCompound;Ljava/lang/String;Lnet/minecraft/registry/entry/RegistryEntry;)V
 
 # For subclassing
 accessible field net/minecraft/block/entity/BeaconBlockEntity beamSegments Ljava/util/List;
 accessible field net/minecraft/block/entity/BeaconBlockEntity beamSegmentsToCheck Ljava/util/List;
 accessible field net/minecraft/block/entity/BeaconBlockEntity level I
 accessible field net/minecraft/block/entity/BeaconBlockEntity minY I
-accessible field net/minecraft/block/entity/BeaconBlockEntity primary Lnet/minecraft/entity/effect/StatusEffect;
-accessible field net/minecraft/block/entity/BeaconBlockEntity secondary Lnet/minecraft/entity/effect/StatusEffect;
-accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/entity/effect/StatusEffect;Lnet/minecraft/entity/effect/StatusEffect;)V
+accessible field net/minecraft/block/entity/BeaconBlockEntity primary Lnet/minecraft/registry/entry/RegistryEntry;
+accessible field net/minecraft/block/entity/BeaconBlockEntity secondary Lnet/minecraft/registry/entry/RegistryEntry;
+accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/registry/entry/RegistryEntry;)V
 
 # Creating new block entity types
 accessible method net/minecraft/block/entity/BlockEntityType create (Ljava/lang/String;Lnet/minecraft/block/entity/BlockEntityType$Builder;)Lnet/minecraft/block/entity/BlockEntityType;

@@ -31,7 +31,7 @@ nyx {
         // warningsAsErrors = true
         distributeLicense = true
         buildDependsOnJar = true
-        jvmTarget = 17
+        jvmTarget = 21
         reproducibleBuilds = true
 
         kotlin {
@@ -91,8 +91,8 @@ nyx {
 
         additionalJvmProperties.putAll(
             mapOf(
-                "fabric-tag-conventions-v2.missingTagTranslationWarning" to "VERBOSE",
-                "fabric-tag-conventions-v1.legacyTagWarning" to "DEV_VERBOSE"
+                "fabric-tag-conventions-v2.missingTagTranslationWarning" to "FAIL",
+                "fabric-tag-conventions-v1.legacyTagWarning" to "FAIL"
             )
         )
 
@@ -110,13 +110,12 @@ nyx {
             dependencies {
                 required("fabric-api")
                 required("fabric-language-kotlin")
-                required("cloth-config")
                 required("lavender")
                 required("owo-lib")
                 required("geckolib")
 
                 embedded("silk")
-                embedded("arrp")
+                // embedded("arrp")
 
                 optional("modmenu")
 
@@ -153,6 +152,9 @@ dependencies {
 
 
     annotationProcessor(libs.sponge.mixin)
+    implementation(libs.sponge.mixin)
+    annotationProcessor(libs.mixinextras)
+    implementation(libs.mixinextras)
 
     // modImplementationInclude(libs.bundles.cloud) {
     //     exclude(group = "net.fabricmc.fabric-api")
@@ -171,22 +173,18 @@ dependencies {
     implementationInclude(libs.slf4k)
     implementationInclude(libs.guava.kotlin)
 
+    implementationInclude(libs.korlibs.io)
+    implementationInclude(libs.korlibs.io.fs)
+
     implementationInclude(libs.paralithic)
 
     implementationInclude(libs.colormath)
 
-    modImplementation(libs.cloth.config) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
     modImplementation(libs.yacl)
 
-    modImplementationInclude(libs.entityAttributes.reach) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
-
-    modImplementationInclude(libs.arrp) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
+    // modImplementationInclude(libs.arrp) {
+    //     exclude(group = "net.fabricmc.fabric-api")
+    // }
 
     modImplementation(libs.lavender)
     modImplementation(libs.owo.lib)
@@ -201,6 +199,7 @@ dependencies {
 
     modCompileOnly(libs.emi)
 
+    modApi(libs.bundles.rei)
     modCompileOnly(libs.bundles.rei) {
         exclude(group = "net.fabricmc.fabric-api")
     }
@@ -224,7 +223,6 @@ tasks {
                         "loader" to libs.versions.fabric.loader.get(),
                         "languageKotlin" to libs.versions.fabric.language.kotlin.get(),
                     ),
-                    "clothconfig" to libs.versions.cloth.config.get(),
                     "minecraft" to libs.versions.minecraft.get(),
                     "silk" to libs.versions.silk.get(),
                     "owo" to libs.versions.owo.get(),
@@ -248,3 +246,55 @@ tasks {
 
 val Project.isSnapshot: Boolean
     get() = version.toString().endsWith("-SNAPSHOT")
+
+
+// val TARGET_MINECRAFT_VERSION_ATTRIBUTE = Attribute.of("net.minecraft.version", String::class.java)
+//
+// dependencies.attributesSchema {
+//     attribute(TARGET_MINECRAFT_VERSION_ATTRIBUTE) {
+//         // disambiguationRules.add(TestDisambiguationRule::class)
+//     }
+//     // getMatchingStrategy(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE).disambiguationRules.add(TestDisambiguationRuleInt::class)
+// }
+//
+// // class TestDisambiguationRule : AttributeDisambiguationRule<String> {
+// //     override fun execute(details: MultipleCandidatesDetails<String>) {
+// //         println("candidate values = ${details.candidateValues}, consumer value = ${details.consumerValue}")
+// //         if (details.consumerValue == null) {
+// //             for (candidate in details.candidateValues) {
+// //                 if (candidate == loom.minecraftVersion.get()) {
+// //
+// //                 }
+// //             }
+// //         }
+// //     }
+// // }
+//
+// // class TestDisambiguationRuleInt : AttributeDisambiguationRule<Int> {
+// //     override fun execute(details: MultipleCandidatesDetails<Int>) {
+// //         println("candidate values = ${details.candidateValues}, consumer value = ${details.consumerValue}")
+// //     }
+// // }
+//
+// configurations.configureEach {
+//     if (name == "archives" || name == "default")
+//         return@configureEach
+//
+//     attributes {
+//         attribute(TARGET_MINECRAFT_VERSION_ATTRIBUTE, "1.20.6")
+//         // attributeProvider(TARGET_MINECRAFT_VERSION_ATTRIBUTE, loom.minecraftVersion)
+//     }
+// }
+//
+// // loom.remapConfigurations.configureEach {
+// //     sourceConfiguration.configure {
+// //         attributes {
+// //             attributeProvider(TARGET_MINECRAFT_VERSION_ATTRIBUTE, loom.minecraftVersion)
+// //         }
+// //     }
+// //     configurations.findByName(remappedConfigurationName)?.apply {
+// //         attributes {
+// //             attributeProvider(TARGET_MINECRAFT_VERSION_ATTRIBUTE, loom.minecraftVersion)
+// //         }
+// //     }
+// // }

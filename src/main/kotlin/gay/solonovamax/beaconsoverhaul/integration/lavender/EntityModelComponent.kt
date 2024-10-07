@@ -1,9 +1,7 @@
 package gay.solonovamax.beaconsoverhaul.integration.lavender
 
 import com.mojang.authlib.GameProfile
-import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.brigadier.exceptions.CommandSyntaxException
 import io.wispforest.owo.ui.base.BaseComponent
 import io.wispforest.owo.ui.core.Component
 import io.wispforest.owo.ui.core.Easing
@@ -17,6 +15,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.ClientConnectionState
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.client.network.PlayerListEntry
@@ -24,17 +23,22 @@ import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.LightmapTextureManager
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderDispatcher
-import net.minecraft.client.render.entity.PlayerModelPart
+import net.minecraft.client.session.telemetry.TelemetrySender
+import net.minecraft.client.session.telemetry.WorldSession
+import net.minecraft.client.util.DefaultSkinHelper
+import net.minecraft.client.util.SkinTextures
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.player.PlayerModelPart
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.StringNbtReader
 import net.minecraft.network.ClientConnection
 import net.minecraft.network.NetworkSide
 import net.minecraft.registry.Registries
-import net.minecraft.util.Identifier
+import net.minecraft.server.ServerLinks
+import net.minecraft.util.Util
 import net.minecraft.util.math.RotationAxis
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
@@ -44,6 +48,7 @@ import kotlin.math.atan
 import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
+
 
 class EntityModelComponent<E : Entity> private constructor(
     sizing: Sizing,
@@ -178,56 +183,50 @@ class EntityModelComponent<E : Entity> private constructor(
     override fun parseProperties(model: UIModel, element: Element, children: Map<String, Element>) {
         super.parseProperties(model, element, children)
 
-        UIParsing.apply(children, "scale", UIParsing::parseFloat) { scale ->
-            this.scale = scale
-        }
-        UIParsing.apply(children, "look-at-cursor", UIParsing::parseBool) { lookAtCursor ->
-            this.lookAtCursor = lookAtCursor
-        }
-        UIParsing.apply(children, "mouse-rotation", UIParsing::parseBool) { allowMouseRotation ->
-            this.allowMouseRotation = allowMouseRotation
-        }
-        UIParsing.apply(children, "scale-to-fit", UIParsing::parseBool) { scaleToFit ->
-            this.scaleToFit = scaleToFit
-        }
+        UIParsing.apply(children, "scale", UIParsing::parseFloat) { this.scale = it }
+        UIParsing.apply(children, "look-at-cursor", UIParsing::parseBool) { this.lookAtCursor = it }
+        UIParsing.apply(children, "mouse-rotation", UIParsing::parseBool) { this.allowMouseRotation = it }
+        UIParsing.apply(children, "scale-to-fit", UIParsing::parseBool) { this.scaleToFit = it }
     }
 
-    class RenderablePlayerEntity(profile: GameProfile?) : ClientPlayerEntity(
+    class RenderablePlayerEntity(profile: GameProfile) : ClientPlayerEntity(
         MinecraftClient.getInstance(),
         MinecraftClient.getInstance().world,
         ClientPlayNetworkHandler(
             MinecraftClient.getInstance(),
-            null,
             ClientConnection(NetworkSide.CLIENTBOUND),
-            null,
-            profile,
-            MinecraftClient.getInstance().telemetryManager.createWorldSession(false, Duration.ZERO, "tetris")
+            ClientConnectionState(
+                profile,
+                WorldSession(TelemetrySender.NOOP, false, Duration.ZERO, ""),
+                MinecraftClient.getInstance().world!!.registryManager.toImmutable(),
+                MinecraftClient.getInstance().world!!.enabledFeatures,
+                "Wisp Forest Enterprises",
+                null,
+                null,
+                mapOf(),
+                null,
+                false,
+                mapOf(),
+                ServerLinks.EMPTY
+            ),
         ),
         null, null, false, false
     ) {
-        private var skinTextureId: Identifier? = null
-        private var model: String? = null
+        private var skinTextures: SkinTextures? = null
 
         init {
-            client.skinProvider.loadSkin(
-                gameProfile,
-                { type: MinecraftProfileTexture.Type, identifier: Identifier, texture: MinecraftProfileTexture ->
-                    if (type != MinecraftProfileTexture.Type.SKIN)
-                        return@loadSkin
-                    skinTextureId = identifier
-                    model = texture.getMetadata("model") ?: "default"
-                }, true
-            )
+            skinTextures = DefaultSkinHelper.getSkinTextures(profile.id)
+            Util.getMainWorkerExecutor().execute {
+                val completeProfile = MinecraftClient.getInstance().sessionService.fetchProfile(profile.id, false)!!.profile()
+                skinTextures = DefaultSkinHelper.getSkinTextures(completeProfile)
+                client.skinProvider.fetchSkinTextures(completeProfile).thenAccept {
+                    skinTextures = it
+                }
+            }
         }
 
-        override fun hasSkinTexture(): Boolean = skinTextureId != null
-
-        override fun getSkinTexture(): Identifier = if (skinTextureId != null) skinTextureId!! else super.getSkinTexture()
-
-        override fun isPartVisible(modelPart: PlayerModelPart): Boolean = true
-
-        override fun getModel(): String = if (model != null) model!! else super.getModel()
-
+        override fun getSkinTextures() = skinTextures
+        override fun isPartVisible(modelPart: PlayerModelPart) = true
         override fun getPlayerListEntry(): PlayerListEntry? = null
     }
 
@@ -235,20 +234,18 @@ class EntityModelComponent<E : Entity> private constructor(
         private val client: MinecraftClient
             get() = MinecraftClient.getInstance()
 
-        fun createRenderablePlayer(profile: GameProfile?): RenderablePlayerEntity = RenderablePlayerEntity(profile)
+        fun createRenderablePlayer(profile: GameProfile): RenderablePlayerEntity = RenderablePlayerEntity(profile)
 
         fun parse(element: Element): EntityModelComponent<*> {
             UIParsing.expectAttributes(element, "type")
-            val entityId: Identifier = UIParsing.parseIdentifier(element.getAttributeNode("type"))
-            val entityType: EntityType<*> = Registries.ENTITY_TYPE.getOrEmpty(entityId).orElseThrow {
+            val entityId = UIParsing.parseIdentifier(element.getAttributeNode("type"))
+            val entityType = Registries.ENTITY_TYPE.getOrEmpty(entityId).orElseThrow {
                 UIModelParsingException("Unknown entity type $entityId")
             }
 
             val nbt = if (element.hasAttribute("nbt")) {
-                try {
-                    StringNbtReader.parse(element.getAttribute("nbt"))
-                } catch (cse: CommandSyntaxException) {
-                    throw UIModelParsingException("Invalid NBT compound", cse)
+                runCatching { StringNbtReader.parse(element.getAttribute("nbt")) }.getOrElse {
+                    throw UIModelParsingException("Invalid NBT compound", it)
                 }
             } else {
                 null

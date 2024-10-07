@@ -8,7 +8,7 @@ import net.minecraft.block.AbstractBlock
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.WallBlock
-import net.minecraft.block.enums.Instrument
+import net.minecraft.block.enums.NoteBlockInstrument
 import net.minecraft.block.piston.PistonBehavior
 import net.minecraft.item.ItemGroups
 import net.minecraft.item.Items
@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier
 object BlockRegistry : CommonRegistration {
     @JvmField
     val FAKE_WITHER_SKELETON_SKULL = FakeWitherSkeletonSkullBlock(blockSettings {
-        instrument(Instrument.WITHER_SKELETON)
+        instrument(NoteBlockInstrument.WITHER_SKELETON)
         strength(1.0f)
         pistonBehavior(PistonBehavior.DESTROY)
     })

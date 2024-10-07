@@ -10,7 +10,7 @@ import gay.solonovamax.beaconsoverhaul.screen.OverhauledConduitScreen
 import net.fabricmc.api.ClientModInitializer
 import org.slf4j.kotlin.debug
 import org.slf4j.kotlin.getLogger
-import software.bernie.geckolib.core.molang.MolangParser
+import software.bernie.geckolib.loading.math.MathParser
 
 object BeaconOverhaulReloadedClient : ClientModInitializer {
     private val logger by getLogger()
@@ -38,6 +38,6 @@ object BeaconOverhaulReloadedClient : ClientModInitializer {
             }
         }
 
-        MolangParser.INSTANCE.functions["query.rotation_to_camera"] = RotationToCameraFunction::class.java
+        MathParser.registerFunction("query.rotation_to_camera", ::RotationToCameraFunction)
     }
 }

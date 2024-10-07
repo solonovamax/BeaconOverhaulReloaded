@@ -15,7 +15,7 @@ class FakeWitherSkeletonSkullBlock(settings: Settings) : Block(settings) {
 
     override fun getCullingShape(state: BlockState, world: BlockView, pos: BlockPos): VoxelShape = VoxelShapes.empty()
 
-    override fun canPathfindThrough(state: BlockState, world: BlockView, pos: BlockPos, type: NavigationType): Boolean = false
+    override fun canPathfindThrough(state: BlockState?, type: NavigationType?): Boolean = false
 
     companion object {
         val SHAPE: VoxelShape = createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0)

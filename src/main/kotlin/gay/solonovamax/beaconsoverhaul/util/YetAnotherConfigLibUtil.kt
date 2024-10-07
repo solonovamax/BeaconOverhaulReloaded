@@ -14,6 +14,8 @@ import dev.isxander.yacl3.dsl.RegisterableDelegateProvider
 import dev.isxander.yacl3.dsl.TextLineBuilderDsl
 import dev.isxander.yacl3.dsl.addDefaultText
 import dev.isxander.yacl3.dsl.descriptionBuilder
+import net.minecraft.registry.entry.RegistryEntry
+import net.minecraft.registry.entry.RegistryEntryList
 import net.minecraft.text.Text
 import java.util.concurrent.CompletableFuture
 import kotlin.experimental.ExperimentalTypeInference
@@ -44,6 +46,13 @@ fun <T> OptionRegistrar.registeringList(
 
 fun <T : Any> ListOption.Builder<T>.binding(property: KMutableProperty0<List<T>>, default: List<T>) {
     binding(default, { property.get() }, { property.set(it) })
+}
+
+fun <T : Any> ListOption.Builder<RegistryEntry<T>>.binding(
+    property: KMutableProperty0<RegistryEntryList<T>>,
+    default: RegistryEntryList<T>,
+) {
+    binding(default.toList(), { property.get().toList() }, { property.set(it.toRegistryEntryList()) })
 }
 
 fun OptionDsl<*>.defaultDescription() {

@@ -45,8 +45,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndRodBlock.class)
-public class EndRodBlockMixin extends RodBlock implements Waterloggable {
-    public EndRodBlockMixin(Settings settings) {
+public abstract class EndRodBlockMixin extends RodBlock implements Waterloggable {
+    protected EndRodBlockMixin(Settings settings) {
         super(settings);
     }
 

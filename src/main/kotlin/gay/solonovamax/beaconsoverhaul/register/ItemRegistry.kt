@@ -4,7 +4,6 @@ import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import gay.solonovamax.beaconsoverhaul.util.register
 import io.wispforest.lavender.book.LavenderBookItem
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.registry.Registries
@@ -30,8 +29,8 @@ object ItemRegistry : CommonRegistration {
     }
 
     private inline fun itemSettings(
-        builder: FabricItemSettings.() -> Unit = {},
+        builder: Item.Settings.() -> Unit = {},
     ): Item.Settings {
-        return FabricItemSettings().apply(builder)
+        return Item.Settings().apply(builder)
     }
 }

@@ -10,14 +10,19 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableProvider
 import net.minecraft.loot.context.LootContextTypes
 import net.minecraft.loot.entry.ItemEntry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.RegistryWrapper
+import java.util.concurrent.CompletableFuture
 
 class AdvancementLootTableProvider(
     output: FabricDataOutput,
-) : SimpleFabricLootTableProvider(output, LootContextTypes.ADVANCEMENT_REWARD) {
+    registryLookup: CompletableFuture<RegistryWrapper.WrapperLookup>,
+) : SimpleFabricLootTableProvider(output, registryLookup, LootContextTypes.ADVANCEMENT_REWARD) {
     override fun accept(exporter: LootTableExporter) {
         val beaconGuideItem = ItemEntry.builder(ItemRegistry.GUIDEBOOK)
         exporter.accept(
-            identifierOf("beacon_guide"),
+            RegistryKey.of(RegistryKeys.LOOT_TABLE, identifierOf("beacon_guide")),
             buildLootTable {
                 pool(buildLootPool {
                     rolls(constant(1f))

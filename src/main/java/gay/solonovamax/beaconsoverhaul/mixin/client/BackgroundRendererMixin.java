@@ -4,10 +4,10 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -61,7 +61,7 @@ class BackgroundRendererMixin {
             method = "applyFog",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/client/render/CameraSubmersionType;WATER:Lnet/minecraft/client/render/CameraSubmersionType;"
+                    target = "Lnet/minecraft/block/enums/CameraSubmersionType;WATER:Lnet/minecraft/block/enums/CameraSubmersionType;"
             )
     )
     private static CameraSubmersionType removeWaterOverlay(CameraSubmersionType original, Camera camera, BackgroundRenderer.FogType fogType,

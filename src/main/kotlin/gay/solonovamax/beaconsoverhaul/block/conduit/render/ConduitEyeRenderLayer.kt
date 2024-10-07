@@ -1,7 +1,7 @@
 package gay.solonovamax.beaconsoverhaul.block.conduit.render
 
 import gay.solonovamax.beaconsoverhaul.block.conduit.OverhauledConduitBlockEntity
-import gay.solonovamax.beaconsoverhaul.util.pushPop
+import gay.solonovamax.beaconsoverhaul.util.scoped
 import net.minecraft.client.render.Camera
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
@@ -26,19 +26,6 @@ class ConduitEyeRenderLayer(
     private val model: ConduitBlockModel
         get() = renderer.geoModel as ConduitBlockModel
 
-    override fun render(
-        poseStack: MatrixStack,
-        conduit: OverhauledConduitBlockEntity,
-        bakedModel: BakedGeoModel,
-        renderType: RenderLayer,
-        vertexSource: VertexConsumerProvider,
-        vertexConsumer: VertexConsumer,
-        partialTick: Float,
-        light: Int,
-        overlay: Int,
-    ) {
-    }
-
     override fun renderForBone(
         matrixStack: MatrixStack,
         conduit: OverhauledConduitBlockEntity,
@@ -53,7 +40,7 @@ class ConduitEyeRenderLayer(
         if (bone.name != "eye" || !conduit.isActive)
             return
 
-        matrixStack.pushPop {
+        matrixStack.scoped {
             matrixStack.translate(0.0, 0.5, 0.0) // Offset shit by 0.5 bc god dammit
             matrixStack.scale(0.5f, 0.5f, 0.5f)
             matrixStack.multiply(

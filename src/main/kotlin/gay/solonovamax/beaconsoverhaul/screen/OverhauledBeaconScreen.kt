@@ -25,6 +25,7 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerListener
 import net.minecraft.screen.ScreenTexts
@@ -43,8 +44,8 @@ class OverhauledBeaconScreen(
     private val logger by getLogger()
 
     private var buttons = listOf<BeaconButtonWidget>()
-    var primaryEffect: StatusEffect? = null
-    var secondaryEffect: StatusEffect? = null
+    var primaryEffect: RegistryEntry<StatusEffect>? = null
+    var secondaryEffect: RegistryEntry<StatusEffect>? = null
 
     init {
         backgroundWidth = BEACON_UI_WIDTH
@@ -303,7 +304,7 @@ class OverhauledBeaconScreen(
     ) : PressableWidget(x, y, 22, 22, message), BeaconButtonWidget {
         var isDisabled: Boolean = false
 
-        public override fun renderButton(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+        public override fun renderWidget(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
             with(context) {
                 renderButton()
             }
@@ -368,7 +369,7 @@ class OverhauledBeaconScreen(
         screen: OverhauledBeaconScreen,
         x: Int,
         y: Int,
-        private var effect: StatusEffect,
+        private var effect: RegistryEntry<StatusEffect>,
         private val primary: Boolean,
         private val level: Int,
     ) : BaseButtonWidget(screen, x, y) {
@@ -378,14 +379,14 @@ class OverhauledBeaconScreen(
             init(effect)
         }
 
-        protected fun init(statusEffect: StatusEffect) {
+        protected fun init(statusEffect: RegistryEntry<StatusEffect>) {
             effect = statusEffect
             sprite = MinecraftClient.getInstance().statusEffectSpriteManager.getSprite(statusEffect)
             tooltip = Tooltip.of(getEffectName(statusEffect), null)
         }
 
-        protected open fun getEffectName(statusEffect: StatusEffect): MutableText {
-            val text = Text.translatable(statusEffect.translationKey)
+        protected open fun getEffectName(statusEffect: RegistryEntry<StatusEffect>): MutableText {
+            val text = Text.translatable(statusEffect.value().translationKey)
             val amplifier = if (primary) screen.data.primaryAmplifier else screen.data.secondaryAmplifier
             if (statusEffect !in ConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1) {
                 text.append(" ")
@@ -440,10 +441,10 @@ class OverhauledBeaconScreen(
         screen: OverhauledBeaconScreen,
         x: Int,
         y: Int,
-        statusEffect: StatusEffect,
+        statusEffect: RegistryEntry<StatusEffect>,
     ) : EffectButtonWidget(screen, x, y, statusEffect, false, 3) {
-        override fun getEffectName(statusEffect: StatusEffect): MutableText {
-            val text = Text.translatable(statusEffect.translationKey)
+        override fun getEffectName(statusEffect: RegistryEntry<StatusEffect>): MutableText {
+            val text = Text.translatable(statusEffect.value().translationKey)
             val amplifier = screen.data.primaryAmplifierPotent
 
             if (statusEffect !in ConfigManager.beaconConfig.levelOneStatusEffects && amplifier > 1)

@@ -8,7 +8,6 @@
     "icon":          "pack.png",
     "accessWidener": "beaconoverhaul.accesswidener",
     "depends":       {
-        "cloth-config":              ">=${versions.clothconfig}",
         "fabric-api":                ">=${versions.fabric.api}",
         "fabric-language-kotlin":    ">=${versions.fabric.languageKotlin}",
         "fabricloader":              ">=${versions.fabric.loader}",

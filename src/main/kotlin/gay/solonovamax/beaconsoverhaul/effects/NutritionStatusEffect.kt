@@ -6,13 +6,15 @@ import net.minecraft.entity.effect.StatusEffectCategory
 import net.minecraft.entity.player.PlayerEntity
 
 class NutritionStatusEffect : StatusEffect(StatusEffectCategory.BENEFICIAL, 0xC75F79) {
-    override fun applyUpdateEffect(entity: LivingEntity, amplifier: Int) {
+    override fun applyUpdateEffect(entity: LivingEntity, amplifier: Int): Boolean {
         if (entity !is PlayerEntity)
-            return
+            return false
 
         entity.hungerManager.add(1, 0.0f)
         if (entity.hungerManager.saturationLevel <= amplifier)
             entity.hungerManager.saturationLevel += 1.0f
+
+        return true
     }
 
     override fun canApplyUpdateEffect(duration: Int, amplifier: Int): Boolean {

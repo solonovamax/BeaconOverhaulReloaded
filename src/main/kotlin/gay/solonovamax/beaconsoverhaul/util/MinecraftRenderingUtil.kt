@@ -1,9 +1,11 @@
 package gay.solonovamax.beaconsoverhaul.util
 
 import com.github.ajalt.colormath.Color
+import com.github.ajalt.colormath.model.RGB
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -147,7 +149,10 @@ fun drawItem(item: Item, x: Int, y: Int) {
     drawItem(ItemStack(item), x, y)
 }
 
-inline fun MatrixStack.pushPop(action: () -> Unit) {
+fun VertexConsumer.color(color: RGB): VertexConsumer = color.run { color(r, g, b, alpha) }
+fun VertexConsumer.color(color: Color): VertexConsumer = color.toSRGB().run { color(r, g, b, alpha) }
+
+inline fun MatrixStack.scoped(action: () -> Unit) {
     push()
     action()
     pop()

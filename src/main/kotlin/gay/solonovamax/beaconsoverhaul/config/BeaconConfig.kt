@@ -1,4 +1,10 @@
-@file:UseSerializers(BlockSerializer::class, StatusEffectSerializer::class, ResourceLocationSerializer::class)
+@file:UseSerializers(
+    BlockSerializer::class,
+    StatusEffectSerializer::class,
+    RegistryEntrySerializer::class,
+    RegistryEntryListSerializer::class,
+    IdentifierSerializer::class
+)
 
 package gay.solonovamax.beaconsoverhaul.config
 
@@ -6,7 +12,10 @@ import com.dfsek.paralithic.Expression
 import com.dfsek.paralithic.eval.parser.Parser
 import com.dfsek.paralithic.eval.parser.Scope
 import gay.solonovamax.beaconsoverhaul.serialization.BlockSerializer
+import gay.solonovamax.beaconsoverhaul.serialization.RegistryEntryListSerializer
+import gay.solonovamax.beaconsoverhaul.serialization.RegistryEntrySerializer
 import gay.solonovamax.beaconsoverhaul.serialization.StatusEffectSerializer
+import gay.solonovamax.beaconsoverhaul.util.toRegistryEntryList
 import io.github.xn32.json5k.SerialComment
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -19,10 +28,12 @@ import net.minecraft.SharedConstants
 import net.minecraft.block.Block
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.registry.Registries
+import net.minecraft.registry.entry.RegistryEntry
+import net.minecraft.registry.entry.RegistryEntryList
 import net.minecraft.util.Identifier
-import net.silkmc.silk.core.serialization.serializers.ResourceLocationSerializer
 import kotlin.math.floor
 import kotlin.time.Duration
+import net.silkmc.silk.core.serialization.serializers.ResourceLocationSerializer as IdentifierSerializer
 
 @Serializable
 data class BeaconConfig(
@@ -73,7 +84,7 @@ data class BeaconConfig(
     @SerialComment("The maximum number of layers the beacon can have")
     var maxBeaconLayers: Int,
     @SerialComment("A list of status effects that can never exceed level 1")
-    var levelOneStatusEffects: List<StatusEffect>,
+    var levelOneStatusEffects: RegistryEntryList<StatusEffect>,
     @SerialComment("A list of blocks that can be in the base of the beacon")
     var beaconBaseBlocks: List<Block>,
     @SerialComment("The different tiers of effects")
@@ -118,7 +129,7 @@ data class BeaconConfig(
         primaryAmplifier: String,
         secondaryAmplifier: String,
         maxBeaconLayers: Int,
-        levelOneStatusEffects: List<StatusEffect>,
+        levelOneStatusEffects: List<RegistryEntry<StatusEffect>>,
         beaconBaseBlocks: List<Block>,
         beaconEffectsByTier: BeaconTierEffects,
         beaconUpdateDelay: Duration,
@@ -139,7 +150,7 @@ data class BeaconConfig(
         AmplifierExpression(primaryAmplifier),
         AmplifierExpression(secondaryAmplifier),
         maxBeaconLayers,
-        levelOneStatusEffects,
+        levelOneStatusEffects.toRegistryEntryList(),
         beaconBaseBlocks,
         beaconEffectsByTier,
         beaconUpdateDelay,
@@ -189,16 +200,14 @@ data class BeaconConfig(
     @Serializable
     data class BeaconTierEffects(
         @SerialComment("A list of available effects at tier 1")
-        var tierOne: List<StatusEffect>,
+        var tierOne: RegistryEntryList<StatusEffect>,
         @SerialComment("A list of available effects at tier 2")
-        var tierTwo: List<StatusEffect>,
+        var tierTwo: RegistryEntryList<StatusEffect>,
         @SerialComment("A list of available effects at tier 3")
-        var tierThree: List<StatusEffect>,
+        var tierThree: RegistryEntryList<StatusEffect>,
         @SerialComment("A list of available secondary effects")
-        var secondaryEffects: List<StatusEffect>,
-    ) {
-        companion object
-    }
+        var secondaryEffects: RegistryEntryList<StatusEffect>,
+    )
 
     @Serializable
     sealed interface BeaconExpression {

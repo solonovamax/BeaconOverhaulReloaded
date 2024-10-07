@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.registry.RegistryWrapper
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
@@ -28,15 +29,14 @@ import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import net.silkmc.silk.core.kotlin.asKotlinRandom
 import net.silkmc.silk.core.math.vector.minus
-import net.silkmc.silk.core.math.vector.plus
 import net.silkmc.silk.nbt.set
 import org.slf4j.kotlin.getLogger
 import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.EasingType
-import software.bernie.geckolib.core.animation.RawAnimation
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
+import software.bernie.geckolib.animation.EasingType
+import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
 class OverhauledConduitBlockEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BlockEntityType.CONDUIT, pos, state), GeoBlockEntity {
@@ -65,10 +65,10 @@ class OverhauledConduitBlockEntity(pos: BlockPos?, state: BlockState?) : BlockEn
     private var nextAmbientSoundTime: Long = 0
 
     private val attackZone: Box
-        get() = Box(pos, pos + 1).expand(KILL_RANGE)
+        get() = Box(pos).stretch(0.0, 1.0, 0.0).expand(KILL_RANGE)
 
     private val effectZone: Box
-        get() = Box(pos, pos + 1).expand(range).stretch(0.0, world?.height?.toDouble() ?: 0.0, 0.0)
+        get() = Box(pos).stretch(0.0, 1.0, 0.0).expand(range).stretch(0.0, world?.height?.toDouble() ?: 0.0, 0.0)
 
     var tier: Int = 0
         private set
@@ -87,18 +87,18 @@ class OverhauledConduitBlockEntity(pos: BlockPos?, state: BlockState?) : BlockEn
         tier = validatedTier
     }
 
-    override fun readNbt(nbt: NbtCompound) {
-        super.readNbt(nbt)
+    override fun readNbt(nbt: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
+        super.readNbt(nbt, registryLookup)
         tier = nbt.getInt("Tier")
     }
 
-    override fun writeNbt(nbt: NbtCompound) {
-        super.writeNbt(nbt)
+    override fun writeNbt(nbt: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
+        super.writeNbt(nbt, registryLookup)
         nbt["Tier"] = tier
     }
 
     override fun toUpdatePacket(): BlockEntityUpdateS2CPacket = BlockEntityUpdateS2CPacket.create(this)
-    override fun toInitialChunkDataNbt(): NbtCompound = createNbt()
+    override fun toInitialChunkDataNbt(registryLookup: RegistryWrapper.WrapperLookup): NbtCompound? = createNbt(registryLookup)
 
     override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar) {
         controllers.add(AnimationController(this, SharedConstants.TICKS_PER_SECOND / 2) { event ->

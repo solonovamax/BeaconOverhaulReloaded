@@ -4,9 +4,11 @@ import gay.solonovamax.beaconsoverhaul.block.conduit.OverhauledConduitBlockEntit
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import net.minecraft.client.texture.SpriteAtlasTexture
 import net.minecraft.client.util.SpriteIdentifier
-import net.minecraft.util.Identifier
+import net.minecraft.screen.PlayerScreenHandler
 import org.joml.Math
-import software.bernie.geckolib.core.molang.MolangParser
+import software.bernie.geckolib.animation.AnimationState
+import software.bernie.geckolib.loading.math.MathParser
+import software.bernie.geckolib.loading.math.value.Variable
 import software.bernie.geckolib.model.GeoModel
 import kotlin.math.cos
 import kotlin.math.max
@@ -32,7 +34,7 @@ class ConduitBlockModel : GeoModel<OverhauledConduitBlockEntity>() {
         }
     }
 
-    override fun applyMolangQueries(conduit: OverhauledConduitBlockEntity, animTime: Double) {
+    override fun applyMolangQueries(conduit: AnimationState<OverhauledConduitBlockEntity>, animTime: Double) {
         super.applyMolangQueries(conduit, animTime)
 
         val step = (animTime / 20) * 6
@@ -40,11 +42,10 @@ class ConduitBlockModel : GeoModel<OverhauledConduitBlockEntity>() {
         val largeMotion = sin(Math.toRadians(1 - (sineStep).pow(32)))
         val smallMotion = Math.toDegrees(largeMotion) * cos(Math.toRadians(step * 28)) / 4
         val shellCornerDistance = max(largeMotion * 96 - 0.01, 0.0) + smallMotion
-        // println("animTime = $animTime, step = $step, sineStep = $sineStep, shellCornerDistance = $shellCornerDistance, smallMotion = $smallMotion")
-        MolangParser.INSTANCE.setMemoizedValue("c.sinstep") { sineStep }
-        MolangParser.INSTANCE.setMemoizedValue("c.step") { step }
-        MolangParser.INSTANCE.setMemoizedValue("c.large_motion") { step }
-        MolangParser.INSTANCE.setMemoizedValue("c.shell_corner_distance") { shellCornerDistance }
+        MathParser.setVariable("c.sinstep") { sineStep }
+        MathParser.setVariable("c.step") { step }
+        MathParser.setVariable("c.large_motion") { step }
+        MathParser.setVariable("c.shell_corner_distance") { shellCornerDistance }
     }
 
     companion object {
@@ -53,15 +54,19 @@ class ConduitBlockModel : GeoModel<OverhauledConduitBlockEntity>() {
         private val CONDUIT_ANIMATION = identifierOf("animations/block/conduit.animation.json")
         private val CONDUIT_EYE_OPEN_TEXTURE = identifierOf("entity/conduit/open_eye")
         private val CONDUIT_EYE_CLOSED_TEXTURE = identifierOf("entity/conduit/closed_eye")
-        private val CONDUIT_OPEN_EYE_SPRITE = SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_OPEN_TEXTURE)
-        private val CONDUIT_CLOSED_EYE_SPRITE = SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_CLOSED_TEXTURE)
+        private val CONDUIT_OPEN_EYE_SPRITE = SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_OPEN_TEXTURE)
+        private val CONDUIT_CLOSED_EYE_SPRITE = SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_CLOSED_TEXTURE)
         private val CONDUIT_OPEN_EYE_SPRITE_EMISSIVE =
-            SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_OPEN_TEXTURE.withPath { "${it}_glowmask" })
+            SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_OPEN_TEXTURE.withPath { "${it}_glowmask" })
         private val CONDUIT_CLOSED_EYE_SPRITE_EMISSIVE =
-            SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_CLOSED_TEXTURE.withPath { "${it}_glowmask" })
-        private val CONDUIT_WIND_TEXTURE = Identifier("entity/conduit/wind")
+            SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, CONDUIT_EYE_CLOSED_TEXTURE.withPath { "${it}_glowmask" })
+        private val CONDUIT_WIND_TEXTURE = identifierOf("minecraft", "entity/conduit/wind")
         private val CONDUIT_WIND_SPRITE = SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_WIND_TEXTURE)
-        private val CONDUIT_WIND_VERTICAL_TEXTURE = Identifier("entity/conduit/wind_vertical")
+        private val CONDUIT_WIND_VERTICAL_TEXTURE = identifierOf("minecraft", "entity/conduit/wind_vertical")
         private val CONDUIT_WIND_VERTICAL_SPRITE = SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, CONDUIT_WIND_VERTICAL_TEXTURE)
+
+        private val SINESTEP_VARIABLE = Variable("c.sinstep") {
+            1.0
+        }
     }
 }

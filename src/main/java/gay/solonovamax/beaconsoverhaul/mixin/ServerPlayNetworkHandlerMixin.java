@@ -32,7 +32,7 @@ public class ServerPlayNetworkHandlerMixin {
                 return;
             }
 
-            beaconScreenHandler.setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
+            beaconScreenHandler.setEffects(packet.primary(), packet.secondary());
         }
     }
 }

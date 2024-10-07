@@ -4,13 +4,15 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator.Pack
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider
 import net.minecraft.advancement.Advancement
+import net.minecraft.advancement.AdvancementEntry
+import net.minecraft.advancement.AdvancementRewards
 import net.minecraft.block.Block
 import net.minecraft.data.DataProvider
 import net.minecraft.data.client.BlockStateModelGenerator
 import net.minecraft.data.client.ModelIds
 import net.minecraft.data.client.TexturedModel
 import net.minecraft.data.family.BlockFamily
-import net.minecraft.data.server.recipe.RecipeJsonProvider
+import net.minecraft.data.server.recipe.RecipeExporter
 import net.minecraft.data.server.recipe.RecipeProvider
 import net.minecraft.loot.LootPool
 import net.minecraft.loot.LootTable
@@ -20,6 +22,8 @@ import net.minecraft.loot.provider.number.ScoreLootNumberProvider
 import net.minecraft.loot.provider.number.UniformLootNumberProvider
 import net.minecraft.recipe.Ingredient
 import net.minecraft.recipe.book.RecipeCategory
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
 import net.minecraft.util.Identifier
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiConsumer
@@ -30,22 +34,94 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
+import net.minecraft.advancement.AdvancementRewards.Builder as AdvancementRewardBuilder
 import net.minecraft.data.family.BlockFamily.Variant as FamilyVariant
 import net.minecraft.loot.context.LootContext.EntityTarget as LootEntityTarget
 
-typealias AdvancementExporter = Consumer<Advancement>
+typealias AdvancementExporter = Consumer<AdvancementEntry>
 
-fun AdvancementExporter.buildExportedAdvancement(id: Identifier, builder: Advancement.Builder.() -> Unit): Advancement {
+fun AdvancementExporter.buildAdvancement(id: Identifier, builder: Advancement.Builder.() -> Unit): AdvancementEntry {
     return Advancement.Builder.createUntelemetered().apply(builder).build(id).also { advancement ->
         accept(advancement)
     }
 }
 
-fun FabricAdvancementProvider.advancementOf(id: Identifier): Advancement {
+context(FabricAdvancementProvider)
+fun advancementOf(id: Identifier): AdvancementEntry {
     return Advancement.Builder.createUntelemetered().build(id)
 }
 
-typealias LootTableExporter = BiConsumer<Identifier, LootTable.Builder>
+context(FabricAdvancementProvider)
+fun experienceRewardOf(experience: Int): AdvancementRewards {
+    return AdvancementRewardBuilder.experience(experience).build()
+}
+
+context(FabricAdvancementProvider)
+fun lootRewardOf(id: Identifier): AdvancementRewards {
+    return AdvancementRewardBuilder.loot(RegistryKey.of(RegistryKeys.LOOT_TABLE, id)).build()
+}
+
+context(FabricAdvancementProvider)
+fun recipeRewardOf(id: Identifier): AdvancementRewards {
+    return AdvancementRewardBuilder.recipe(id).build()
+}
+
+context(FabricAdvancementProvider)
+fun functionRewardOf(id: Identifier): AdvancementRewards {
+    return AdvancementRewardBuilder.function(id).build()
+}
+
+context(FabricAdvancementProvider)
+fun rewardOf(
+    experience: Int? = null,
+    lootTable: Identifier? = null,
+    recipe: Identifier? = null,
+    function: Identifier? = null,
+): AdvancementRewards {
+    val builder = AdvancementRewardBuilder()
+
+    if (experience != null)
+        builder.setExperience(experience)
+
+    if (lootTable != null)
+        builder.addLoot(RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTable))
+
+    if (recipe != null)
+        builder.addRecipe(recipe)
+
+    if (function != null)
+        builder.setFunction(function)
+
+    return builder.build()
+}
+
+context(FabricAdvancementProvider)
+fun rewardOf(
+    experience: Int? = null,
+    lootTables: List<Identifier>? = null,
+    recipes: List<Identifier>? = null,
+    function: Identifier? = null,
+): AdvancementRewards {
+    val builder = AdvancementRewardBuilder()
+
+    if (experience != null)
+        builder.setExperience(experience)
+
+    if (lootTables != null)
+        for (lootTable in lootTables)
+            builder.addLoot(RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTable))
+
+    if (recipes != null)
+        for (recipe in recipes)
+            builder.addRecipe(recipe)
+
+    if (function != null)
+        builder.setFunction(function)
+
+    return builder.build()
+}
+
+typealias LootTableExporter = BiConsumer<RegistryKey<LootTable>, LootTable.Builder>
 
 fun buildLootTable(action: LootTable.Builder.() -> Unit): LootTable.Builder {
     return LootTable.builder().apply(action)
@@ -78,8 +154,6 @@ fun BlockStateModelGenerator.registerWallModelTexturePool(family: BlockFamily): 
 }
 
 operator fun BlockFamily.get(variant: FamilyVariant): Block = getVariant(variant)
-
-typealias RecipeExporter = Consumer<RecipeJsonProvider>
 
 fun RecipeExporter.offerWallRecipe(family: BlockFamily) {
     val wallVariantName = FamilyVariant.WALL.getName()
