@@ -1,12 +1,11 @@
 package gay.solonovamax.beaconsoverhaul.mixin.client;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import gay.solonovamax.beaconsoverhaul.register.StatusEffectRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.random.Random;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
 abstract class InGameHudMixin {
-    @WrapWithCondition(
+    @ModifyExpressionValue(
             method = "renderFood",
             at = @At(
                     target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I",
@@ -25,13 +24,16 @@ abstract class InGameHudMixin {
             require = 1,
             allow = 1
     )
-    private boolean noNutritionHungerShake(Random instance, int i) {
+    private int noNutritionHungerShake(int original) {
         PlayerEntity player = this.getCameraPlayer();
 
         if ((player != null) && !player.getHungerManager().isNotFull()) {
-            return player.hasStatusEffect(StatusEffectRegistry.NUTRITION);
+            if (player.hasStatusEffect(StatusEffectRegistry.NUTRITION))
+                return 1;
+            else
+                return 0;
         } else {
-            return true;
+            return original;
         }
     }
 

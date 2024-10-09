@@ -16,7 +16,7 @@ object StatusEffectRegistry : CommonRegistration {
         .let { Registries.STATUS_EFFECT.registerReference(identifierOf("long_reach"), it) }
 
     @JvmField
-    val NUTRITION = NutritionStatusEffect().let { Registries.STATUS_EFFECT.registerReference(identifierOf("long_reach"), it) }
+    val NUTRITION = NutritionStatusEffect().let { Registries.STATUS_EFFECT.registerReference(identifierOf("nutrition"), it) }
 
     override fun register() {}
 }
