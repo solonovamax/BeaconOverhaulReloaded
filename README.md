@@ -38,6 +38,7 @@
     - [x] Beacon beam redirection using amethyst clusters
     - [ ] When the beam is obstructed, still render it, but blink red. Don't grant effects.
     - [ ] More effects? (smth to remove phantoms/patrols? maybe this could be for the corrupted beacon...)
+      - [x] Stealthy: Makes detection range of sculk sensors smaller
     - [ ] Allow Lapis & Redstone to be used in the base. (what can make them different from other blocks?)
     - [ ] Integration with other mods (how?)
 - Conduit

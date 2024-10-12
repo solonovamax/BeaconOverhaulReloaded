@@ -8,6 +8,7 @@ import com.mojang.serialization.MapCodec
 import gay.solonovamax.beaconsoverhaul.BeaconConstants
 import net.minecraft.block.Block
 import net.minecraft.entity.Entity
+import net.minecraft.entity.attribute.ClampedEntityAttribute
 import net.minecraft.predicate.entity.EntityPredicates
 import net.minecraft.registry.Registries
 import net.minecraft.resource.featuretoggle.FeatureSet
@@ -40,10 +41,23 @@ fun <T : ScreenHandler?> ScreenHandlerType(
     factory: ScreenHandlerType.Factory<T>,
 ): ScreenHandlerType<T> = ScreenHandlerType(factory, requiredFeatures)
 
+fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(size)
+
+fun clampedEntityAttributeOf(
+    translationKey: String,
+    fallback: Double,
+    min: Double,
+    max: Double,
+    tracked: Boolean? = null,
+): ClampedEntityAttribute {
+    return ClampedEntityAttribute(translationKey, fallback, min, max).apply {
+        if (tracked != null)
+            isTracked = tracked
+    }
+}
+
 val Block.id: Identifier
     get() = Registries.BLOCK.getId(this)
-
-fun PropertyDelegate(size: Int): ArrayPropertyDelegate = ArrayPropertyDelegate(size)
 
 fun World.otherEntities(
     except: Entity?,

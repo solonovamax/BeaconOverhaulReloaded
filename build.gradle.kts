@@ -139,7 +139,6 @@ dependencies {
 
     // the last item has the highest priority
     mappings(loom.layered {
-        mappings(variantOf(libs.quilt.mappings) { classifier("intermediary-v2") })
         mappings(variantOf(libs.yarn.mappings) { classifier("v2") })
     })
 

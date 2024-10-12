@@ -1,9 +1,9 @@
 {
     "minVersion": "0.8",
     "compatibilityLevel": "JAVA_17",
-    "required":  true,
-    "package":   "gay.solonovamax.beaconsoverhaul.mixin",
-    "mixins":    [
+    "required":   true,
+    "package":    "gay.solonovamax.beaconsoverhaul.mixin",
+    "mixins":     [
         "BeaconBlockEntityMixin",
         "BeaconBlockMixin",
         "BlockEntityTypeMixin",
@@ -14,10 +14,12 @@
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin",
-        "ServerPlayNetworkHandlerMixin"
+        "SculkBlockEntityVibrationCallbackMixin",
+        "ServerPlayNetworkHandlerMixin",
+        "WardenEntityVibrationCallbackMixin"
     ],
-    "refmap":    "mixins/beaconoverhaul/refmap.json",
-    "injectors": {
+    "refmap":     "mixins/beaconoverhaul/refmap.json",
+    "injectors":  {
         "maxShiftBy": 2
     }
 }

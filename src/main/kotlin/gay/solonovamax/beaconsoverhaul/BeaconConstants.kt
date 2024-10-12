@@ -204,7 +204,12 @@ object BeaconConstants {
         beaconEffectsByTier = BeaconTierEffects(
             tierOne = registryEntryListOf(StatusEffects.SPEED, StatusEffects.HASTE),
             tierTwo = registryEntryListOf(StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST, StatusEffectRegistry.LONG_REACH),
-            tierThree = registryEntryListOf(StatusEffects.STRENGTH, StatusEffectRegistry.NUTRITION, StatusEffects.HEALTH_BOOST),
+            tierThree = registryEntryListOf(
+                StatusEffects.STRENGTH,
+                StatusEffectRegistry.NUTRITION,
+                StatusEffects.HEALTH_BOOST,
+                StatusEffectRegistry.STEALTHY,
+            ),
             secondaryEffects = registryEntryListOf(
                 StatusEffects.REGENERATION,
                 StatusEffects.FIRE_RESISTANCE,

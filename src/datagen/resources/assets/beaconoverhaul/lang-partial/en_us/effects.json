@@ -3,7 +3,9 @@
     "translations": {
         "long_reach":             "Long Reach",
         "nutrition":              "Nutrition",
+        "stealthy":              "Stealthy",
         "long_reach.description": "Increases the reach distance of the player",
-        "nutrition.description":  "Slowly replenishes the hunger bar of the player"
+        "nutrition.description": "Slowly replenishes the hunger bar of the player",
+        "stealthy.description":  "Muffles player sounds, making Sculk have a smaller detection range"
     }
 }
