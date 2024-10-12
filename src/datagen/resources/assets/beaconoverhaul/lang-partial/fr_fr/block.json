@@ -1,0 +1,11 @@
+{
+    "prefix":       "block.beaconoverhaul",
+    "translations": {
+        "beacon.points":         "Points :",
+        "beacon.range":          "Portée :",
+        "beacon.duration":       "Durée :",
+        "corrupted_beacon":      "Balise corrompue",
+        "prismarine_brick_wall": "Muret de prismarine taillée",
+        "dark_prismarine_wall":  "Muret de prismarine sombre taillée"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "prefix":       "guidebook.beaconoverhauled",
+    "translations": {
+        "structure_component.layer_checkbox":      "Afficher les niveaux en dessous du niveau actuel",
+        "beacon_structure_component.tier_label":   "Niveau de la balise",
+        "beacon_structure_component.tier_tooltip": "Niveau : %d"
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "prefix":       "attribute.name",
+    "translations": {
+        "player.sculk_detection_range_multiplier": "Multiplieur de la portée de détection du sculk"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "prefix":       "advancements.nether.beaconoverhaul",
+    "translations": {
+        "redirect_beacon.title":            "Philosophe des lumières",
+        "redirect_beacon.description":      "Redirigez le rayon d'une balise avec des amas d'améthystes",
+        "redirect_beacon_many.title":       "Tellement brillant",
+        "redirect_beacon_many.description": "Redirigez le rayon d'une balise plusieurs fois"
+    }
+}

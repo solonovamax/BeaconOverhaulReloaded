@@ -1,0 +1,159 @@
+{
+    "prefix":       "yacl3.config.beaconoverhaul",
+    "translations": {
+        "category": {
+            "beacon":  {
+                "_":     "Configuration de la balise",
+                "group": {
+                    "expressions": {
+                        "_":      "Expressions",
+                        "option": {
+                            "range":               {
+                                "_":             "Range",
+                                "description.1": "L'expression pour calculer la portée de la balise",
+                                "description.2": [
+                                    "Variables :\n",
+                                    "- ", { "text": "pts", "color": "dark_gray" }, " : les points associée avec la balise."
+                                ]
+                            },
+                            "duration":            {
+                                "_":             "Duration",
+                                "description.1": "L'expression pour calculer la durée de la balise.",
+                                "description.2": [
+                                    "Variables :\n",
+                                    "- ", { "text": "pts", "color": "dark_gray" }, " : les points associée avec la balise."
+                                ]
+                            },
+                            "primary_amplifier":   {
+                                "_":             "Primary Amplifier",
+                                "description.1": "L'expression pour calculer le niveau de l'effet primaire.",
+                                "description.2": [
+                                    "Variables :\n",
+
+                                    "- ",
+                                    { "text": "pts", "color": "dark_gray" },
+                                    " : les points associée avec la balise.\n",
+
+                                    "- ",
+                                    { "text": "isPotent", "color": "dark_gray" },
+                                    " : si l'effet est plus puissant. 1 si oui, sinon 0."
+                                ]
+                            },
+                            "secondary_amplifier": {
+                                "_":             "Secondary Amplifier",
+                                "description.1": "The expression used to calculate the amplifier for the secondary effect.",
+                                "description.2": [
+                                    "Variables :\n",
+
+                                    "- ",
+                                    { "text": "pts", "color": "dark_gray" },
+                                    " : les points associée avec la balise.\n",
+
+                                    "- ",
+                                    { "text": "isPotent", "color": "dark_gray" },
+                                    " : si l'effet est plus puissant. 1 si oui, sinon 0."
+                                ]
+                            }
+                        }
+
+                    },
+                    "misc":        {
+                        "_":      "Miscellaneous",
+                        "option": {
+                            "allow_tinted_glass_transparency":   {
+                                "_":             "Activer la transparence des vitres teintées",
+                                "description.1": "Si les rayon de le balise qui traverse les vitres teintées devient partiellement transparent."
+                            },
+                            "max_beacon_layers":                 {
+                                "_":             "Nombre maximal de niveaux",
+                                "description.1": "Le nombre maximal de niveaux qu'une balise peut avoir avant que l'ajout des nouveaux niveaux n'ait aucun effet."
+                            },
+                            "effect_particles":                  {
+                                "_":             "Particles d'effet de balise",
+                                "description.1": "Si les effets émis par une balise émettent des particules.",
+                                "description.2": "Le comportement par défaut est « true »."
+                            },
+                            "redirection_horizontal_move_limit": {
+                                "_":             "Limite de redirection horizontale",
+                                "description.1": "Nombre maximal de blocs qu'un rayon de balise peut parcourir horizontalement."
+                            }
+                        }
+                    },
+                    "beam":        {
+                        "_":      "Beacon Beam",
+                        "option": {
+                            "beam_update_frequency": {
+                                "_":             "Fréquence des actualisations du rayon",
+                                "description.1": "La fréquence de mise à jour du faisceau de la balise, en ticks.",
+                                "description.2": "Ce nombre correspond à la fréquence des actualisations du rayon de la balise, en ticks. S'il est 2, le rayon sera réactualisé chaque 2 ticks."
+                            },
+                            "beam_radius":           {
+                                "_":             "Taille du rayon",
+                                "description.1": "La taille du rayon de la balise, en blocs."
+                            },
+                            "beam_glow_radius":      {
+                                "_":             "Taille de la lueur du rayon",
+                                "description.1": "La taille de la lueur du rayon, en blocs.",
+                                "description.2": "La lueur autour du rayon principal de la balise."
+                            },
+                            "beam_glow_opacity":     {
+                                "_":             "Transparence du rayon",
+                                "description.1": "La transparence de la lueur autour du rayon principal de la balise.",
+                                "description.2": "0 si totalement transparent, 1 si pas de tout transparent."
+                            },
+                            "beam_blend_padding":    {
+                                "_":             "Taille de la section du rayon mélangé",
+                                "description.1": "La distance à laquelle le rayon de la balise est mélangé lorsqu'il change de couleur, en blocs."
+                            }
+                        }
+                    }
+                },
+                "root":  {
+                    "option": {
+                        "beacon_base_blocks":        {
+                            "_":             "Blocs pour la base de la balise",
+                            "description.1": "Les blocs qui sont utilisables dans la construction de la base d'une balise.",
+                            "description.2": [
+                                "Les blocs qui ne sont pas dans cette liste peuvent quand même être utilisés s'ils sont présents dans le tag « ",
+                                { "text": "beacon_base_blocks", "color": "gray" },
+                                " », donc cette liste est utilisée pour ajouter tous les blocs qui ne sont pas déjà présents, comme le « ",
+                                { "translate": "block.minecraft.lapis_block" },
+                                " » ou le « ",
+                                { "translate": "block.minecraft.amethyst_block" },
+                                "» ."
+                            ]
+                        },
+                        "level_one_status_effects":  {
+                            "_":             "Effet à un seul niveau",
+                            "description.1": "Une liste d'effets qui se limitent au niveau 1.",
+                            "description.2": [
+                                "Les effet « ",
+                                { "translate": "effect.minecraft.fire_resistance" },
+                                " » ou « ",
+                                { "translate": "effect.minecraft.invisibility" },
+                                " » come exemple."
+                            ]
+                        },
+                        "tier_one_beacon_effects":   {
+                            "_":             "Effets de niveau 1",
+                            "description.1": "Les effets que vous pouvez obtenir avec une balise de niveau 1."
+                        },
+                        "tier_two_beacon_effects":   {
+                            "_":             "Effets de niveau 2",
+                            "description.1": "Les effets que vous pouvez obtenir avec une balise de niveau 2."
+                        },
+                        "tier_three_beacon_effects": {
+                            "_":             "Effets de niveau 3",
+                            "description.1": "Les effets que vous pouvez obtenir avec une balise de niveau 3."
+                        },
+                        "secondary_beacon_effects":  {
+                            "_":             "Effets secondaires",
+                            "description.1": "Les effets que vous pouvez obtenir avec une balise de niveau 4."
+                        }
+                    }
+                }
+            },
+            "conduit": "Configuration du conduit"
+        }
+    }
+}

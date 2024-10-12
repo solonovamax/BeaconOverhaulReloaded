@@ -1,0 +1,11 @@
+{
+    "prefix":       "effect.beaconoverhaul",
+    "translations": {
+        "long_reach":             "Long Reach",
+        "nutrition":              "L'alimentation",
+        "stealthy":               "Furtif",
+        "long_reach.description": "Augmente la portée du joueur",
+        "nutrition.description":  "Remplit lentement la barre de faim du joueur",
+        "stealthy.description":   "Réduit les sons du joueur, réduisant la portée de détection du sculk."
+    }
+}
