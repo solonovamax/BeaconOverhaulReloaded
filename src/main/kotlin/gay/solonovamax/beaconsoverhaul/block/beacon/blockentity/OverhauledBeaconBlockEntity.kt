@@ -211,7 +211,7 @@ fun OverhauledBeacon.testCanApplyEffect(effect: RegistryEntry<StatusEffect>): Bo
         in ConfigManager.beaconConfig.beaconEffectsByTier.tierOne -> level >= 1
         in ConfigManager.beaconConfig.beaconEffectsByTier.tierTwo -> level >= 2
         in ConfigManager.beaconConfig.beaconEffectsByTier.tierThree -> level >= 3
-        !in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
+        in ConfigManager.beaconConfig.beaconEffectsByTier.secondaryEffects -> level >= 4
         else -> false
     }
 }
