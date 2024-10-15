@@ -27,11 +27,13 @@ public abstract class BlockItemMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void whatever(ItemPlacementContext placementContext, BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    private void placeNextMatchingStructureBlock(ItemPlacementContext placementContext, BlockState state,
+                                                 CallbackInfoReturnable<Boolean> cir) {
         ItemUsageContextAccessor usageContextAccessor = (ItemUsageContextAccessor) placementContext;
         World world = placementContext.getWorld();
         BlockPos pos = usageContextAccessor.getHit().getBlockPos();
         BlockState targetBlockState = world.getBlockState(pos);
+
         if (targetBlockState.isOf(Blocks.CONDUIT)) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             BlockState placementState = getBlock().getPlacementState(placementContext);

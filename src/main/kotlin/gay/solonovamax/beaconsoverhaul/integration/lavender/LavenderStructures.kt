@@ -20,6 +20,7 @@ import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
 import net.minecraft.registry.Registries
 import net.minecraft.registry.entry.RegistryEntryList
+import net.minecraft.registry.tag.BlockTags
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.state.property.Property
 import net.minecraft.util.Identifier
@@ -222,6 +223,10 @@ fun LavenderStructureTemplate.tryPlaceNextMatching(state: BlockState, pos: Block
         val currentState = world.getBlockState(realPos)
 
         if (predicate.test(currentState) == LavenderBlockStatePredicate.Result.STATE_MATCH)
+            continue
+
+        val targetState = world.getBlockState(realPos)
+        if (!targetState.isAir && !targetState.isReplaceable && targetState !in BlockTags.FIRE && targetState.fluidState.isEmpty)
             continue
 
         world.setBlockState(realPos, state)

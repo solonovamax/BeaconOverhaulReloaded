@@ -7,7 +7,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeacon;
 import gay.solonovamax.beaconsoverhaul.block.beacon.OverhauledBeaconPropertyDelegate;
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment;
-import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.OverhauledBeaconBlockEntityKt;
+import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBlockEntityKt;
 import gay.solonovamax.beaconsoverhaul.config.ConfigManager;
 import gay.solonovamax.beaconsoverhaul.util.JvmUtils;
 import kotlinx.datetime.Instant;
@@ -131,7 +131,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             allow = 1
     )
     private static void constructBeamSegments(World world, BlockPos pos, BlockState state, BeaconBlockEntity beacon, CallbackInfo ci) {
-        OverhauledBeaconBlockEntityKt.constructBeamSegments((OverhauledBeacon) beacon);
+        if (BeaconBlockEntityKt.shouldConstructBeamSegments((OverhauledBeacon) beacon))
+            BeaconBlockEntityKt.constructBeamSegments((OverhauledBeacon) beacon);
     }
 
     @ModifyExpressionValue(
@@ -160,7 +161,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
             allow = 1
     )
     private static void updateTier(World world, BlockPos pos, BlockState beaconState, BeaconBlockEntity beacon, CallbackInfo ci) {
-        OverhauledBeaconBlockEntityKt.updateTier((OverhauledBeacon) beacon, world, pos);
+        BeaconBlockEntityKt.updateTier((OverhauledBeacon) beacon, world, pos);
     }
 
     @Redirect(
@@ -312,7 +313,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     )
     private void createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity,
                             CallbackInfoReturnable<ScreenHandler> cir) {
-        cir.setReturnValue(OverhauledBeaconBlockEntityKt.createMenu(this, syncId, playerEntity));
+        cir.setReturnValue(BeaconBlockEntityKt.createMenu(this, syncId, playerEntity));
     }
 
     @Inject(
@@ -337,7 +338,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public byte[] getScreenOpeningData(ServerPlayerEntity player) {
-        return OverhauledBeaconBlockEntityKt.screenOpeningData(this, player);
+        return BeaconBlockEntityKt.screenOpeningData(this, player);
     }
 
     @Unique
@@ -528,7 +529,7 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     @Unique
     @Override
     public boolean canApplyEffect(@NotNull RegistryEntry<StatusEffect> effect) {
-        return OverhauledBeaconBlockEntityKt.testCanApplyEffect(this, effect);
+        return BeaconBlockEntityKt.testCanApplyEffect(this, effect);
     }
 
     @Unique

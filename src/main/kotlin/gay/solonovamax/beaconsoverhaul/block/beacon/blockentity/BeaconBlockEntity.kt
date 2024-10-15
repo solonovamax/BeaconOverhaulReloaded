@@ -38,31 +38,6 @@ import net.minecraft.world.Heightmap
 import net.minecraft.world.World
 import net.silkmc.silk.core.math.vector.minus
 
-// class OverhauledBeaconBlockEntity(
-//     pos: BlockPos,
-//     state: BlockState,
-// ) : AbstractBeaconBlockEntity(BlockEntityType.BEACON, pos, state) {
-//     override val range: Int
-//         get() = TODO("Not yet implemented")
-//     override val duration: Int
-//         get() = TODO("Not yet implemented")
-//     override val primaryAmplifier: Int
-//         get() = TODO("Not yet implemented")
-//     override val primaryAmplifierPotent: Int
-//         get() = TODO("Not yet implemented")
-//     override val secondaryAmplifier: Int
-//         get() = TODO("Not yet implemented")
-//
-//     override fun applyPrimaryStatusEffect(entities: List<Entity>) {
-//         TODO("Not yet implemented")
-//     }
-//
-//     override fun applySecondaryStatusEffect(entities: List<Entity>) {
-//         TODO("Not yet implemented")
-//     }
-//
-// }
-
 fun OverhauledBeacon.createMenu(
     syncId: Int,
     player: PlayerEntity,
@@ -72,14 +47,7 @@ fun OverhauledBeacon.createMenu(
     if (player is ServerPlayerEntity)
         addUpdateListener(player)
 
-    val beaconScreenHandler = OverhauledBeaconScreenHandler(
-        syncId,
-        player,
-        this.propertyDelegate,
-        context,
-    ) { player: PlayerEntity ->
-        this.removeUpdateListener(player)
-    }
+    val beaconScreenHandler = OverhauledBeaconScreenHandler(syncId, player, this.propertyDelegate, context) { removeUpdateListener(it) }
 
     return beaconScreenHandler
 }
@@ -93,11 +61,9 @@ fun OverhauledBeacon.updateTier(world: World, pos: BlockPos) {
 
     val (level, baseBlocks) = buildBlockMultiset(pos.y, world, pos.x, pos.z)
 
-    if (level > this.level) {
-        // if (/*!broke &&*/beamSegmentsToCheck.isNotEmpty()) {
+    if (level > this.level && !brokenBeam) {
         for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos.toCenterPos(), pos.toCenterPos()).expand(10.0)))
             Criteria.CONSTRUCT_BEACON.trigger(player, level)
-        // }
     }
 
     this.baseBlocks = baseBlocks
@@ -216,10 +182,11 @@ fun OverhauledBeacon.testCanApplyEffect(effect: RegistryEntry<StatusEffect>): Bo
     }
 }
 
-fun OverhauledBeacon.constructBeamSegments() {
-    if (world.time % ConfigManager.beaconConfig.beamUpdateFrequency != 0L)
-        return
+fun OverhauledBeacon.shouldConstructBeamSegments(): Boolean {
+    return world.time % ConfigManager.beaconConfig.beamUpdateFrequency == 0L
+}
 
+fun OverhauledBeacon.constructBeamSegments() {
     if (level == 0)
         return
 
@@ -230,6 +197,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
     var broke = false
     var didRedirection = false
+    var redirections = 0
 
     val beamSegmentsToCheck = mutableListOf<BeaconBeamSegment>()
 
@@ -285,6 +253,7 @@ fun OverhauledBeacon.constructBeamSegments() {
                 check = true
 
                 didRedirection = true
+                redirections += 1
                 lastDirection = currentSegment.direction
                 currentSegment.isTurn = true
                 currentSegment = BeaconBeamSegment(
@@ -329,90 +298,6 @@ fun OverhauledBeacon.constructBeamSegments() {
             }
         }
 
-        /*if (BeaconOverhaulConfigManager.config.allowTintedGlassTransparency) {
-            if (block === Blocks.TINTED_GLASS) {
-                targetAlpha = if (alpha < 0.3f) 0f else (alpha * 0.75f)
-            }
-        }
-
-        if (isRedirectingBlock(block)) {
-            val dir = state[Properties.FACING]
-            if (dir == currentSegment.direction) {
-                currentSegment.increaseHeight()
-            } else {
-                check = true
-                beamSegmentsToCheck.add(currentSegment)
-
-                targetColor = floatArrayOf(1.0f, 1.0f, 1.0f)
-                if (targetColor[0] == 1.0f && targetColor[1] == 1.0f && targetColor[2] == 1.0f)
-                    targetColor = currColor
-
-                val mixedColor = floatArrayOf(
-                    (currColor[0] + targetColor[0] * 3) / 4.0f,
-                    (currColor[1] + targetColor[1] * 3) / 4.0f,
-                    (currColor[2] + targetColor[2] * 3) / 4.0f
-                )
-                currColor = mixedColor
-
-                didRedirection = true
-                lastDirection = currentSegment.direction
-                currentSegment.isTurn = true
-                currentSegment = BeaconBeamSegment(
-                    dir,
-                    currentPos.subtract(pos),
-                    currColor,
-                    alpha,
-                    currColor,
-                    alpha,
-                    previousSegmentIsTurn = true,
-                )
-            }
-        } else if (targetColor != null || targetAlpha != -1.0f) {
-            if (targetColor.contentEquals(currColor) && targetAlpha == alpha) {
-                currentSegment.increaseHeight()
-            } else {
-                check = true
-                beamSegmentsToCheck.add(currentSegment)
-
-                val previousColor = currColor
-                val previousAlpha = alpha
-
-                var mixedColor = currColor
-                if (targetColor != null) {
-                    mixedColor = mixColors(currColor, targetColor)
-
-                    if (!firstColorChange) {
-                        mixedColor = targetColor
-                        firstColorChange = true
-                    }
-
-                    currColor = mixedColor
-                }
-
-                if (targetAlpha != -1.0f)
-                    alpha = targetAlpha
-
-                lastDirection = currentSegment.direction
-                currentSegment = BeaconBeamSegment(
-                    currentSegment.direction,
-                    currentPos.subtract(pos),
-                    mixedColor,
-                    alpha,
-                    previousColor,
-                    previousAlpha
-                )
-            }
-        } else {
-            // skip transparent blocks & blocks in the beacon transparent tag (bedrock)
-            if (state !in TagRegistry.BEACON_TRANSPARENT && state.getOpacity(world, currentPos) >= 15) {
-                if (currentSegment.direction == Direction.UP)
-                    broke = true
-                break
-            }
-
-            currentSegment.increaseHeight()
-        }*/
-
         if (check) {
             val added = seenPositions.add(currentPos)
             if (!added) {
@@ -425,19 +310,15 @@ fun OverhauledBeacon.constructBeamSegments() {
     if (remainingHorizontalMoves == 0 || currentPos.y <= world.bottomY)
         broke = true
 
-    minY = if (!broke) {
-        targetHeight + 1
-    } else {
-        if (remainingHorizontalMoves == 0)
-            currentSegment.height = 1000
+    minY = targetHeight + if (broke) 0 else 1
 
-        targetHeight
-    }
+    if (broke && remainingHorizontalMoves == 0)
+        currentSegment.height = 1000
 
     if (!this.didRedirection && didRedirection) {
         if (!broke && beamSegmentsToCheck.isNotEmpty()) {
             for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos.toCenterPos(), pos.toCenterPos()).expand(10.0)))
-                CriterionRegistry.REDIRECT_BEACON_CRITERION.trigger(player)
+                CriterionRegistry.REDIRECT_BEACON_CRITERION.trigger(player, redirections)
         }
     }
 

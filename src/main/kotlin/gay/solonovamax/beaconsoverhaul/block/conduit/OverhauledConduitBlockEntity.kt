@@ -35,7 +35,6 @@ import software.bernie.geckolib.animatable.GeoBlockEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
 import software.bernie.geckolib.animation.AnimationController
-import software.bernie.geckolib.animation.EasingType
 import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
@@ -106,7 +105,7 @@ class OverhauledConduitBlockEntity(pos: BlockPos?, state: BlockState?) : BlockEn
                 event.setAndContinue(RawAnimation.begin().thenLoop("animation.powered"))
             else
                 event.setAndContinue(RawAnimation.begin().thenLoop("animation.idle"))
-        }.setOverrideEasingType(EasingType.EASE_OUT_SINE))
+        })
     }
 
     override fun getAnimatableInstanceCache() = cache

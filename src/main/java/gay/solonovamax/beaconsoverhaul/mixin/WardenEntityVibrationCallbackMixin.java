@@ -24,7 +24,7 @@ public abstract class WardenEntityVibrationCallbackMixin {
     public abstract int getRange();
 
     @ModifyReturnValue(
-            method = "accept(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;F)V",
+            method = "accepts",
             at = @At("RETURN")
     )
     private boolean filterWithinRange(boolean original, ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event,

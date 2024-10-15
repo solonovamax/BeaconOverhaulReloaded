@@ -14,8 +14,8 @@ import net.minecraft.server.network.ServerPlayerEntity
 import java.util.Optional
 
 class RedirectBeaconCriterion : AbstractCriterion<RedirectBeaconCriterion.Conditions>() {
-    fun trigger(player: ServerPlayerEntity) {
-        trigger(player) { true }
+    fun trigger(player: ServerPlayerEntity, redirections: Int) {
+        trigger(player) { it.matches(redirections) }
     }
 
     override fun getConditionsCodec() = Conditions.CODEC

@@ -5,7 +5,6 @@
     "package":    "gay.solonovamax.beaconsoverhaul.mixin",
     "mixins":     [
         "BeaconBlockEntityMixin",
-        "BeaconBlockMixin",
         "BlockEntityTypeMixin",
         "BlockFamiliesMixin",
         "BlockItemMixin",

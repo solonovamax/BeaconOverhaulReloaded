@@ -3,6 +3,7 @@ package gay.solonovamax.beaconsoverhaul.block.conduit.render
 import gay.solonovamax.beaconsoverhaul.block.conduit.OverhauledConduitBlockEntity
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory
 import software.bernie.geckolib.renderer.GeoBlockRenderer
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer
 
 class OverhauledConduitBlockEntityRenderer(
     ctx: BlockEntityRendererFactory.Context,
@@ -11,6 +12,6 @@ class OverhauledConduitBlockEntityRenderer(
         addRenderLayer(ConduitWindRenderLayer(this, ctx))
         addRenderLayer(ConduitEyeRenderLayer(this, ctx))
         // Can't get this working for whatever reason (pain)
-        // addRenderLayer(AutoGlowingGeoLayer(this))
+        addRenderLayer(AutoGlowingGeoLayer(this))
     }
 }
