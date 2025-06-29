@@ -5,16 +5,12 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import gay.solonovamax.beaconsoverhaul.config.ConfigManager
 import gay.solonovamax.beaconsoverhaul.util.contains
+import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import io.wispforest.lavender.structure.BlockStatePredicate.MatchCategory
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.addJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import kotlinx.serialization.json.putJsonObject
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
@@ -30,6 +26,13 @@ import net.minecraft.util.math.Vec3i
 import net.minecraft.world.World
 import net.silkmc.silk.core.math.vector.minus
 import net.silkmc.silk.core.math.vector.plus
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addAll
+import kotlinx.serialization.json.addJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import io.wispforest.lavender.structure.BlockStatePredicate as LavenderBlockStatePredicate
 
 
@@ -42,11 +45,17 @@ fun createBeaconStructureTemplate(tier: Int): LavenderStructureTemplate {
     val size = tier * 2 + 1
 
     val jsonString = buildJsonObject {
+        val baseBlocks = ConfigManager.beaconConfig.beaconBaseBlocks.map { it.id.toString() }
         putJsonObject("keys") {
             put("b", "minecraft:beacon")
-            put("B", "#minecraft:beacon_base_blocks")
-            put("anchor", "#minecraft:beacon_base_blocks")
+            putJsonArray("B") {
+                addAll(baseBlocks)
+            }
+            putJsonArray("anchor") {
+                addAll(baseBlocks)
+            }
         }
+
         putJsonArray("layers") {
             for (level in tier downTo 0) {
                 addJsonArray {
@@ -87,16 +96,15 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
     var anchor: Vec3i? = null
 
     for ((k, predicate) in keyObject.entrySet()) {
-        var key: Char
-        when {
+        val key = when {
             k.length == 1 -> {
-                key = k[0]
-                if (key == '#') {
-                    throw JsonParseException("Key '#' is reserved for 'anchor' declarations")
+                k.first().also {
+                    if (it == '#')
+                        throw JsonParseException("Key '#' is reserved for 'anchor' declarations")
                 }
             }
 
-            k == "anchor" -> key = '#'
+            k == "anchor" -> '#'
             else -> continue
         }
 
@@ -105,37 +113,13 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
                 predicate.isJsonArray -> {
                     predicate as JsonArray
                     val predicates = predicate.map { nested ->
-                        when (val result = StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, nested.asString)) {
-                            is StructureBlockParser.BlockResult -> {
-                                LavenderBlockPredicate(result.blockState, result.properties)
-                            }
-
-                            is StructureBlockParser.TagResult -> {
-                                LavenderTagStatePredicate(result.tag, result.vagueProperties)
-                            }
-
-                            is StructureBlockParser.AnyBlockResult -> {
-                                LavenderFuzzyBlockPredicate(result.previewState, result.vagueProperties)
-                            }
-                        }
+                        StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, nested.asString).toPredicate()
                     }
                     keys[key] = LavenderNestedBlockStatePredicate(predicates)
                 }
 
                 predicate.isJsonPrimitive -> {
-                    keys[key] = when (val result = StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, predicate.asString)) {
-                        is StructureBlockParser.BlockResult -> {
-                            LavenderBlockPredicate(result.blockState, result.properties)
-                        }
-
-                        is StructureBlockParser.TagResult -> {
-                            LavenderTagStatePredicate(result.tag, result.vagueProperties)
-                        }
-
-                        is StructureBlockParser.AnyBlockResult -> {
-                            LavenderFuzzyBlockPredicate(result.previewState, result.vagueProperties)
-                        }
-                    }
+                    keys[key] = StructureBlockParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, predicate.asString).toPredicate()
                 }
             }
         } catch (e: CommandSyntaxException) {
@@ -210,6 +194,22 @@ fun parseStructureTemplate(resourceId: Identifier, json: JsonObject): LavenderSt
     }
 
     return LavenderStructureTemplate(resourceId, result, xSize, ySize, zSize, anchor)
+}
+
+fun StructureBlockParser.ParsedResult.toPredicate(): BlockStatePredicate {
+    return when (this) {
+        is StructureBlockParser.BlockResult -> {
+            LavenderBlockPredicate(blockState, properties)
+        }
+
+        is StructureBlockParser.TagResult -> {
+            LavenderTagStatePredicate(tag, vagueProperties)
+        }
+
+        is StructureBlockParser.AnyBlockResult -> {
+            LavenderFuzzyBlockPredicate(previewState, vagueProperties)
+        }
+    }
 }
 
 fun LavenderStructureTemplate.tryPlaceNextMatching(state: BlockState, pos: BlockPos, world: World): Boolean {

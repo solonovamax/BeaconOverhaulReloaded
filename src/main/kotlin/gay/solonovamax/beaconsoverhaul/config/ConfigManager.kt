@@ -45,6 +45,7 @@ object ConfigManager {
     }
 
     fun createConfigScreen(parent: Screen): Screen {
+        @Suppress("unused", "UnusedVariable")
         val config = YetAnotherConfigLib("beaconoverhaul") {
             val beaconCategory by categories.registering("beacon") {
                 val expressionsGroup by groups.registering("expressions") {
@@ -185,23 +186,13 @@ object ConfigManager {
                     controller(TickBoxControllerBuilder::create)
                 }
             }
+
             save(::saveAllConfigs)
         }
         return config.generateScreen(parent)
-
-        // val configBuilder = ConfigBuilder.create().apply {
-        //     parentScreen = parent
-        //     title = Text.translatable("title.beaconoverhaul.config")
-        //     // savingRunnable = Runnable { writeConfig(config) }
-        //     transparentBackground = true
-        // }
-        //
-        // val entryBuilder = configBuilder.entryBuilder()
-        // val generalCategory = configBuilder.getOrCreateCategory(Text.translatable("title.beaconoverhaul.category.general"))
-        //
-        // return configBuilder.build()
     }
 
+    @Suppress("unused", "UnusedVariable")
     private fun createStatusEffectsScreen(parent: Screen): Screen {
         val config = YetAnotherConfigLib("beaconoverhaul") {
             val conduitCategory by categories.registering("conduit") {

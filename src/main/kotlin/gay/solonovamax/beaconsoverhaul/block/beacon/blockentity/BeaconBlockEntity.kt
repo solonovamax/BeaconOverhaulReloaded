@@ -16,9 +16,6 @@ import gay.solonovamax.beaconsoverhaul.register.TagRegistry
 import gay.solonovamax.beaconsoverhaul.screen.OverhauledBeaconScreenHandler
 import gay.solonovamax.beaconsoverhaul.util.contains
 import gay.solonovamax.beaconsoverhaul.util.nonSpectatingEntities
-import kotlinx.datetime.Clock
-import kotlinx.serialization.cbor.Cbor
-import kotlinx.serialization.encodeToByteArray
 import net.minecraft.advancement.criterion.Criteria
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -37,6 +34,9 @@ import net.minecraft.util.math.Vec3i
 import net.minecraft.world.Heightmap
 import net.minecraft.world.World
 import net.silkmc.silk.core.math.vector.minus
+import kotlinx.datetime.Clock
+import kotlinx.serialization.cbor.Cbor
+import kotlinx.serialization.encodeToByteArray
 
 fun OverhauledBeacon.createMenu(
     syncId: Int,
@@ -97,7 +97,7 @@ private fun buildBlockMultiset(
             for (zOffset in z - layerOffset..z + layerOffset) {
                 val state = world.getBlockState(BlockPos(xOffset, yOffset, zOffset))
 
-                if (state !in BlockTags.BEACON_BASE_BLOCKS)
+                if (state.block !in ConfigManager.beaconConfig.beaconBaseBlocks && state !in BlockTags.BEACON_BASE_BLOCKS)
                     return level to baseBlocks
 
                 layerContents.add(state.block)
@@ -134,10 +134,14 @@ private fun OverhauledBeacon.shouldUpdateBeacon(world: World, pos: BlockPos): Bo
         else -> {
             this.lastUpdate = Clock.System.now()
 
-            for (xOffset in -1..1)
-                for (zOffset in -1..1)
-                    if (world.getBlockState(pos.add(xOffset, -1, zOffset)) !in BlockTags.BEACON_BASE_BLOCKS)
+            for (xOffset in -1..1) {
+                for (zOffset in -1..1) {
+                    val state = world.getBlockState(pos.add(xOffset, -1, zOffset))
+                    if (state.block !in ConfigManager.beaconConfig.beaconBaseBlocks && state !in BlockTags.BEACON_BASE_BLOCKS) {
                         return false
+                    }
+                }
+            }
 
             return true
         }
@@ -201,7 +205,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
     val beamSegmentsToCheck = mutableListOf<BeaconBeamSegment>()
 
-    var currentColor = SRGB(1.0f, 1.0f, 1.0f)
+    var currentColor = SRGB(1.0f, 1.0f, 1.0f).toHSV()
 
     var lastDirection: Direction? = null
     var currentSegment = BeaconBeamSegment(Direction.UP, Vec3i.ZERO, currentColor, currentColor).also { beamSegmentsToCheck.add(it) }
@@ -215,7 +219,7 @@ fun OverhauledBeacon.constructBeamSegments() {
         if (currentSegment.direction === Direction.UP && currentSegment.direction !== lastDirection) {
             val heightmapVal = world.getTopY(Heightmap.Type.WORLD_SURFACE, currentPos.x, currentPos.z)
             if (heightmapVal == (currentPos.y + 1)) {
-                currentSegment.height = heightmapVal + 1000
+                currentSegment.height = heightmapVal + 10000
                 break
             }
 
@@ -231,7 +235,7 @@ fun OverhauledBeacon.constructBeamSegments() {
         val state = world.getBlockState(currentPos)
         val block = state.block
 
-        val nextColor = block.beaconTint ?: currentColor
+        val nextColor = block.beaconTint?.toHSV() ?: currentColor
 
         when {
             ConfigManager.beaconConfig.allowTintedGlassTransparency && block === Blocks.TINTED_GLASS -> {

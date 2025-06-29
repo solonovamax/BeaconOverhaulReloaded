@@ -20,8 +20,6 @@ import org.slf4j.kotlin.info
 
 
 object BeaconOverhaulReloaded : ModInitializer {
-    // val RESOURCE_PACK = RuntimeResourcePack.create(identifierOf("beacon-overhaul"))
-
     private val logger by getLogger()
 
     val updateBeaconPacket = s2cPacket<OverhauledBeaconData>(identifierOf("beacon_update"))
@@ -40,8 +38,6 @@ object BeaconOverhaulReloaded : ModInitializer {
         CriterionRegistry.register()
         TagRegistry.register()
 
-        createRuntimeResourcepack()
-
         ServerLifecycleEvents.SERVER_STARTING.register {
             // add the status effects a bit later in the lifecycle
             addStatusEffectsToBeacon()
@@ -59,21 +55,4 @@ object BeaconOverhaulReloaded : ModInitializer {
         BeaconBlockEntity.EFFECTS_BY_LEVEL = effectsByLevel.map { it.toList() }
         BeaconBlockEntity.EFFECTS = effectsByLevel.flatMapTo(mutableSetOf()) { it }
     }
-
-    private fun createRuntimeResourcepack() {
-        // TODO: 2024-10-07 Add runtime resource pack for beacon_base_blocks
-        // val beaconBaseBlocksTag = JTag().apply {
-        //     for (block in ConfigManager.beaconConfig.beaconBaseBlocks)
-        //         add(block.id)
-        //
-        //     RESOURCE_PACK.addTag(identifierOf("minecraft", "blocks/beacon_base_blocks"), this)
-        // }
-        //
-        // RRPCallback.AFTER_VANILLA.register { resourcePacks: MutableList<ResourcePack> ->
-        //     resourcePacks.add(RESOURCE_PACK)
-        // }
-        //
-        // RESOURCE_PACK.dump()
-    }
-
 }

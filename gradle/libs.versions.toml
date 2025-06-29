@@ -10,12 +10,12 @@ axion-release = "1.17.2"
 
 minecraft = "1.21.1"
 
-loom = "1.8.6"
+loom = "1.8.9"
 
 minotaur = "2.8.7"
 
 fabric-loader = "0.16.5"
-fabric-api = "0.105.0+1.21.1"
+fabric-api = "0.116.4+1.21.1"
 fabric-language-kotlin = "1.12.2+kotlin.2.0.20"
 fabric-yarn = "1.21.1+build.3"
 
@@ -53,9 +53,9 @@ lavender = "0.1.13+1.21"
 
 geckolib = "4.6.6"
 
-emi = "1.1.14+1.21.1"
-rei = "16.0.777"
-jei = "19.19.6.236"
+emi = "1.1.22+1.21.1"
+rei = "16.0.799"
+jei = "19.21.2.313"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
