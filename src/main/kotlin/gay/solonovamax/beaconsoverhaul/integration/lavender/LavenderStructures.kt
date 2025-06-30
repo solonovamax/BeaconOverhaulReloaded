@@ -10,6 +10,7 @@ import gay.solonovamax.beaconsoverhaul.util.contains
 import gay.solonovamax.beaconsoverhaul.util.id
 import gay.solonovamax.beaconsoverhaul.util.identifierOf
 import io.wispforest.lavender.structure.BlockStatePredicate.MatchCategory
+import io.wispforest.lavender.structure.BlockStatePredicate.Result
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
@@ -212,27 +213,41 @@ fun StructureBlockParser.ParsedResult.toPredicate(): BlockStatePredicate {
     }
 }
 
-fun LavenderStructureTemplate.tryPlaceNextMatching(state: BlockState, pos: BlockPos, world: World): Boolean {
-    val realPos = BlockPos.Mutable()
-    for ((predicate, localPos) in this) {
-        realPos.set(pos + localPos - anchor)
+fun LavenderStructureTemplate.canPlaceNextMatching(state: BlockState, pos: BlockPos, world: World): Boolean {
+    findFirstAvailableMatching(state, pos, world) { pos ->
+        return true
+    }
 
-        if (predicate.test(state) != LavenderBlockStatePredicate.Result.STATE_MATCH)
+    return false
+}
+
+fun LavenderStructureTemplate.tryPlaceNextMatching(state: BlockState, pos: BlockPos, world: World): Boolean {
+    findFirstAvailableMatching(state, pos, world) { pos ->
+        world.setBlockState(pos, state)
+        return true
+    }
+
+    return false
+}
+
+private inline fun LavenderStructureTemplate.findFirstAvailableMatching(state: BlockState, pos: BlockPos, world: World, found: (BlockPos) -> Unit) {
+    for ((predicate, localPos) in this) {
+        val realPos = pos + localPos - anchor
+
+        if (predicate.test(state) != Result.STATE_MATCH)
             continue
 
         val currentState = world.getBlockState(realPos)
 
-        if (predicate.test(currentState) == LavenderBlockStatePredicate.Result.STATE_MATCH)
+        if (predicate.test(currentState) == Result.STATE_MATCH)
             continue
 
         val targetState = world.getBlockState(realPos)
         if (!targetState.isAir && !targetState.isReplaceable && targetState !in BlockTags.FIRE && targetState.fluidState.isEmpty)
             continue
 
-        world.setBlockState(realPos, state)
-        return true
+        found(realPos)
     }
-    return false
 }
 
 val NULL_PREDICATE: BlockStatePredicate = object : BlockStatePredicate {
@@ -242,8 +257,8 @@ val NULL_PREDICATE: BlockStatePredicate = object : BlockStatePredicate {
         return Blocks.AIR.defaultState
     }
 
-    override fun test(blockState: BlockState?): LavenderBlockStatePredicate.Result {
-        return LavenderBlockStatePredicate.Result.STATE_MATCH
+    override fun test(blockState: BlockState?): Result {
+        return Result.STATE_MATCH
     }
 
     override fun isOf(type: MatchCategory): Boolean {
@@ -258,8 +273,8 @@ val AIR_PREDICATE: BlockStatePredicate = object : BlockStatePredicate {
         return Blocks.AIR.defaultState
     }
 
-    override fun test(blockState: BlockState): LavenderBlockStatePredicate.Result {
-        return if (blockState.isAir) LavenderBlockStatePredicate.Result.STATE_MATCH else LavenderBlockStatePredicate.Result.NO_MATCH
+    override fun test(blockState: BlockState): Result {
+        return if (blockState.isAir) Result.STATE_MATCH else Result.NO_MATCH
     }
 
     override fun isOf(type: MatchCategory): Boolean {
@@ -288,20 +303,20 @@ data class LavenderNestedBlockStatePredicate(
         }
     }
 
-    override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
+    override fun test(state: BlockState): Result {
         var hasBlockMatch = false
         for (predicate in predicates) {
             when (val result = predicate.test(state)) {
-                LavenderBlockStatePredicate.Result.STATE_MATCH -> return result
-                LavenderBlockStatePredicate.Result.BLOCK_MATCH -> hasBlockMatch = true
-                LavenderBlockStatePredicate.Result.NO_MATCH -> {}
+                Result.STATE_MATCH -> return result
+                Result.BLOCK_MATCH -> hasBlockMatch = true
+                Result.NO_MATCH -> {}
             }
         }
 
         return if (hasBlockMatch)
-            LavenderBlockStatePredicate.Result.BLOCK_MATCH
+            Result.BLOCK_MATCH
         else
-            LavenderBlockStatePredicate.Result.NO_MATCH
+            Result.NO_MATCH
     }
 }
 
@@ -311,16 +326,16 @@ data class LavenderBlockPredicate(
 ) : BlockStatePredicate {
     override val previewStates: List<BlockState> = listOf(state)
 
-    override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
+    override fun test(state: BlockState): Result {
         if (state.block !== this.state.block)
-            return LavenderBlockStatePredicate.Result.NO_MATCH
+            return Result.NO_MATCH
 
         for ((property, value) in properties.entries) {
             if (state[property] != value)
-                return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+                return Result.BLOCK_MATCH
         }
 
-        return LavenderBlockStatePredicate.Result.STATE_MATCH
+        return Result.STATE_MATCH
     }
 }
 
@@ -330,19 +345,19 @@ data class LavenderFuzzyBlockPredicate(
 ) : BlockStatePredicate {
     override val previewStates: List<BlockState> = listOf(state)
 
-    override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
+    override fun test(state: BlockState): Result {
         for ((vagueProperty, value) in vagueProperties.entries) {
-            val prop = state.block.stateManager.getProperty(vagueProperty) ?: return LavenderBlockStatePredicate.Result.NO_MATCH
+            val prop = state.block.stateManager.getProperty(vagueProperty) ?: return Result.NO_MATCH
 
             val expected = prop.parse(value)
             if (expected.isEmpty)
-                return LavenderBlockStatePredicate.Result.NO_MATCH
+                return Result.NO_MATCH
 
             if (state[prop] != expected.get())
-                return LavenderBlockStatePredicate.Result.NO_MATCH
+                return Result.NO_MATCH
         }
 
-        return LavenderBlockStatePredicate.Result.STATE_MATCH
+        return Result.STATE_MATCH
     }
 }
 
@@ -372,21 +387,21 @@ data class LavenderTagStatePredicate(
         }
     }
 
-    override fun test(state: BlockState): LavenderBlockStatePredicate.Result {
+    override fun test(state: BlockState): Result {
         if (state !in tag)
-            return LavenderBlockStatePredicate.Result.NO_MATCH
+            return Result.NO_MATCH
 
         for ((vagueProperty, value) in vagueProperties.entries) {
-            val prop = state.block.stateManager.getProperty(vagueProperty) ?: return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+            val prop = state.block.stateManager.getProperty(vagueProperty) ?: return Result.BLOCK_MATCH
 
             val expected = prop.parse(value)
             if (expected.isEmpty)
-                return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+                return Result.BLOCK_MATCH
 
             if (state[prop] != expected.get())
-                return LavenderBlockStatePredicate.Result.BLOCK_MATCH
+                return Result.BLOCK_MATCH
         }
 
-        return LavenderBlockStatePredicate.Result.STATE_MATCH
+        return Result.STATE_MATCH
     }
 }

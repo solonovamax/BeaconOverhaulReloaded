@@ -18,6 +18,7 @@ import gay.solonovamax.beaconsoverhaul.util.contains
 import gay.solonovamax.beaconsoverhaul.util.nonSpectatingEntities
 import net.minecraft.advancement.criterion.Criteria
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
 import net.minecraft.block.Stainable
 import net.minecraft.entity.effect.StatusEffect
@@ -33,6 +34,9 @@ import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3i
 import net.minecraft.world.Heightmap
 import net.minecraft.world.World
+import net.silkmc.silk.core.math.vector.component1
+import net.silkmc.silk.core.math.vector.component2
+import net.silkmc.silk.core.math.vector.component3
 import net.silkmc.silk.core.math.vector.minus
 import kotlinx.datetime.Clock
 import kotlinx.serialization.cbor.Cbor
@@ -59,7 +63,7 @@ fun OverhauledBeacon.updateTier(world: World, pos: BlockPos) {
     val oldBaseBlocks = this.baseBlocks
     val oldBeaconPoints = this.beaconPoints
 
-    val (level, baseBlocks) = buildBlockMultiset(pos.y, world, pos.x, pos.z)
+    val (level, baseBlocks) = buildBlockMultiset(world, pos)
 
     if (level > this.level && !brokenBeam) {
         for (player in world.nonSpectatingEntities<ServerPlayerEntity>(Box(pos.toCenterPos(), pos.toCenterPos()).expand(10.0)))
@@ -77,12 +81,12 @@ fun OverhauledBeacon.updateTier(world: World, pos: BlockPos) {
 }
 
 private fun buildBlockMultiset(
-    y: Int,
     world: World,
-    x: Int,
-    z: Int,
+    pos: BlockPos,
 ): Pair<Int, MutableMultiset<Block>> {
     var level = 0
+
+    val (x, y, z) = pos
 
     val baseBlocks = mutableMultisetOf<Block>()
 
@@ -205,7 +209,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
     val beamSegmentsToCheck = mutableListOf<BeaconBeamSegment>()
 
-    var currentColor = SRGB(1.0f, 1.0f, 1.0f).toHSV()
+    var currentColor = SRGB(1.0f, 1.0f, 1.0f).toOklab()
 
     var lastDirection: Direction? = null
     var currentSegment = BeaconBeamSegment(Direction.UP, Vec3i.ZERO, currentColor, currentColor).also { beamSegmentsToCheck.add(it) }
@@ -235,7 +239,7 @@ fun OverhauledBeacon.constructBeamSegments() {
         val state = world.getBlockState(currentPos)
         val block = state.block
 
-        val nextColor = block.beaconTint?.toHSV() ?: currentColor
+        val nextColor = block.beaconTint?.toOklab() ?: currentColor
 
         when {
             ConfigManager.beaconConfig.allowTintedGlassTransparency && block === Blocks.TINTED_GLASS -> {
@@ -245,7 +249,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
                 currentSegment = BeaconBeamSegment(
                     direction = currentSegment.direction,
-                    offset = currentPos - (pos),
+                    offset = currentPos - pos,
                     color = mixedColor,
                     previousColor = currentColor,
                 ).also { beamSegmentsToCheck.add(it) }
@@ -262,7 +266,7 @@ fun OverhauledBeacon.constructBeamSegments() {
                 currentSegment.isTurn = true
                 currentSegment = BeaconBeamSegment(
                     direction = state[Properties.FACING],
-                    offset = currentPos.subtract(pos),
+                    offset = currentPos - pos,
                     color = currentColor,
                     previousColor = currentColor,
                     previousSegmentIsTurn = true,
@@ -281,7 +285,7 @@ fun OverhauledBeacon.constructBeamSegments() {
 
                 currentSegment = BeaconBeamSegment(
                     currentSegment.direction,
-                    currentPos - (pos),
+                    currentPos - pos,
                     mixedColor,
                     currentColor,
                 ).also { beamSegmentsToCheck.add(it) }
@@ -329,6 +333,54 @@ fun OverhauledBeacon.constructBeamSegments() {
     this.brokenBeam = broke
     this.beamSegmentsToCheck = beamSegmentsToCheck
     this.didRedirection = didRedirection
+}
+
+fun OverhauledBeacon.canPlaceNextMatching(state: BlockState): Boolean {
+    if (state.block !in ConfigManager.beaconConfig.beaconBaseBlocks && state !in BlockTags.BEACON_BASE_BLOCKS)
+        return false
+
+    findFirstNotInvalid {
+        return true
+    }
+
+    return false
+}
+
+fun OverhauledBeacon.tryPlaceNextMatching(state: BlockState): Boolean {
+    if (state.block !in ConfigManager.beaconConfig.beaconBaseBlocks && state !in BlockTags.BEACON_BASE_BLOCKS)
+        return false
+
+    findFirstNotInvalid { pos ->
+        world.setBlockState(pos, state)
+        return true
+    }
+
+    return false
+}
+
+private inline fun OverhauledBeacon.findFirstNotInvalid(found: (BlockPos) -> Unit) {
+    val (x, y, z) = pos
+
+    for (layerOffset in 1..ConfigManager.beaconConfig.maxBeaconLayers) {
+        val yOffset = y - layerOffset
+
+        if (yOffset < world.bottomY)
+            return
+
+        for (xOffset in x - layerOffset..x + layerOffset) {
+            for (zOffset in z - layerOffset..z + layerOffset) {
+                val currentPos = BlockPos(xOffset, yOffset, zOffset)
+                val targetState = world.getBlockState(currentPos)
+
+                if (!targetState.isAir && !targetState.isReplaceable && targetState !in BlockTags.FIRE && targetState.fluidState.isEmpty)
+                    continue
+
+                found(currentPos)
+
+                return
+            }
+        }
+    }
 }
 
 private fun isRedirectingBlock(block: Block): Boolean {

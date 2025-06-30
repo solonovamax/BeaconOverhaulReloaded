@@ -532,6 +532,16 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
         return BeaconBlockEntityKt.testCanApplyEffect(this, effect);
     }
 
+    @Override
+    public boolean canPlaceNextMatching(@NotNull BlockState state) {
+        return BeaconBlockEntityKt.canPlaceNextMatching(this, state);
+    }
+
+    @Override
+    public boolean tryPlaceNextMatching(@NotNull BlockState state) {
+        return BeaconBlockEntityKt.tryPlaceNextMatching(this, state);
+    }
+
     @Unique
     @NotNull
     @Override
@@ -540,9 +550,8 @@ abstract class BeaconBlockEntityMixin extends BlockEntity implements ExtendedScr
     }
 
     @Unique
-    @NotNull
     @Override
-    public BlockPos getPos() {
+    public @NotNull BlockPos getPos() {
         return this.pos;
     }
 }

@@ -2,14 +2,15 @@ package gay.solonovamax.beaconsoverhaul.block.beacon
 
 import ca.solostudios.guava.kotlin.collect.MutableMultiset
 import gay.solonovamax.beaconsoverhaul.block.beacon.blockentity.BeaconBeamSegment
-import kotlinx.datetime.Instant
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import kotlinx.datetime.Instant
 
 interface OverhauledBeacon {
     var lastUpdate: Instant
@@ -46,4 +47,7 @@ interface OverhauledBeacon {
     fun removeUpdateListener(player: PlayerEntity)
 
     fun canApplyEffect(effect: RegistryEntry<StatusEffect>): Boolean
+
+    fun canPlaceNextMatching(state: BlockState): Boolean
+    fun tryPlaceNextMatching(state: BlockState): Boolean
 }

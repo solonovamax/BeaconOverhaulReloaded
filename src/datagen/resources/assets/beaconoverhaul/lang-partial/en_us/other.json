@@ -1,3 +1,7 @@
 {
-    "itemGroup.beaconoverhaul": "Beacon Overhaul"
+    "itemGroup.beaconoverhaul": "Beacon Overhaul",
+    "hud.beaconoverhaul": {
+        "sneak_to_place": "Sneak to place",
+        "right_click_to_place": "Right click to place"
+    }
 }

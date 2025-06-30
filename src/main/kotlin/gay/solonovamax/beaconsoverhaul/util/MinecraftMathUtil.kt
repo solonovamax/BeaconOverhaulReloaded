@@ -2,6 +2,9 @@ package gay.solonovamax.beaconsoverhaul.util
 
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Direction
+import net.silkmc.silk.core.world.pos.Pos3d
+import net.silkmc.silk.core.world.pos.Pos3f
+import net.silkmc.silk.core.world.pos.Pos3i
 import org.joml.Vector3d
 
 operator fun Direction.not(): Direction = opposite
@@ -13,6 +16,12 @@ fun Box.expand(value: Int): Box {
 fun Box.stretch(x: Int, y: Int, z: Int): Box {
     return stretch(x.toDouble(), y.toDouble(), z.toDouble())
 }
+
+operator fun Pos3i.plus(direction: Direction): Pos3i = Pos3i(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ)
+
+operator fun Pos3f.plus(direction: Direction): Pos3f = Pos3f(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ)
+
+operator fun Pos3d.plus(direction: Direction): Pos3d = Pos3d(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ)
 
 operator fun Vector3d.not(): Vector3d = times(-1f)
 
